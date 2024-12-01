@@ -16,9 +16,12 @@ public class MailService {
     private JavaMailSender mailSender;
 
     public void sendOrderConfirmationMail(User user, Order order) {
-        String subject = STR."Order Confirmation - \{order.getId()}";
-        String confirmationUrl = STR."http://localhost:8080/orders/confirm/\{order.getId()}";
-        String message = STR."<p>Dear \{user.getUsername()},</p><p>Thank you for your order. Please confirm your order by clicking the link below:</p><a href='\{confirmationUrl}'>Confirm Order</a>";
+        String subject = "Order Confirmation -" +order.getId();
+        String confirmationUrl ="http://localhost:8080/orders/confirm/"+order.getId();
+        String message = "<p>Dear"+ user.getUsername()
+                        + "</p><p>Thank you for your order. " +
+                        "Please confirm your order by clicking the link below:</p><a href='"
+                        +confirmationUrl +"'>Confirm Order</a>";
 
         sendHtmlMessage(user.getEmail(), subject, message);
     }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
   <title>Order History</title>
   <th:block th:replace="~{Layout :: link-css}"></th:block>
@@ -39,6 +39,6 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-<div th:replace="layout :: common-js"></div>
+<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
 </body>
 </html>

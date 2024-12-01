@@ -24,11 +24,14 @@ public class SecurityConfig {
         http
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/**", "/auth/register", "/css/**", "/js/**").permitAll()
-//                        .requestMatchers("/api/revenue").permitAll()
-                        .requestMatchers("/cart/**").authenticated()
-                        .requestMatchers("/ratings/add").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/**", "/auth/register", "/css/**", "/js/**","/uploads/**").permitAll()
+//                        .requestMatchers("/productst/**").permitAll()
+//                        .requestMatchers("products/add").permitAll()
+//                        .requestMatchers("products/edit").permitAll()
+//                        .requestMatchers("products/delete").permitAll()
+//                        .requestMatchers("/cart/**").authenticated()
+//                        .requestMatchers("/ratings/add").authenticated()
+//                        .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")
@@ -41,6 +44,7 @@ public class SecurityConfig {
                 )
                 .rememberMe(rememberMe -> rememberMe.key("uniqueAndSecret")
                 .tokenValiditySeconds(86400)
+
         );
 
         return http.build();

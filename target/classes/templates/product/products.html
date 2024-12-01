@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,7 +47,7 @@
                 <tr th:each="product, i : ${products}">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${i.index + 1}"></td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <img th:src="'/' + ${product.image}" alt="Product Image" class="h-10 w-10 rounded-full">
+                        <img th:src="@{'/' + ${product.image}}" alt="Product Image" class="h-10 w-10 rounded-full">
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${product.name}"></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
@@ -92,6 +92,6 @@
 
 <!-- Footer & Common JS -->
 <div th:replace="~{fragments/footer :: footer}"></div>
-<div th:replace="layout :: common-js"></div>
+<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
 </body>
 </html>

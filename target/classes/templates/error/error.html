@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"   xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/error.css}">
+    <th:block th:replace="~{Layout :: link-css}"></th:block>
     <title>I dont have what you search </title>
 </head>
 <body>
-
+<div th:replace="~{fragments/header :: header}"></div>
 <svg>
-    <h1  th:text="${error}">
-        <a th:href="@{/}">Back to homer</a>
-    </h1>
+
+     <a th:href="@{/}" >
+        <p class=" txt" th:text="${error}"></p>
+     </a>
+
     <svg>
         <defs>
             <g id="Cabeza" transform="matrix(1, 0, 0, 1, 0, 0)">
@@ -41,6 +44,7 @@
         <g id="screen" />
     </svg>
 </svg>
+
 <div class="link-container">
     <a th:href="@{/}">Back to homer</a>
 </div>

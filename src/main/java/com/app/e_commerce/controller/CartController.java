@@ -29,8 +29,8 @@ public class CartController {
     private CartService cartService;       // Cart service to manage cart logic
     @Autowired
     private OrderService orderService;     // Order service to manage orders
-@Autowired
-private UserService userService;
+    @Autowired
+    private UserService userService;
     // Display cart items
     @PostMapping("/add")
     public String addToCart(@RequestParam("productId") Long productId,

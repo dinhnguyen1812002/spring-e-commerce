@@ -52,7 +52,7 @@ public class UserController {
         redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
 
         // Reload the same profile page with updated information
-        return STR."redirect:/users/edit/\{userId}";
+        return "redirect:/users/edit/";
     }
 
 }

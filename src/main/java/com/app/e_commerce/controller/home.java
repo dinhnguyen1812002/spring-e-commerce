@@ -33,12 +33,14 @@ public class home {
     public String getAllUser(Model model){
         List<User> listUser = userService.getAllUser();
         model.addAttribute("users", listUser);
-        return "/users/list-user";
+        return "users/list-user";
     }
     @GetMapping("/search")
     public String searchProducts(@RequestParam("keyword") String keyword, Model model) {
         model.addAttribute("products", productService.searchProducts(keyword));
         return "fragments/header";
     }
+
+
 
 }

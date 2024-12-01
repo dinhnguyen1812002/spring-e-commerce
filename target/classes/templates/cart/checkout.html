@@ -21,6 +21,6 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-<div th:replace="layout :: common-js"></div>
+<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
 </body>
 </html>

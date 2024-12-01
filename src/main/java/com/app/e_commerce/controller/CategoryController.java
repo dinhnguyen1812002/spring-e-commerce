@@ -17,12 +17,12 @@ public class CategoryController {
     @GetMapping("/new-category")
     public String showCreateForm(Model model) {
         model.addAttribute("category", new Category());
-        return "category/category-form";
+        return "Category/category-form";
     }
     @PostMapping("/save")
     public String saveCategory(@ModelAttribute("category") @Valid Category category, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return "category-form";
+            return "Category/category-form";
         }
         categoryService.saveCategory(category);
         return "redirect:/categories";
@@ -32,7 +32,7 @@ public class CategoryController {
         Category category = categoryService.getCategoryById(id);
         if (category != null) {
             model.addAttribute("category", category);
-            return "category/category-form";
+            return "Category/category-form";
         } else {
             return "redirect:/categories";
         }
@@ -46,7 +46,7 @@ public class CategoryController {
     @GetMapping
     public String listCategories(Model model) {
         model.addAttribute("categories", categoryService.getAllCategories());
-        return "category/categories";
+        return "Category/categories";
     }
 }
 

@@ -54,7 +54,7 @@ public class ProductController {
             if (category != null) {
                 categories.add(category);
             } else {
-                throw new RuntimeException(STR."Không tìm thấy danh mục: \{categoryName}");
+                throw new RuntimeException("Not found category: " + categoryName);
             }
         }
         return categories;
@@ -93,9 +93,9 @@ public class ProductController {
             List<Category> categories = categoryService.getAllCategories();
             model.addAttribute("product", product);
             model.addAttribute("categories", categories);
-            return "product/edit-product"; // Thymeleaf template for editing a product
+            return "product/edit-product";
         } else {
-            return "redirect:/products"; // Redirect if product not found
+            return "redirect:/products";
         }
     }
 

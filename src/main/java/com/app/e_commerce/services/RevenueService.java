@@ -79,7 +79,8 @@ public class RevenueService {
                 LocalDate startDate = LocalDate.of(year, month, 1);
                 LocalDate endDate = startDate.plusMonths(1);
                 BigDecimal revenue = orderRepository.sumTotalAmountByOrderDate(startDate.atStartOfDay(), endDate.atStartOfDay());
-                String monthYear = STR."\{startDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)} \{year}";
+                String monthYear = startDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + year;
+
                 revenueDataPoints.add(new RevenueDataPoint(monthYear, revenue != null ? revenue : BigDecimal.ZERO));
             }
         }

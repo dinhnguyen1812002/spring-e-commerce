@@ -69,7 +69,7 @@
 </div>
 
 <script th:src="@{/js/add-product.js}"></script>
-<div th:replace="layout :: common-js"></div>
+<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

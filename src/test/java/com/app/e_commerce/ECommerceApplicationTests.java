@@ -9,11 +9,7 @@ class ECommerceApplicationTests {
 
 	@Test
 	void contextLoads() {
-		Integer l= 1;
-		Integer r=1;
-		if (l.equals(r)){
-			System.out.println(true);;
-		}
+
 	}
 
 }

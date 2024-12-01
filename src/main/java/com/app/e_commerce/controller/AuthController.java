@@ -23,7 +23,7 @@ public class AuthController {
     UserServiceOptimize userService;
     @GetMapping("/login")
     public String showLoginPage() {
-        return "Authentication/login"; // This will render login.html Thymeleaf template
+        return "Authentication/Login";
     }
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
