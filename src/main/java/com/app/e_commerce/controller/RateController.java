@@ -37,7 +37,7 @@ public class RateController {
                             @RequestParam("star") Integer star,
                             Principal principal) {
         if (principal == null) {
-            return "auth/login";
+            return "Authentication/Login";
         }
 
         Product product = productService

@@ -46,6 +46,7 @@ public class ProductController {
         productService.saveProduct(product, file);
         return "redirect:/products";
     }
+
     private Set<Category> processCategories(String categoriesString) {
         Set<Category> categories = new HashSet<>();
         String[] categoryNames = categoriesString.split(",");
@@ -59,6 +60,7 @@ public class ProductController {
         }
         return categories;
     }
+
     @GetMapping
     public String listProducts(Model model,
                                @RequestParam(value = "page", defaultValue = "0") int page,
@@ -72,6 +74,7 @@ public class ProductController {
         model.addAttribute("size", size);
         return "product/products"; // Thymeleaf view name
     }
+
     @GetMapping("/search")
     public String searchProducts(@RequestParam("keyword") String keyword, Model model) {
         List<Product> searchResults = productService.searchProducts(keyword.trim().toLowerCase());
@@ -85,6 +88,7 @@ public class ProductController {
 
         return "product/products";
     }
+
     @GetMapping("/edit/{id}")
     public String showUpdateProductForm(@PathVariable Long id, Model model) {
         Optional<Product> productOptional = productService.getProductById(id);

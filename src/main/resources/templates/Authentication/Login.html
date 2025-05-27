@@ -5,30 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <script src="https://kit.fontawesome.com/e5f0641b17.js" crossorigin="anonymous"></script>
-    <!-- Add Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <th:block  th:replace="~{Layout :: link-css}"></th:block>
+    <th:block th:replace="~{Layout :: link-css}"></th:block>
 </head>
 
-<body >
+<body class="bg-gray-100 min-h-screen flex flex-col">
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="min-h-screen bg-gray-100 flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Đăng nhập</h2>
+<div class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Đăng nhập</h2>
 
         <!-- Error messages -->
-        <div th:if="${param.error}" class="mb-4 p-3 bg-red-100 rounded">
-            <p class="text-red-700 text-sm" th:if="${param.error[0] == 'invalidCredentials'}">
+        <div th:if="${param.error}" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+            <p class="text-red-700 text-sm flex items-center" th:if="${param.error[0] == 'invalidCredentials'}">
                 <i class="fas fa-exclamation-circle mr-2"></i> Tên đăng nhập hoặc mật khẩu không đúng.
             </p>
-            <p class="text-red-700 text-sm" th:if="${param.error[0] == 'userNotFound'}">
+            <p class="text-red-700 text-sm flex items-center" th:if="${param.error[0] == 'userNotFound'}">
                 <i class="fas fa-exclamation-circle mr-2"></i> Không tìm thấy người dùng.
             </p>
-            <p class="text-red-700 text-sm" th:if="${param.error[0] == 'loginError'}">
+            <p class="text-red-700 text-sm flex items-center" th:if="${param.error[0] == 'loginError'}">
                 <i class="fas fa-exclamation-circle mr-2"></i> Đã xảy ra lỗi khi đăng nhập.
             </p>
-
         </div>
 
         <form th:action="@{/auth/login}" method="post" class="space-y-6">
@@ -36,11 +34,11 @@
             <div>
                 <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <i class="fas fa-user text-gray-400"></i>
-                    </span>
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </span>
                     <input type="text" id="username" name="username" required
-                           class="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                           class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" />
                 </div>
             </div>
 
@@ -48,38 +46,49 @@
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <i class="fas fa-lock text-gray-400"></i>
-                    </span>
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </span>
                     <input type="password" id="password" name="password" required
-                           class="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                           class="pl-10 pr-12 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" />
                     <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center pr-3">
-                        <i class="fas fa-eye text-gray-400"></i>
+                        <i class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
                     </button>
                 </div>
+            </div>
+
+            <!-- Remember Me Checkbox -->
+            <div class="flex items-center">
+                <input type="checkbox" id="remember-me" name="remember-me" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                <label for="remember-me" class="ml-2 block text-sm text-gray-700">Ghi nhớ đăng nhập</label>
             </div>
 
             <!-- Submit button -->
             <div>
                 <button type="submit"
-                        class="w-full bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300">
+                        class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 font-medium">
                     Đăng nhập
                 </button>
             </div>
-            <hr> or
+
+            <!-- Divider -->
+            <div class="relative flex items-center">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="px-3 text-sm text-gray-500">hoặc</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <!-- Register link -->
             <div>
-                 <a th:href="@{/auth/register}"
-                    class="w-full bg-blue-600 text-white rounded-md py-2 px-4
-                    hover:bg-blue-700 focus:outline-none focus:ring-2
-                    focus:ring-blue-500 focus:ring-opacity-50 transition duration-300">
-                   Đăng Ký
+                <a th:href="@{/auth/register}"
+                   class="block w-full bg-gray-100 text-blue-600 py-3 px-4 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 text-center font-medium">
+                    Đăng ký
                 </a>
             </div>
         </form>
-        <input type="checkbox" name="remember-me" />
     </div>
-
 </div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 <script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
 <script>
@@ -97,6 +106,5 @@
         }
     });
 </script>
-
 </body>
 </html>

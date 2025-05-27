@@ -33,7 +33,6 @@ public class TrafficService {
 
         trafficRepo.save(traffic);
 
-        // Send the updated traffic data to WebSocket clients
         messagingTemplate.convertAndSend("/topic/trafficUpdates", getAllTraffic());
     }
 

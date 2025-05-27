@@ -1,8 +1,11 @@
 package com.app.e_commerce.controller;
+import com.app.e_commerce.entity.Category;
 import com.app.e_commerce.entity.Product;
 import com.app.e_commerce.entity.User;
 import com.app.e_commerce.repository.UserRepo;
+import com.app.e_commerce.services.CategoryService;
 import com.app.e_commerce.services.ProductService;
+import com.app.e_commerce.services.RecommendationService;
 import com.app.e_commerce.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,18 +18,38 @@ import java.util.List;
 
 @Controller
 @RequestMapping
-public class home {
+public class HomeController {
     @Autowired
     private UserService userService;
     @Autowired
     private UserRepo userRepo;
     @Autowired
     ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private RecommendationService recommendationService;
     @GetMapping
     public String home(Model model)
     {
         List<Product> listProduct = productService.getAllProducts();
+        List<Category> categories = categoryService.getAllCategories();
+
+        // Get recommended products (limit to 4)
+        List<Product> recommendedProducts = recommendationService.getRecommendedProducts(4);
+
+        // Get popular products (limit to 4)
+        List<Product> popularProducts = recommendationService.getPopularProducts(4);
+
+        // Get latest products
+        List<Product> newProducts = productService.getLatestProducts();
+
         model.addAttribute("products", listProduct);
+        model.addAttribute("categories", categories);
+        model.addAttribute("recommendedProducts", recommendedProducts);
+        model.addAttribute("popularProducts", popularProducts);
+        model.addAttribute("newProducts", newProducts);
+
         return "Layout";
     }
     @GetMapping("/user-list")
@@ -41,6 +64,9 @@ public class home {
         return "fragments/header";
     }
 
-
+    @GetMapping("/hero")
+    public String hero(){
+        return "fragments/hero";
+    }
 
 }

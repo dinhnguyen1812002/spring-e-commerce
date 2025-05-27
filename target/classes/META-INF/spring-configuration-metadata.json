@@ -10,27 +10,32 @@
     {
       "name": "app.image.compression-quality",
       "type": "java.lang.Float",
-      "sourceType": "com.app.e_commerce.config.ImageProperties"
+      "sourceType": "com.app.e_commerce.config.ImageProperties",
+      "defaultValue": 0.7
     },
     {
       "name": "app.image.default-avatar-path",
       "type": "java.lang.String",
-      "sourceType": "com.app.e_commerce.config.ImageProperties"
+      "sourceType": "com.app.e_commerce.config.ImageProperties",
+      "defaultValue": "static\/images\/avatar.png"
     },
     {
       "name": "app.image.max-file-size",
       "type": "java.lang.Long",
-      "sourceType": "com.app.e_commerce.config.ImageProperties"
+      "sourceType": "com.app.e_commerce.config.ImageProperties",
+      "defaultValue": 0
     },
     {
       "name": "app.image.max-height",
       "type": "java.lang.Integer",
-      "sourceType": "com.app.e_commerce.config.ImageProperties"
+      "sourceType": "com.app.e_commerce.config.ImageProperties",
+      "defaultValue": 800
     },
     {
       "name": "app.image.max-width",
       "type": "java.lang.Integer",
-      "sourceType": "com.app.e_commerce.config.ImageProperties"
+      "sourceType": "com.app.e_commerce.config.ImageProperties",
+      "defaultValue": 800
     }
   ],
   "hints": []

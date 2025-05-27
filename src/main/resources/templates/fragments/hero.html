@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Hero Section</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-slideInLeft { animation: slideInLeft 0.8s ease-out forwards; }
+        .animate-slideInRight { animation: slideInRight 0.8s ease-out forwards; }
+        .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+        .animate-gradient { animation: gradient-shift 8s ease-in-out infinite; background-size: 200% 200%; }
+        .animate-shimmer { animation: shimmer 2s ease-in-out infinite; }
+
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-600 { animation-delay: 0.6s; }
+        .delay-800 { animation-delay: 0.8s; }
+
+        .product-card {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+<!-- Hero Section -->
+<div class="relative min-h-screen overflow-hidden" th:fragment="hero">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 gradient-bg animate-gradient opacity-20"></div>
+
+    <!-- Floating Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <!-- Floating Circles -->
+        <div class="absolute top-20 left-10 w-32 h-32 bg-purple-200 rounded-full opacity-30 animate-float"></div>
+        <div class="absolute top-40 right-20 w-24 h-24 bg-pink-200 rounded-full opacity-40 animate-float" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-40 left-20 w-20 h-20 bg-blue-200 rounded-full opacity-30 animate-float" style="animation-delay: 4s;"></div>
+        <div class="absolute bottom-20 right-10 w-28 h-28 bg-indigo-200 rounded-full opacity-25 animate-float" style="animation-delay: 1s;"></div>
+
+        <!-- Floating Shapes -->
+        <div class="absolute top-1/3 left-1/4 w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-400 opacity-20 rotate-45 animate-pulse-slow"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-12 h-12 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-25 rotate-12 animate-pulse-slow" style="animation-delay: 1.5s;"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="relative container mx-auto px-6 pt-20 pb-16">
+        <div class="grid lg:grid-cols-2 gap-12 items-center min-h-screen">
+
+            <!-- Left Content -->
+            <div class="space-y-8" >
+                <!-- Badge -->
+                <div class="opacity-0 animate-fadeInUp">
+                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border border-purple-200">
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2 animate-pulse"></span>
+                            New Collection Available
+                        </span>
+                </div>
+
+                <!-- Main Heading -->
+                <div class="space-y-4 opacity-0 animate-fadeInUp delay-200">
+                    <h1 class="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-gray-900 via-purple-900 to-indigo-900 bg-clip-text text-transparent leading-tight">
+                        Everything you need
+                        <span class="block text-transparent bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text">
+                               We don't have it
+                            </span>
+                    </h1>
+                    <p class="text-xl text-gray-600 leading-relaxed max-w-lg">
+                        Just some useless stuff you spent a lot of money on.
+                    </p>
+                </div>
+
+                <!-- Features -->
+                <div class="grid grid-cols-2 gap-4 opacity-0 animate-fadeInUp delay-400">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <span class="text-gray-700 font-medium">Free Shipping</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <span class="text-gray-700 font-medium">Quality Guaranteed</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-gray-700 font-medium">Easy Returns</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-gray-700 font-medium">24/7 Support</span>
+                    </div>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 opacity-0 animate-fadeInUp delay-600">
+                    <button class="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+                            <span class="relative z-10 flex items-center justify-center">
+                                Shop Now
+                                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+
+                    <button class="group bg-white text-gray-800 px-8 py-4 rounded-2xl font-semibold text-lg border-2 border-gray-200 hover:border-purple-300 hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                            <span class="flex items-center justify-center">
+                                View Collection
+                                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </span>
+                    </button>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-8 pt-8 opacity-0 animate-fadeInUp delay-800">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-900">50K+</div>
+                        <div class="text-sm text-gray-600">Happy Customers</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-900">10K+</div>
+                        <div class="text-sm text-gray-600">Products Sold</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-900">99%</div>
+                        <div class="text-sm text-gray-600">Satisfaction Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content - Product Showcase -->
+            <div class="relative opacity-0 animate-slideInRight delay-400">
+                <!-- Main Product Card -->
+                <div class="product-card rounded-3xl p-8 shadow-2xl transform hover:scale-105 transition-all duration-500">
+                    <!-- Product Image Placeholder -->
+                    <div class="aspect-square bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-200/50 to-pink-200/50 animate-shimmer opacity-50"></div>
+                        <div class="text-6xl text-purple-300">👜</div>
+                        <!-- Sale Badge -->
+                        <div class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                            -30%
+                        </div>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">Premium Designer Bag</h3>
+                            <p class="text-gray-600">Luxury Collection 2024</p>
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="flex items-center space-x-2">
+                            <div class="flex text-yellow-400">
+                                ⭐⭐⭐⭐⭐
+                            </div>
+                            <span class="text-sm text-gray-600">(128 reviews)</span>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="flex items-center space-x-3">
+                            <span class="text-3xl font-bold text-gray-900">$299</span>
+                            <span class="text-xl text-gray-500 line-through">$429</span>
+                        </div>
+
+                        <!-- Quick Action -->
+                        <button class="w-full bg-gray-900 text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-300">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Floating Mini Cards -->
+                <div class="absolute -top-8 -left-8 product-card rounded-2xl p-4 shadow-lg animate-float">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center mb-2">
+                        <span class="text-2xl">👟</span>
+                    </div>
+                    <div class="text-sm font-semibold">$199</div>
+                </div>
+
+                <div class="absolute -bottom-8 -right-8 product-card rounded-2xl p-4 shadow-lg animate-float" style="animation-delay: 1s;">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center mb-2">
+                        <span class="text-2xl">⌚</span>
+                    </div>
+                    <div class="text-sm font-semibold">$599</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 animate-fadeInUp delay-1000">
+        <div class="flex flex-col items-center space-y-2 text-gray-500">
+            <span class="text-sm">Scroll to explore</span>
+            <div class="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-bounce"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

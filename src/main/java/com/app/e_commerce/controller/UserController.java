@@ -43,16 +43,16 @@ public class UserController {
                              @ModelAttribute User user,
                              @RequestParam("avatarFile") MultipartFile avatarFile,
                              RedirectAttributes redirectAttributes,
-                             Principal pri
+                             Principal principal
     ) {
 
-        if(pri ==null) return "redirect:/auth/login";
+        if(principal ==null) return "redirect:/auth/login";
         // Update the user's information and avatar
         userService.updateUser(userId, user, avatarFile);
         redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
 
         // Reload the same profile page with updated information
-        return "redirect:/users/edit/";
+        return "users/user-profile";
     }
 
 }

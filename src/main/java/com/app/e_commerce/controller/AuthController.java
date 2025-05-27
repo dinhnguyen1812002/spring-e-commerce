@@ -5,6 +5,11 @@ import com.app.e_commerce.services.UserService;
 import com.app.e_commerce.services.UserServiceOptimize;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,14 +22,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/auth")
 public class AuthController {
 
-//    @Autowired
-//    UserService userService;
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
     UserServiceOptimize userService;
+
     @GetMapping("/login")
     public String showLoginPage() {
         return "Authentication/Login";
     }
+
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
@@ -42,8 +53,19 @@ public class AuthController {
         try {
             // Attempt to register the user
             userService.registerUser(user);
-            // Redirect to the login page after successful registration
-            return "redirect:/auth/login?success=true";
+
+            // Automatically log in the user
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+            // Use the constructor that doesn't require credentials since we're auto-authenticating after registration
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null, // Don't provide credentials here as they're already verified
+                userDetails.getAuthorities()
+            );
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            // Redirect to the home page after successful registration and login
+            return "redirect:/login?success=true";
         } catch (IllegalArgumentException e) {
             // Handle case where username or email is already taken
             model.addAttribute("errorMessage", e.getMessage());
@@ -58,4 +80,5 @@ public class AuthController {
             return "Authentication/register";
         }
     }
+
 }

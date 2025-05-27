@@ -50,14 +50,14 @@ public class UserServiceOptimize {
     }
 
     @Transactional
-    public User registerUser(@Valid @NotNull User user) {
+    public void registerUser(@Valid @NotNull User user) {
         validateNewUser(user);
         setUserRole(user);
         encodePassword(user);
         setDefaultAvatar(user);
 
         try {
-            return userRepository.save(user);
+            userRepository.save(user);
         } catch (Exception e) {
             log.error("Error while registering user: {}", user.getUsername(), e);
             throw new RuntimeException("Failed to register user", e);
