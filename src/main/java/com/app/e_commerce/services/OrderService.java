@@ -39,17 +39,7 @@ public class OrderService {
             order.setPaymentMethod(paymentMethod);
             order.setOrderDate(LocalDateTime.now());
             order.setTotalAmount(cart.getTotalPrice());
-            order.setOrderStatus(OrderStatus.PENDING);  // Set status to PENDING
-            // Convert CartItems to OrderItems and save them
-            for (CartItem cartItem : cart.getCartItems()) {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setProduct(cartItem.getProduct());
-                orderItem.setQuantity(cartItem.getQuantity());
-                orderItem.setPrice(cartItem.getProduct().getPrice());
-                orderItem.setOrder(order);
-
-                order.getOrderItems().add(orderItem);
-            }
+            CartService.setStatus(cart, order);
             orderRepository.save(order); // Save order to database
         }
     }

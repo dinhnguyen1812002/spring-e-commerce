@@ -21,7 +21,7 @@
 .settings/
 .metadata/
 .factorypath
-
+./target/*
 # IDE-specific files - VS Code
 .vscode/
 *.code-workspace
@@ -99,4 +99,3 @@ node_modules/*
 # Package manager locks
 package-lock.json
 yarn.lock
-target/*

@@ -25,7 +25,6 @@ import java.util.*;
 public class Order {
 
     @Id
-
     private String id;
 
     @ManyToOne

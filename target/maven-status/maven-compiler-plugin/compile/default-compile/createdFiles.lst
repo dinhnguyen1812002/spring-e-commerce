@@ -25,6 +25,7 @@ com\app\e_commerce\controller\UserController.class
 com\app\e_commerce\controller\TrafficController.class
 com\app\e_commerce\data\RevenueDataPoint.class
 com\app\e_commerce\repository\RateRepository.class
+com\app\e_commerce\DTO\RateMessageDTO.class
 com\app\e_commerce\config\WebSocketConfig.class
 com\app\e_commerce\controller\ProductController.class
 com\app\e_commerce\entity\Category.class

@@ -39,7 +39,13 @@ public class SecurityConfig {
         http
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers( "/auth/register", "/css/**", "/js/**","/uploads/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers( "/auth/register",
+                                "/css/**",
+                                "/js/**",
+                                "/uploads/**",
+                                "/images/**",
+                                "/static/**")
+                        .permitAll()
 
                         .requestMatchers("/products/**").authenticated()
                         .requestMatchers("/users/**").permitAll()

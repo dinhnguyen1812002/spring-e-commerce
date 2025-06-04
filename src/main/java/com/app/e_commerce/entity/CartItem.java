@@ -1,7 +1,5 @@
 package com.app.e_commerce.entity;
 
-
-import com.app.e_commerce.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +29,7 @@ public class CartItem {
     @Column(nullable = false)
     private Integer quantity;
 
-    public CartItem( Product product,Cart cart, Integer quantity) {
+    public CartItem(Product product, Cart cart, Integer quantity) {
         this.product = product;
         this.cart = cart;
         this.quantity = quantity;

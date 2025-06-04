@@ -9,7 +9,9 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -39,6 +41,9 @@ public class Product {
 
 
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<Rate> rates = new ArrayList<>();
 
     @ManyToMany()
     @JoinTable(

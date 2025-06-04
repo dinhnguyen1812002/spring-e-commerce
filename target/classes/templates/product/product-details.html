@@ -6,6 +6,8 @@
     <title>Chi tiết sản phẩm</title>
     <th:block th:replace="~{Layout :: link-css}"></th:block>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body class="bg-white text-gray-800">
 <div th:replace="~{fragments/header :: header}"></div>
@@ -101,80 +103,82 @@
     </div>
 
     <!-- Đánh giá sản phẩm -->
-    <div class="mt-12">
-        <h2 class="text-2xl font-bold mb-6">Đánh giá sản phẩm</h2>
+<!--    <div class="mt-12">-->
+<!--        <h2 class="text-2xl font-bold mb-6">Đánh giá sản phẩm</h2>-->
 
-        <div class="bg-white rounded-xl shadow-md p-6">
-            <!-- Existing Ratings -->
-            <div th:if="${#lists.isEmpty(rates)}" class="text-center py-6 text-gray-500">
-                <i class="fas fa-comment-slash text-4xl mb-3"></i>
-                <p>Chưa có đánh giá nào cho sản phẩm này</p>
-            </div>
+<!--        <div class="bg-white rounded-xl shadow-md p-6">-->
+<!--            &lt;!&ndash; Existing Ratings &ndash;&gt;-->
+<!--            <div th:if="${#lists.isEmpty(rates)}" class="text-center py-6 text-gray-500">-->
+<!--                <i class="fas fa-comment-slash text-4xl mb-3"></i>-->
+<!--                <p>Chưa có đánh giá nào cho sản phẩm này</p>-->
+<!--            </div>-->
 
-            <div th:unless="${#lists.isEmpty(rates)}" class="space-y-6">
-                <div th:each="rate : ${rates}" class="border-b border-gray-100 pb-4 last:border-b-0">
-                    <div class="flex items-start">
-                        <img th:src="@{'data:image/jpeg;base64,' + ${rate.user.avatar}}" alt="User Avatar" class="w-10 h-10 rounded-full mr-4 object-cover">
-                        <div class="flex-1">
-                            <div class="flex items-center">
-                                <span class="font-semibold mr-2" th:text="${rate.user.username}">Username</span>
-                                <div class="flex text-yellow-400">
-                                    <i class="fas fa-star text-xs" th:each="i : ${#numbers.sequence(1, rate.star)}"></i>
-                                </div>
-                            </div>
-                            <p class="text-gray-700 my-2" th:text="${rate.comment}">User's comment here</p>
-                            <small th:text="${#temporals.format(rate.createdAt, 'dd-MM-yyyy HH:mm')}" class="text-gray-400 text-xs">Date</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!--            <div th:unless="${#lists.isEmpty(rates)}" class="space-y-6">-->
+<!--                <div th:each="rate : ${rates}" class="border-b border-gray-100 pb-4 last:border-b-0">-->
+<!--                    <div class="flex items-start">-->
+<!--                        <img th:src="@{'data:image/jpeg;base64,' + ${rate.user.avatar}}" alt="User Avatar" class="w-10 h-10 rounded-full mr-4 object-cover">-->
+<!--                        <div class="flex-1">-->
+<!--                            <div class="flex items-center">-->
+<!--                                <span class="font-semibold mr-2" th:text="${rate.user.username}">Username</span>-->
+<!--                                <div class="flex text-yellow-400">-->
+<!--                                    <i class="fas fa-star text-xs" th:each="i : ${#numbers.sequence(1, rate.star)}"></i>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <p class="text-gray-700 my-2" th:text="${rate.comment}">User's comment here</p>-->
+<!--                            <small th:text="${#temporals.format(rate.createdAt, 'dd-MM-yyyy HH:mm')}" class="text-gray-400 text-xs">Date</small>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <!-- Add New Rating - Show only if user is authenticated -->
-            <div sec:authorize="isAuthenticated()" class="mt-8 border-t border-gray-100 pt-6">
-                <h3 class="font-semibold text-lg mb-4">Đánh giá của bạn</h3>
-                <form th:action="@{/ratings/add}" method="post">
-                    <input type="hidden" name="productId" th:value="${product.id}">
+<!--            &lt;!&ndash; Add New Rating - Show only if user is authenticated &ndash;&gt;-->
+<!--            <div sec:authorize="isAuthenticated()" class="mt-8 border-t border-gray-100 pt-6">-->
+<!--                <h3 class="font-semibold text-lg mb-4">Đánh giá của bạn</h3>-->
+<!--                <form th:action="@{/ratings/add}" method="post">-->
+<!--                    <input type="hidden" name="productId" th:value="${product.id}">-->
 
-                    <div class="flex items-center mb-4">
-                        <label for="star" class="block text-sm font-medium text-gray-700 mr-4">Đánh giá của bạn:</label>
-                        <div class="flex items-center">
-                            <div class="star-rating flex space-x-1">
-                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="1">
-                                    <i class="fas fa-star"></i>
-                                </button>
-                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="2">
-                                    <i class="fas fa-star"></i>
-                                </button>
-                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="3">
-                                    <i class="fas fa-star"></i>
-                                </button>
-                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="4">
-                                    <i class="fas fa-star"></i>
-                                </button>
-                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="5">
-                                    <i class="fas fa-star"></i>
-                                </button>
-                            </div>
-                            <input type="hidden" id="star" name="star" value="5">
-                        </div>
-                    </div>
+<!--                    <div class="flex items-center mb-4">-->
+<!--                        <label for="star" class="block text-sm font-medium text-gray-700 mr-4">Đánh giá của bạn:</label>-->
+<!--                        <div class="flex items-center">-->
+<!--                            <div class="star-rating flex space-x-1">-->
+<!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="1">-->
+<!--                                    <i class="fas fa-star"></i>-->
+<!--                                </button>-->
+<!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="2">-->
+<!--                                    <i class="fas fa-star"></i>-->
+<!--                                </button>-->
+<!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="3">-->
+<!--                                    <i class="fas fa-star"></i>-->
+<!--                                </button>-->
+<!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="4">-->
+<!--                                    <i class="fas fa-star"></i>-->
+<!--                                </button>-->
+<!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="5">-->
+<!--                                    <i class="fas fa-star"></i>-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                            <input type="hidden" id="star" name="star" value="5">-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="mb-4">
-                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Nhận xét của bạn</label>
-                        <textarea id="comment" name="comment" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..." class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
+<!--                    <div class="mb-4">-->
+<!--                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Nhận xét của bạn</label>-->
+<!--                        <textarea id="comment" name="comment" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..." class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>-->
+<!--                    </div>-->
 
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                        Gửi đánh giá
-                    </button>
-                </form>
-            </div>
+<!--                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">-->
+<!--                        Gửi đánh giá-->
+<!--                    </button>-->
+<!--                </form>-->
+<!--            </div>-->
 
-            <div sec:authorize="!isAuthenticated()" class="mt-6 text-center py-4 bg-gray-50 rounded-lg">
-                <p>Vui lòng <a href="/login" class="text-blue-600 hover:underline">đăng nhập</a> để đánh giá sản phẩm</p>
-            </div>
-        </div>
-    </div>
+<!--            <div sec:authorize="!isAuthenticated()" class="mt-6 text-center py-4 bg-gray-50 rounded-lg">-->
+<!--                <p>Vui lòng <a href="/login" class="text-blue-600 hover:underline">đăng nhập</a> để đánh giá sản phẩm</p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div th:replace="~{ratings/product-ratings :: rating}"></div>-->
+    <div th:replace="~{Rate/product-ratings :: ratings-section(product=${product})}"></div>
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
