@@ -121,7 +121,7 @@ public class CartService {
     }
 
     @Transactional
-    public void checkoutCart(String address, PaymentMethod paymentMethod, HttpSession session, Principal principal) {
+    public void checkoutCart(String fullName, String phone, String address, String note, PaymentMethod paymentMethod, HttpSession session, Principal principal) {
         String username = principal.getName();
         User user = userService.findByUsername(username);
         if (user == null) {
@@ -135,14 +135,17 @@ public class CartService {
 
         Order order = new Order();
         order.setUser(user);
+        order.setName(fullName);
+        order.setPhoneNumber(phone);
         order.setShippingAddress(address);
+        order.setNote(note);
         order.setPaymentMethod(paymentMethod);
         order.setTotalAmount(cart.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());
         setStatus(cart, order);
 
         orderService.createOrder(order);
-        mailService.sendOrderConfirmationMail(user, order);
+//        mailService.sendOrderConfirmationMail(user, order);
 
         cart.getCartItems().clear();
         cart.updateTotalPrice();

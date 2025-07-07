@@ -1,10 +1,11 @@
 package com.app.e_commerce.controller;
 
 import com.app.e_commerce.Enum.OrderStatus;
+import com.app.e_commerce.entity.Cart;
 import com.app.e_commerce.entity.Order;
-
 import com.app.e_commerce.entity.User;
 import com.app.e_commerce.exception.ResourceNotFoundException;
+import com.app.e_commerce.services.CartService;
 import com.app.e_commerce.services.OrderService;
 import com.app.e_commerce.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpSession;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,6 +37,28 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CartService cartService;
+
+    @GetMapping("/checkout")
+    public String checkout(Model model, HttpSession session, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+//        if (result.hasErrors()) {
+//            return "cart/checkout";
+//        }
+
+        User user = userService.findByUsername(principal.getName());
+        Cart cart = cartService.getOrCreateCart(user, session);
+
+        if (cart.getCartItems().isEmpty()) {
+            return "redirect:/cart?error=empty";
+        }
+
+        model.addAttribute("cart", cart);
+        return "cart/checkout";
+    }
 
     @GetMapping("/confirm/{orderId}")
     public String confirmOrder(@PathVariable("orderId") String orderId, Model model) {
@@ -48,8 +73,9 @@ public class OrderController {
 
     @GetMapping("/success")
     public String orderSuccess() {
-        return "cart/checkout";  // Return a Thymeleaf page showing payment success
+        return "orders/success";  // Return a Thymeleaf page showing payment success
     }
+
     @GetMapping
     public String getOrderHistory(
             Model model,

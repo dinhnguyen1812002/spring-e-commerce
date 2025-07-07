@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Xác nhận đơn hàng</title>
+    <th:block th:replace="~{Layout :: link-css}"></th:block>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="max-w-3xl mx-auto px-4 py-10 bg-white rounded shadow mt-10">
+    <h2 class="text-2xl font-bold text-green-600 mb-6 text-center">Đặt hàng thành công!</h2>
+    <div class="mb-6">
+        <h3 class="font-semibold mb-2">Thông tin đơn hàng:</h3>
+        <p><b>Mã đơn hàng:</b> <span th:text="${order.id}"></span></p>
+        <p><b>Họ tên:</b> <span th:text="${order.fullName}"></span></p>
+        <p><b>Số điện thoại:</b> <span th:text="${order.phone}"></span></p>
+        <p><b>Địa chỉ:</b> <span th:text="${order.address}"></span></p>
+        <p><b>Ghi chú:</b> <span th:text="${order.note}"></span></p>
+        <p><b>Phương thức thanh toán:</b> <span th:text="${order.paymentMethod}"></span></p>
+        <p><b>Ngày đặt:</b> <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></span></p>
+    </div>
+    <div>
+        <h3 class="font-semibold mb-2">Sản phẩm đã đặt:</h3>
+        <ul>
+            <li th:each="item : ${order.orderItems}" class="mb-2">
+                <span th:text="${item.product.name}"></span> - SL: <span th:text="${item.quantity}"></span> - 
+                <span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+            </li>
+        </ul>
+        <div class="mt-4 font-bold text-lg">
+            Tổng tiền: <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+        </div>
+    </div>
+    <div class="mt-8 text-center">
+        <a href="/" class="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Tiếp tục mua sắm</a>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

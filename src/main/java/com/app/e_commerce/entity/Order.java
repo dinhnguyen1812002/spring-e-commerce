@@ -6,6 +6,7 @@ import com.app.e_commerce.Enum.OrderStatus;
 import com.app.e_commerce.Enum.PaymentMethod;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +35,13 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderItem> orderItems = new HashSet<>();
 
-    @Column(nullable = false)
+    private String name;
+
+    @Size(min = 10, max = 10)
+    private String phoneNumber;
+
+    private String note;
+
     private BigDecimal totalAmount;
 
     @Column(nullable = false)

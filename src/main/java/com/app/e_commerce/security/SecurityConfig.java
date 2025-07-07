@@ -48,10 +48,13 @@ public class SecurityConfig {
                         .permitAll()
 
                         .requestMatchers("/products/**").authenticated()
+
                         .requestMatchers("/users/**").permitAll()
                         .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/ratings/add").authenticated()
+                        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form

@@ -32,6 +32,7 @@ public class ImageService {
     /**
      * Converts and optimizes an image file to Base64 with caching
      */
+
     @Cacheable(value = IMAGE_CACHE_NAME, key = "#file.originalFilename")
     public String convertToBase64(MultipartFile file) throws IOException {
         try {

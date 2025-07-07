@@ -31,7 +31,7 @@ public class CategoryService {
         return categoryRepository.findByName(name);
     }
 
-    public Category findOrCreateCategoryByName(String name) {
+        public Category findOrCreateCategoryByName(String name) {
         Category category = findByName(name);
         if (category == null) {
             category = new Category();
@@ -41,5 +41,8 @@ public class CategoryService {
         return category;
     }
 
+    public long countCategories() {
+        return categoryRepository.count();
+    }
 
 }

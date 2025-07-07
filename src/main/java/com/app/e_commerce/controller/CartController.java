@@ -69,14 +69,31 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public String checkout(@RequestParam("address") String address,
+    public String checkout(@RequestParam("fullName") String fullName,
+                           @RequestParam("phone") String phone,
+                           @RequestParam("address") String address,
+                           @RequestParam(value = "note", required = false) String note,
                            @RequestParam("paymentMethod") PaymentMethod paymentMethod,
                            HttpSession session,
                            Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }
-        cartService.checkoutCart(address, paymentMethod, session, principal);
+
+        cartService.checkoutCart(fullName, phone, address, note, paymentMethod, session, principal);
         return "redirect:/orders/success";
     }
+
+//    @PostMapping("/cart/checkout")
+//    public String checkout(@ModelAttribute CheckoutRequestDTO checkoutRequest, Model model, Principal principal) {
+//        // Lấy thông tin user hiện tại (nếu có)
+//        User user = userService.findByUsername(principal.getName());
+//
+//        // Lưu thông tin đơn hàng và khách hàng
+//        Order order = orderService.createOrderFromCheckout(checkoutRequest, user);
+//
+//        // Truyền thông tin đơn hàng ra view xác nhận
+//        model.addAttribute("order", order);
+//        return "cart/order-confirmation"; // Tạo trang xác nhận đơn hàng
+//    }
 }

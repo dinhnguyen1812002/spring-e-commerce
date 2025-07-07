@@ -42,9 +42,12 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public String addProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile file) throws IOException {
+    public String addProduct(@ModelAttribute Product product,
+                             @RequestParam("file") MultipartFile file
+    ) throws IOException {
+
         productService.saveProduct(product, file);
-        return "redirect:/products";
+        return "redirect:/admin/products";
     }
 
     private Set<Category> processCategories(String categoriesString) {
@@ -117,6 +120,7 @@ public class ProductController {
         }
         return "redirect:/products";
     }
+
     // New method for deleting a product
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable("id") Long id, Model model) {
@@ -132,15 +136,28 @@ public class ProductController {
     public String getProductById(@PathVariable Long id, Model model) {
         Optional<Product> productOptional = productService.getProductById(id);
         List<Rate> rates = rateService.getRatesByProduct(id);
+        
         if (productOptional.isPresent()) {
-            model.addAttribute("product", productOptional.get());
+            Product product = productOptional.get();
+            
+            // Tính rating trung bình
+            double averageRating = rateService.getAverageRating(id);
+            long ratingCount = rateService.getRatingCount(id);
+            int[] ratingDistribution = rateService.getRatingDistribution(id);
+            
+            model.addAttribute("product", product);
             model.addAttribute("rates", rates);
-            return "product/product-details"; // Replace with your actual view name for displaying product details
+            model.addAttribute("averageRating", averageRating);
+            model.addAttribute("ratingCount", ratingCount);
+            model.addAttribute("ratingDistribution", ratingDistribution);
+            
+            return "product/product-details";
         } else {
             model.addAttribute("errorMessage", "Product not found");
-            return "product/product-not-found"; // Replace with a suitable error view
+            return "product/product-not-found";
         }
     }
+
 //    @GetMapping("/find")
 //    @ResponseBody
 //    public List<Product> searchProducts(@RequestParam("query") String query) {

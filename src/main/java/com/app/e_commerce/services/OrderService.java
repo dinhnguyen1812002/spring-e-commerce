@@ -8,6 +8,7 @@ import com.app.e_commerce.exception.ResourceNotFoundException;
 import com.app.e_commerce.repository.OrderRepository;
 import com.app.e_commerce.repository.OrderItemRepository;
 import com.app.e_commerce.repository.UserRepo;
+import com.app.e_commerce.DTO.CheckoutRequestDTO;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -29,18 +31,27 @@ public class OrderService {
     private OrderItemRepository orderItemRepository;
     @Autowired
     private UserRepo userRepository;
-    public void createOrder(User user, String address, PaymentMethod paymentMethod, HttpSession session) {
+
+
+    public void createOrder(Order order) {
+        orderRepository.save(order);
+    }
+
+    public void createOrder(User user,String name,  String phone, String note , String address, PaymentMethod paymentMethod, HttpSession session) {
         Cart cart = (Cart) session.getAttribute("cart");
 
         if (cart != null && !cart.getCartItems().isEmpty()) {
             Order order = new Order();
             order.setUser(user);
+            order.setName(name);
+            order.setPhoneNumber(phone);
+            order.setNote(note);
             order.setShippingAddress(address);
             order.setPaymentMethod(paymentMethod);
             order.setOrderDate(LocalDateTime.now());
             order.setTotalAmount(cart.getTotalPrice());
             CartService.setStatus(cart, order);
-            orderRepository.save(order); // Save order to database
+            orderRepository.save(order);
         }
     }
 
@@ -48,9 +59,7 @@ public class OrderService {
         return orderRepository.findById(id).orElse(null);
     }
 
-    public void createOrder(Order order) {
-        orderRepository.save(order); // Save the order object
-    }
+
     public List<Order> getOrdersForUser(User user) {
         return orderRepository.findByUser(user);
     }
@@ -146,5 +155,11 @@ public class OrderService {
     public boolean isOrderOwnedByUser(String orderId, User user) {
         return findByIdAndUser(orderId, user).isPresent();
     }
+
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
 
 }

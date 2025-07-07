@@ -29,6 +29,7 @@ public class HomeController {
     private CategoryService categoryService;
     @Autowired
     private RecommendationService recommendationService;
+
     @GetMapping
     public String home(Model model)
     {

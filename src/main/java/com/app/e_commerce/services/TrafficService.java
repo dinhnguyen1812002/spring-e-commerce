@@ -43,5 +43,9 @@ public class TrafficService {
     public Optional<Traffic> getVisitByDay(LocalDate date) {
         return trafficRepo.findByDate(date);
     }
+
+    public List<Traffic> getAllVisits() {
+        return trafficRepo.findAll();
+    }
 }
 

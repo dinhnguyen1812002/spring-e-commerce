@@ -31,12 +31,14 @@ com\app\e_commerce\controller\ProductController.class
 com\app\e_commerce\entity\Category.class
 com\app\e_commerce\repository\CartItemRepository.class
 com\app\e_commerce\entity\ProductRecommendation.class
+com\app\e_commerce\controller\AdminController.class
 com\app\e_commerce\controller\api.class
 com\app\e_commerce\entity\Order.class
 com\app\e_commerce\Enum\OrderStatus.class
 com\app\e_commerce\ECommerceApplication.class
 com\app\e_commerce\exception\UserAlreadyExistsException.class
 com\app\e_commerce\entity\OrderItem.class
+com\app\e_commerce\util\TimeAgoUtil.class
 com\app\e_commerce\entity\Product.class
 com\app\e_commerce\config\WebConfig.class
 com\app\e_commerce\entity\Rate.class
@@ -57,6 +59,7 @@ com\app\e_commerce\services\RevenueService.class
 com\app\e_commerce\security\SecurityConfig.class
 com\app\e_commerce\controller\OrderController.class
 com\app\e_commerce\entity\PersistentLogins.class
+com\app\e_commerce\DTO\CheckoutRequestDTO.class
 com\app\e_commerce\repository\TrafficRepo.class
 com\app\e_commerce\services\CustomUserDetails.class
 com\app\e_commerce\entity\Cart.class

@@ -18,14 +18,16 @@ public class CategoryController {
     public String showCreateForm(Model model) {
         model.addAttribute("category", new Category());
         return "Category/category-form";
+
     }
     @PostMapping("/save")
-    public String saveCategory(@ModelAttribute("category") @Valid Category category, BindingResult result, Model model) {
+    public String saveCategory(@ModelAttribute("category") @Valid Category category,
+                               BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "Category/category-form";
         }
         categoryService.saveCategory(category);
-        return "redirect:/categories";
+        return "redirect:/admin/categories";
     }
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {

@@ -130,5 +130,8 @@ public class ProductService {
         return productRepository.findOrderByCreatedAtDesc();
     }
 
+    public long countProducts() {
+        return productRepository.count();
+    }
 
 }
