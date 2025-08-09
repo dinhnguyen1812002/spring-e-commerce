@@ -1,19 +1,40 @@
-
 services:
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KEYCLOAK_ADMIN_EMAIL: admin@gmail.com
-    ports:
-      - "8088:8080"
-    command:
-      - start-dev
-
   app:
     build: .
     ports:
-      - "8082:8082"
+      - "8888:8888"
     depends_on:
-      - keycloak
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/e_commerce_spring
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - spring-app
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=e_commerce_spring
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spring-app
+networks:
+  spring-app:
+    driver: bridge
+volumes:
+  postgres_data:
+  uploads_data:

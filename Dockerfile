@@ -1,23 +1,14 @@
-# Dockerfile
-# Stage 1: Build jar
-FROM eclipse-temurin:21-jdk-alpine as builder
-
+# Stage 1: Build the application
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean install -DskipTests
 
-# Copy toàn bộ source code vào container
-COPY . .
-
-# Build jar (cần có Maven Wrapper trong dự án)
-RUN ./mvnw clean package -DskipTests
-
-# Stage 2: Chạy ứng dụng
-FROM eclipse-temurin:21-jdk-alpine
-
+# Stage 2: Create the final image
+FROM openjdk:21-jdk-slim
 WORKDIR /app
-
-# Copy file jar từ stage build sang
-COPY --from=builder /app/target/*.jar app.jar
-
-EXPOSE 8080
-
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8888
 ENTRYPOINT ["java", "-jar", "app.jar"]

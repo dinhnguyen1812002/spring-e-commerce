@@ -55,6 +55,7 @@ F:\Java\e-commerce\src\main\java\com\app\e_commerce\services\UserService.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\repository\RoleRepo.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\repository\ProductRecommendationRepository.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\entity\Order.java
+F:\Java\e-commerce\src\main\java\com\app\e_commerce\DB\UserSeed.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\controller\RecommendationController.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\services\ProductService.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\services\RevenueService.java

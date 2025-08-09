@@ -22,6 +22,7 @@ com\app\e_commerce\services\CategoryService.class
 com\app\e_commerce\deploy\deploy.class
 com\app\e_commerce\controller\RevenueController.class
 com\app\e_commerce\controller\UserController.class
+com\app\e_commerce\DB\UserSeed.class
 com\app\e_commerce\controller\TrafficController.class
 com\app\e_commerce\data\RevenueDataPoint.class
 com\app\e_commerce\repository\RateRepository.class

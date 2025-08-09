@@ -43,42 +43,35 @@ public class AuthController {
     }
 
     // Handle the registration form submission
-    @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            // If there are validation errors, re-display the form with error messages
-            return "Authentication/register";
-        }
-
-        try {
-            // Attempt to register the user
-            userService.registerUser(user);
-
-            // Automatically log in the user
-            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-            // Use the constructor that doesn't require credentials since we're auto-authenticating after registration
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null, // Don't provide credentials here as they're already verified
-                userDetails.getAuthorities()
-            );
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            // Redirect to the home page after successful registration and login
-            return "redirect:/login?success=true";
-        } catch (IllegalArgumentException e) {
-            // Handle case where username or email is already taken
-            model.addAttribute("errorMessage", e.getMessage());
-            return "Authentication/register";
-        } catch (IllegalStateException e) {
-            // Handle case where the USER role is not found in the database
-            model.addAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            return "Authentication/register";
-        } catch (Exception e) {
-            // Generic error handling for unexpected issues
-            model.addAttribute("errorMessage", "An unexpected error occurred.");
-            return "Authentication/register";
-        }
+@PostMapping("/register")
+public String registerUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
+    if (result.hasErrors()) {
+        return "Authentication/register";
     }
+
+    try {
+        userService.registerUser(user);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+            userDetails,
+            null,
+            userDetails.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        // ✅ Chuyển hướng sau khi đăng nhập thành công
+        return "redirect:/"; // hoặc "redirect:/dashboard" tùy app của bạn
+    } catch (IllegalArgumentException e) {
+        model.addAttribute("errorMessage", e.getMessage());
+        return "Authentication/register";
+    } catch (IllegalStateException e) {
+        model.addAttribute("errorMessage", "An error occurred: " + e.getMessage());
+        return "Authentication/register";
+    } catch (Exception e) {
+        model.addAttribute("errorMessage", "An unexpected error occurred.");
+        return "Authentication/register";
+    }
+}
 
 }
