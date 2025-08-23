@@ -34,14 +34,14 @@ public class ProductController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    @GetMapping("/add")
+    @GetMapping("/new")
     public String showAddProductForm(Model model) {
         model.addAttribute("product", new Product());
         model.addAttribute("categories", categoryService.getAllCategories());
         return "product/add-product";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/create")
     public String addProduct(@ModelAttribute Product product,
                              @RequestParam("file") MultipartFile file
     ) throws IOException {

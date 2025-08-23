@@ -41,7 +41,8 @@ public class ProductService {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
-
+    @Autowired
+    private FileStorageService fileStorageService;
 
 
     public List<Product> getAllProducts() {
@@ -85,26 +86,30 @@ public class ProductService {
         }
     }
 
+
+
     public Product saveProduct(Product product, MultipartFile file) throws IOException {
-        if (!file.isEmpty()) {
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir, fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            product.setImage("uploads/" +fileName);
+        if (file != null && !file.isEmpty()) {
+            String imagePath = fileStorageService.saveFile(file);
+            product.setImage(imagePath); // ✅ Lưu đường dẫn ảnh vào DB
         }
 
+        // Lưu tạm không có category trước
         Set<Category> categories = product.getCategories();
         product.setCategories(new HashSet<>());
         Product savedProduct = productRepository.save(product);
 
+        // Gán lại category
         for (Category category : categories) {
-            Category managedCategory = categoryRepo.findById(category.getId()).orElseThrow(() -> new RuntimeException("Category not found"));
+            Category managedCategory = categoryRepo.findById(category.getId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
             managedCategory.getProducts().add(savedProduct);
             savedProduct.getCategories().add(managedCategory);
         }
 
         return productRepository.save(savedProduct);
     }
+
     public List<Product> searchProducts(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return (List<Product>) productRepository.findAll();

@@ -1,131 +1,230 @@
 package com.app.e_commerce.controller;
 
 import com.app.e_commerce.Enum.OrderStatus;
+import com.app.e_commerce.Enum.PaymentMethod;
 import com.app.e_commerce.entity.Cart;
 import com.app.e_commerce.entity.Order;
 import com.app.e_commerce.entity.User;
-import com.app.e_commerce.exception.ResourceNotFoundException;
+import com.app.e_commerce.exception.ProductNotFoundException;
 import com.app.e_commerce.services.CartService;
 import com.app.e_commerce.services.OrderService;
 import com.app.e_commerce.services.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jakarta.servlet.http.HttpSession;
 import java.security.Principal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
 
     @Autowired
+    private CartService cartService;
+    @Autowired
     private OrderService orderService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private CartService cartService;
+
+    /**
+     * Trang checkout (form nhập thông tin)
+     */
 
     @GetMapping("/checkout")
-    public String checkout(Model model, HttpSession session, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-//        if (result.hasErrors()) {
-//            return "cart/checkout";
-//        }
+    public String checkout(Model model, HttpSession session, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = (userDetails != null)
+                ? userService.findByUsername(userDetails.getUsername())
+                : null;
 
-        User user = userService.findByUsername(principal.getName());
+        // Lấy giỏ hàng từ CartService
         Cart cart = cartService.getOrCreateCart(user, session);
 
+        // Nếu giỏ hàng rỗng thì redirect về trang giỏ hàng
         if (cart.getCartItems().isEmpty()) {
-            return "redirect:/cart?error=empty";
+            return "redirect:/cart";
         }
 
         model.addAttribute("cart", cart);
+        model.addAttribute("paymentMethods", PaymentMethod.values());
+
         return "cart/checkout";
     }
 
-    @GetMapping("/confirm/{orderId}")
-    public String confirmOrder(@PathVariable("orderId") String orderId, Model model) {
-        Order order = orderService.findOrderById(orderId);
-        if (order != null && order.getOrderStatus() == OrderStatus.PENDING) {
-            order.setOrderStatus(OrderStatus.SUCCESS); // Update order status to SUCCESS
-            orderService.saveOrder(order);  // Save the updated order
-            return "redirect:/orders/success";
+
+
+    /**
+     * Submit đơn hàng
+     */
+//    @PostMapping("/checkout")
+//    public String placeOrder(@RequestParam String fullName,
+//                             @RequestParam String phone,
+//                             @RequestParam String address,
+//                             @RequestParam(required = false) String note,
+//                             @RequestParam PaymentMethod paymentMethod,
+//                             HttpSession session,
+//                             Principal principal,
+//                             Model model) {
+//        try {
+//            Order order = orderService.checkoutCart(fullName, phone, address, note, paymentMethod, session, principal);
+//            return "redirect:/orders/" + order.getId();
+//        } catch (Exception e) {
+//            model.addAttribute("error", e.getMessage());
+//            model.addAttribute("paymentMethods", PaymentMethod.values());
+//            return "order/checkout";
+//        }
+//    }
+    @PostMapping("/checkout")
+    public String placeOrder(@RequestParam String fullName,
+                             @RequestParam String phone,
+                             @RequestParam String address,
+                             @RequestParam(required = false) String note,
+                             @RequestParam PaymentMethod paymentMethod,
+                             HttpSession session,
+                             Principal principal,
+                             Model model) {
+        try {
+            // Lấy user từ principal (ví dụ bạn dùng Spring Security)
+            User user = userService.findByUsername(principal.getName());
+//                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            if( user == null){
+                throw  new UsernameNotFoundException("User Not Found");
+            }
+            Order order = orderService.checkoutCart(user, fullName, phone, note, address, paymentMethod, session);
+
+            return "redirect:/orders/" + order.getId();
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("paymentMethods", PaymentMethod.values());
+            return "cart/checkout";
         }
-        return "redirect:/orders/invalid";  // Handle invalid or already confirmed orders
     }
 
-    @GetMapping("/success")
-    public String orderSuccess() {
-        return "orders/success";  // Return a Thymeleaf page showing payment success
-    }
 
-    @GetMapping
-    public String getOrderHistory(
-            Model model,
-            Principal principal,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) OrderStatus status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        User user = userService.findByUsername(principal.getName());
-        Page<Order> orderPage;
-
-        if (status != null) {
-            // Filter by status
-            orderPage = orderService.getOrdersByUserAndStatus(user, status, PageRequest.of(page, size));
-        } else if (startDate != null && endDate != null) {
-            // Filter by date range
-            LocalDateTime start = startDate.atStartOfDay();
-            LocalDateTime end = endDate.atTime(LocalTime.MAX);
-            orderPage = orderService.getOrdersByUserAndDateRange(user, start, end, PageRequest.of(page, size));
-        } else {
-            // Get all orders
-            orderPage = orderService.getOrdersByUserPaginated(user, PageRequest.of(page, size));
-        }
-
-        model.addAttribute("orders", orderPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", orderPage.getTotalPages());
-        model.addAttribute("totalItems", orderPage.getTotalElements());
-
-        // Add additional attributes for filtering
-        model.addAttribute("statuses", OrderStatus.values());
-        model.addAttribute("selectedStatus", status);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-
-        return "users/order-history";
-    }
-
+    /**
+     * Xem chi tiết đơn hàng
+     */
     @GetMapping("/{orderId}")
-    public String getOrderDetails(@PathVariable String orderId, Model model, Principal principal) {
-        User user = userService.findByUsername(principal.getName());
-        Order order = orderService.findByIdAndUser(orderId, user)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-
+    public String orderDetail(@PathVariable String orderId,
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              Model model) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        User user = userService.findByUsername(userDetails.getUsername());
+        Order order = orderService.findByIdAndUserOrThrow(orderId, user);
         model.addAttribute("order", order);
-        return "users/order-details";
+        return "cart/view";
+    }
+
+    /**
+     * Xem danh sách đơn của user
+     */
+    @GetMapping
+    public String listOrders(@AuthenticationPrincipal UserDetails userDetails,
+                             Model model) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        User user = userService.findByUsername(userDetails.getUsername());
+        model.addAttribute("orders", orderService.getOrdersByUser(user));
+        return "cart/list";
+    }
+
+    /**
+     * Cancel an order
+     */
+    @PostMapping("/{orderId}/cancel")
+    public String cancelOrder(@PathVariable String orderId,
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              RedirectAttributes redirectAttributes) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            User user = userService.findByUsername(userDetails.getUsername());
+            orderService.cancelOrder(orderId, user);
+            redirectAttributes.addFlashAttribute("successMessage", "Đơn hàng đã được hủy thành công.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể hủy đơn hàng: " + e.getMessage());
+        }
+
+        return "redirect:/orders";
+    }
+
+    /**
+     * Admin endpoint to update order status
+     */
+    @PostMapping("/{orderId}/status")
+    public String updateOrderStatus(@PathVariable String orderId,
+                                    @RequestParam OrderStatus status,
+                                    @AuthenticationPrincipal UserDetails userDetails,
+                                    RedirectAttributes redirectAttributes) {
+        // Check if user is admin (you should implement proper role checking)
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            orderService.updateOrderStatus(orderId, status);
+            redirectAttributes.addFlashAttribute("successMessage", "Trạng thái đơn hàng đã được cập nhật.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật trạng thái đơn hàng: " + e.getMessage());
+        }
+
+        return "redirect:/admin/orders";
+    }
+
+    /**
+     * Admin endpoint to set tracking number
+     */
+    @PostMapping("/{orderId}/tracking")
+    public String setTrackingNumber(@PathVariable String orderId,
+                                    @RequestParam String trackingNumber,
+                                    @AuthenticationPrincipal UserDetails userDetails,
+                                    RedirectAttributes redirectAttributes) {
+        // Check if user is admin (you should implement proper role checking)
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            orderService.setTrackingNumber(orderId, trackingNumber);
+            redirectAttributes.addFlashAttribute("successMessage", "Mã vận đơn đã được cập nhật.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật mã vận đơn: " + e.getMessage());
+        }
+
+        return "redirect:/admin/orders";
+    }
+
+    /**
+     * Admin endpoint to set payment transaction ID
+     */
+    @PostMapping("/{orderId}/payment")
+    public String setPaymentTransactionId(@PathVariable String orderId,
+                                          @RequestParam String transactionId,
+                                          @AuthenticationPrincipal UserDetails userDetails,
+                                          RedirectAttributes redirectAttributes) {
+        // Check if user is admin (you should implement proper role checking)
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            orderService.setPaymentTransactionId(orderId, transactionId);
+            redirectAttributes.addFlashAttribute("successMessage", "Mã giao dịch thanh toán đã được cập nhật.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật mã giao dịch: " + e.getMessage());
+        }
+
+        return "redirect:/admin/orders";
     }
 }
-
-
-

@@ -1,99 +1,165 @@
 package com.app.e_commerce.controller;
 
-import com.app.e_commerce.Enum.PaymentMethod;
 import com.app.e_commerce.entity.Cart;
+import com.app.e_commerce.entity.Coupon;
 import com.app.e_commerce.entity.Product;
 import com.app.e_commerce.entity.User;
 import com.app.e_commerce.exception.ProductNotFoundException;
 import com.app.e_commerce.services.CartService;
+import com.app.e_commerce.services.CouponService;
 import com.app.e_commerce.services.ProductService;
 import com.app.e_commerce.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/cart")
 public class CartController {
 
     @Autowired
-    private ProductService productService;
-
-    @Autowired
     private CartService cartService;
-
+    @Autowired
+    private ProductService productService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CouponService couponService;
 
+    /**
+     * Hiển thị giỏ hàng
+     */
+    @GetMapping
+    public String viewCart(@AuthenticationPrincipal UserDetails userDetails,
+                           HttpSession session,
+                           Model model) {
+        User user = (userDetails != null)
+                ? userService.findByUsername(userDetails.getUsername())
+                : null;
+
+        Cart cart = cartService.getOrCreateCart(user, session);
+        model.addAttribute("cart", cart);
+        return "cart/view"; // return view name (tuỳ theo template engine bạn dùng)
+    }
+
+    /**
+     * Thêm sản phẩm vào giỏ
+     */
     @PostMapping("/add")
     public String addToCart(@RequestParam("productId") Long productId,
                             @RequestParam("quantity") int quantity,
-                            HttpSession session,
-                            Principal principal) {
-        Product product = productService.getProductById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Not found product: " + productId));
+                            @AuthenticationPrincipal UserDetails userDetails,
+                            HttpSession session) {
+        User user = (userDetails != null)
+                ? userService.findByUsername(userDetails.getUsername())
+                : null;
 
-        User user = principal != null ? userService.findByUsername(principal.getName()) : null;
+        Product product = productService.findById(productId);
+        if( product == null){
+            throw new ProductNotFoundException("Đéo thấy product??");
+        }
         cartService.addItemToCart(product, quantity, user, session);
-
         return "redirect:/cart";
     }
 
-    @GetMapping
-    public String viewCart(Model model, HttpSession session, Principal principal) {
-        User user = principal != null ? userService.findByUsername(principal.getName()) : null;
-        Cart cart = cartService.getOrCreateCart(user, session);
-        model.addAttribute("cart", cart);
-        return "cart/view";
-    }
-
-    @PostMapping("/remove")
-    public String removeFromCart(@RequestParam("productId") Long productId, HttpSession session, Principal principal) {
-        User user = principal != null ? userService.findByUsername(principal.getName()) : null;
-        cartService.removeItemFromCart(productId, user, session);
-        return "redirect:/cart";
-    }
-
+    /**
+     * Cập nhật số lượng sản phẩm
+     */
     @PostMapping("/update")
     public String updateCartItem(@RequestParam("productId") Long productId,
                                  @RequestParam("quantity") int quantity,
-                                 HttpSession session,
-                                 Principal principal) {
-        User user = principal != null ? userService.findByUsername(principal.getName()) : null;
+                                 @AuthenticationPrincipal UserDetails userDetails,
+                                 HttpSession session) {
+        User user = (userDetails != null)
+                ? userService.findByUsername(userDetails.getUsername())
+                : null;
+
         cartService.updateCartItem(productId, quantity, user, session);
         return "redirect:/cart";
     }
 
-    @PostMapping("/checkout")
-    public String checkout(@RequestParam("fullName") String fullName,
-                           @RequestParam("phone") String phone,
-                           @RequestParam("address") String address,
-                           @RequestParam(value = "note", required = false) String note,
-                           @RequestParam("paymentMethod") PaymentMethod paymentMethod,
-                           HttpSession session,
-                           Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
+    /**
+     * Xoá sản phẩm khỏi giỏ
+     */
+    @PostMapping("/remove")
+    public String removeFromCart(@RequestParam("productId") Long productId,
+                                 @AuthenticationPrincipal UserDetails userDetails,
+                                 HttpSession session) {
+        User user = (userDetails != null)
+                ? userService.findByUsername(userDetails.getUsername())
+                : null;
 
-        cartService.checkoutCart(fullName, phone, address, note, paymentMethod, session, principal);
-        return "redirect:/orders/success";
+        cartService.removeItemFromCart(productId, user, session);
+        return "redirect:/cart";
     }
 
-//    @PostMapping("/cart/checkout")
-//    public String checkout(@ModelAttribute CheckoutRequestDTO checkoutRequest, Model model, Principal principal) {
-//        // Lấy thông tin user hiện tại (nếu có)
-//        User user = userService.findByUsername(principal.getName());
-//
-//        // Lưu thông tin đơn hàng và khách hàng
-//        Order order = orderService.createOrderFromCheckout(checkoutRequest, user);
-//
-//        // Truyền thông tin đơn hàng ra view xác nhận
-//        model.addAttribute("order", order);
-//        return "cart/order-confirmation"; // Tạo trang xác nhận đơn hàng
-//    }
+    /**
+     * Xoá sạch giỏ hàng
+     */
+    @PostMapping("/clear")
+    public String clearCart(@AuthenticationPrincipal UserDetails userDetails,
+                            HttpSession session) {
+        User user = (userDetails != null)
+                ? userService.findByUsername(userDetails.getUsername())
+                : null;
+
+        Cart cart = cartService.getOrCreateCart(user, session);
+        cartService.clearCart(session, cart);
+        return "redirect:/cart";
+    }
+
+    /**
+     * Apply a coupon to the cart
+     */
+    @PostMapping("/apply-coupon")
+    public String applyCoupon(@RequestParam("couponCode") String couponCode,
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        User user = (userDetails != null)
+                ? userService.findByUsername(userDetails.getUsername())
+                : null;
+
+        boolean applied = cartService.applyCoupon(couponCode, user, session);
+
+        if (applied) {
+            redirectAttributes.addFlashAttribute("successMessage", "Mã giảm giá đã được áp dụng thành công!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Mã giảm giá không hợp lệ hoặc không áp dụng được cho đơn hàng này.");
+        }
+
+        return "redirect:/cart";
+    }
+
+    /**
+     * Remove a coupon from the cart
+     */
+    @PostMapping("/remove-coupon")
+    public String removeCoupon(@AuthenticationPrincipal UserDetails userDetails,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        User user = (userDetails != null)
+                ? userService.findByUsername(userDetails.getUsername())
+                : null;
+
+        cartService.removeCoupon(user, session);
+        redirectAttributes.addFlashAttribute("successMessage", "Mã giảm giá đã được xóa khỏi giỏ hàng.");
+
+        return "redirect:/cart";
+    }
+
+    /**
+     * Get available coupons (AJAX)
+     */
+    @GetMapping("/available-coupons")
+    @ResponseBody
+    public ResponseEntity<?> getAvailableCoupons() {
+        return ResponseEntity.ok(couponService.getAllValidCoupons());
+    }
 }

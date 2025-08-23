@@ -21,35 +21,48 @@ import java.util.List;
 public class DataInitializer {
 
     @Autowired
-     PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
+
     @Bean
     public CommandLineRunner initData(RoleRepo roleRepository) {
         return args -> {
             List<String> roles = Arrays.asList("USER", "ADMIN");
 
+            // Seed roles
             for (String roleName : roles) {
-                if (roleRepository.findByName(roleName).isEmpty()) {
-                    Role role = new Role();
-                    role.setName(roleName);
-                    roleRepository.save(role);
-                }
+                roleRepository.findByName(roleName).ifPresentOrElse(
+                        role -> System.out.println("Role " + roleName + " already exists."),
+                        () -> {
+                            Role role = new Role();
+                            role.setName(roleName);
+                            roleRepository.save(role);
+                            System.out.println("Role " + roleName + " created.");
+                        }
+                );
             }
 
-            // ✅ Kiểm tra xem user admin đã tồn tại chưa
-            if (userRepo.findByEmail("admin@example.com").isEmpty()) {
+            // Seed admin user (check cả email và username)
+            boolean adminExists = userRepo.findByEmail("admin@example.com").isPresent()
+                    || userRepo.findByUsername("admin").isPresent();
+
+            if (adminExists) {
+                System.out.println("Admin user already exists. Skipping seed.");
+            } else {
+                Role adminRole = roleRepository.findByName("ADMIN")
+                        .orElseThrow(() -> new IllegalStateException("ADMIN role must exist"));
+
                 User admin = new User();
                 admin.setUsername("admin");
                 admin.setEmail("admin@example.com");
-                admin.setRoles(Collections.singleton(roleRepository.findByName("ADMIN").get()));
                 admin.setPassword(passwordEncoder.encode("admin"));
+                admin.setEnabled(true);
+                admin.setRoles(Collections.singleton(adminRole));
                 userRepo.save(admin);
                 System.out.println("Admin user created.");
-            } else {
-                System.out.println("Admin user already exists. Skipping seed.");
             }
         };
     }
-
 }

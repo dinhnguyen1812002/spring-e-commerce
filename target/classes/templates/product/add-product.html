@@ -68,7 +68,7 @@
                     <div class="max-w-4xl mx-auto mt-10 bg-white rounded-xl shadow-md overflow-hidden">
                         <div class="md:flex">
                             <div class="p-8 w-full">
-                                <form th:action="@{/products/add}" th:object="${product}" method="post" enctype="multipart/form-data" class="space-y-6">
+                                <form th:action="@{/products/create}" th:object="${product}" method="post" enctype="multipart/form-data" class="space-y-6">
                                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                                         <div>
                                             <label for="name" class="block text-sm font-medium text-gray-700">Tên Sản Phẩm</label>
@@ -77,6 +77,10 @@
                                         <div>
                                             <label for="price" class="block text-sm font-medium text-gray-700">Giá (VND)</label>
                                             <input type="number" id="price" th:field="*{price}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" oninput="formatCurrency(this)" />
+                                        </div>
+                                        <div>
+                                            <label for="price" class="block text-sm font-medium text-gray-700">Số lượng </label>
+                                            <input type="number" id="stock" th:field="*{stock}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" oninput="formatCurrency(this)" />
                                         </div>
                                     </div>
 

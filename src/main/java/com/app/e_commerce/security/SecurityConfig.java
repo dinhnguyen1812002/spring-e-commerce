@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,12 +49,14 @@ public class SecurityConfig {
                         .permitAll()
 
                         .requestMatchers("/products/**").authenticated()
-
+                        .requestMatchers(HttpMethod.POST, "/products/create").authenticated()
                         .requestMatchers("/users/**").permitAll()
                         .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/cart/**").authenticated()
+                        .requestMatchers("/orders/**").authenticated()
                         .requestMatchers("/ratings/add").authenticated()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+
 
                         .anyRequest().permitAll()
                 )

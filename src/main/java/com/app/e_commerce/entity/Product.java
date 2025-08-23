@@ -39,6 +39,10 @@ public class Product {
     @Column(length = 2000)
     private String description;
 
+    private Integer stock;
+
+    @Version
+    private Long version;
 
     private LocalDateTime createdAt;
 

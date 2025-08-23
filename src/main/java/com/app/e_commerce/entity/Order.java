@@ -1,7 +1,5 @@
 package com.app.e_commerce.entity;
 
-
-
 import com.app.e_commerce.Enum.OrderStatus;
 import com.app.e_commerce.Enum.PaymentMethod;
 import de.huxhorn.sulky.ulid.ULID;
@@ -57,6 +55,34 @@ public class Order {
 
     @Column(nullable = false)
     private LocalDateTime orderDate;
+
+    @Column(nullable = true)
+    private LocalDateTime shippedDate;
+
+    @Column(nullable = true)
+    private LocalDateTime deliveredDate;
+
+    @Column(nullable = true)
+    private String trackingNumber;
+
+    @Column(nullable = true)
+    private String paymentTransactionId;
+
+    @Column(nullable = false)
+    private BigDecimal subtotal = BigDecimal.ZERO;
+
+    @Column(nullable = false)
+    private BigDecimal tax = BigDecimal.ZERO;
+
+    @Column(nullable = false)
+    private BigDecimal shippingCost = BigDecimal.ZERO;
+
+    @Column(nullable = true)
+    private String couponCode;
+
+    @Column(nullable = false)
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
 //    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 //    private List<OrderDetail> orderDetails;
     // Constructors, getters, setters, etc.
@@ -72,5 +98,3 @@ public class Order {
         }
     }
 }
-
-
