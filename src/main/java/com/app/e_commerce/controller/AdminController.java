@@ -1,9 +1,11 @@
 package com.app.e_commerce.controller;
 
 import com.app.e_commerce.entity.*;
+import com.app.e_commerce.exception.ProductNotFoundException;
 import com.app.e_commerce.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +41,7 @@ public class AdminController {
         long totalProducts = productService.countProducts();
         long totalUsers = userService.countUsers();
         long totalCategories = categoryService.countCategories();
-        
+
         model.addAttribute("totalProducts", totalProducts);
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("totalCategories", totalCategories);
@@ -76,8 +78,10 @@ public class AdminController {
 
     @GetMapping("/products/edit/{id}")
     public String editProduct(@PathVariable Long id, Model model) {
-        Optional<Product> product = productService.getProductById(id);
-        model.addAttribute("product", product);
+        Product product = productService.getProductById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        model.addAttribute("product", product);  // ✅ Truyền Product, không phải Optional
         model.addAttribute("categories", categoryService.getAllCategories());
         return "product/edit-product";
     }
@@ -110,8 +114,11 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public String orders(Model model) {
-        // Add order management logic here
+    public String orders(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<Order> orderPage = orderService.getAllOrders(PageRequest.of(page, size));
+        model.addAttribute("orders", orderPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", orderPage.getTotalPages());
         return "admin/admin-orders";
     }
 //

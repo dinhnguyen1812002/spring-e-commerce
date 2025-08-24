@@ -1,6 +1,8 @@
 package com.app.e_commerce.services;
 
+import com.app.e_commerce.entity.Cart;
 import com.app.e_commerce.entity.Coupon;
+import com.app.e_commerce.exception.ResourceNotFoundException;
 import com.app.e_commerce.repository.CouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -128,4 +130,10 @@ public class CouponService {
         
         return expiredCoupons.size();
     }
+//    public boolean isValidCoupon(String couponCode, Cart cart) {
+//        Coupon coupon = couponRepository.findByCode(couponCode)
+//                .orElseThrow(() -> new ResourceNotFoundException("Coupon not found"));
+//        return coupon.getExpiryDate().isAfter(LocalDateTime.now()) &&
+//                cart.getSubtotal().compareTo(coupon.getMinimumAmount()) >= 0;
+//    }
 }

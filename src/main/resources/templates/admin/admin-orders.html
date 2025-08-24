@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Products Management</title>
+    <title>Admin - Orders Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
@@ -33,22 +33,74 @@
         <header class="bg-white shadow-sm border-b border-gray-200">
             <div class="flex items-center justify-between px-6 py-4">
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-800">Products Management</h2>
-                    <p class="text-sm text-gray-600">Manage your product inventory</p>
+                    <h2 class="text-xl font-semibold text-gray-800">Orders Management</h2>
+                    <p class="text-sm text-gray-600">View and manage all customer orders</p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a  class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-
-                        Orders
+                    <a href="/admin/products"
+                       class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        <i class="fas fa-box"></i> Products
                     </a>
                 </div>
             </div>
         </header>
 
-        <!-- Products Content -->
+        <!-- Orders Content -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
             <div class="container mx-auto px-6 py-8">
-               <h1 class="text-3xl font-bold text-red-800">fuck you</h1>
+                <!-- Title -->
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6">Orders List</h3>
+
+                <!-- Orders Table -->
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <table class="w-full table-auto">
+                        <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">#</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Order ID</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Customer</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                            <th class="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                        <tr th:each="order, iStat : ${orders}">
+                            <td class="px-6 py-4 text-sm text-gray-600" th:text="${iStat.index + 1}">1</td>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900" th:text="${order.id}">ORD12345</td>
+                            <td class="px-6 py-4 text-sm text-gray-600" th:text="${order.user.username}">John Doe</td>
+                            <td class="px-6 py-4 text-sm text-gray-600"
+                                th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">20/08/2025</td>
+                            <td class="px-6 py-4 text-sm text-gray-600"
+                                th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',2,'POINT')} + ' VND'">500,000 VND</td>
+                            <td class="px-6 py-4 text-sm">
+                                <!-- Form update status -->
+                                <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post" class="flex items-center space-x-2">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <select name="status" class="px-2 py-1 border rounded-md text-sm">
+                                        <option th:each="st : ${T(com.app.e_commerce.Enum.OrderStatus).values()}"
+                                                th:value="${st}"
+                                                th:text="${st}"
+                                                th:selected="${st == order.orderStatus}">
+                                        </option>
+                                    </select>
+                                    <button type="submit"
+                                            class="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                                        Update
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="px-6 py-4 text-right flex items-center justify-end gap-3">
+                                <a th:href="@{'/orders/' + ${order.id}}"
+                                   class="text-primary hover:text-blue-800 text-sm">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>

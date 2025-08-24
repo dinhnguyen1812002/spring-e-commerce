@@ -7,6 +7,7 @@ import com.app.e_commerce.exception.ResourceNotFoundException;
 import com.app.e_commerce.repository.OrderItemRepository;
 import com.app.e_commerce.repository.OrderRepository;
 import com.app.e_commerce.repository.ProductRepo;
+import com.app.e_commerce.repository.UserRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -33,6 +35,8 @@ public class OrderService {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private UserRepo userRepository;
     /**
      * API mới: tạo Order từ Order skeleton + Cart đã có (được CartService chuẩn bị).
      * Thực hiện:
@@ -350,5 +354,12 @@ public class OrderService {
 
         return order;
     }
+    public Page<Order> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable);
+    }
+
+
+
+
 
 }

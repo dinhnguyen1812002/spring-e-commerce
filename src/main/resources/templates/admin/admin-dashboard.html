@@ -169,19 +169,26 @@
                         <div class="p-6">
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between" th:each="order : ${orders}">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <img th:src="'data:image/jpeg;base64,' + ${order.user.avatar}" alt="User" class="w-8 h-8 rounded-full">
+                                    <a th:href="@{/orders/{orderId}(orderId =  ${order.id})}">
+<!--                                        <a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}"></a>-->
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <img th:src="'data:image/jpeg;base64,' + ${order.user.avatar}" alt="User" class="w-8 h-8 rounded-full">
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-900" th:text="'Order #' + ${order.id}">Order #12345</p>
+                                                <p class="text-sm text-gray-500" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></p>
+                                                <p class="text-sm text-gray-500" th:text="${order.user.username} + ' - ' + ${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' VND'"></p>
+                                            </div>
                                         </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium text-gray-900" th:text="'Order #' + ${order.id}">Order #12345</p>
-                                            <p class="text-sm text-gray-500" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></p>
-                                            <p class="text-sm text-gray-500" th:text="${order.user.username} + ' - ' + ${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' VND'"></p>
-                                        </div>
-                                    </div>
-                                    <span class="px-2 py-1 text-xs font-medium bg-green-100  rounded-full" th:text="${order.orderStatus}"></span>
+
+                                    </a>
+
+
+
+<!--                                    <span class="px-2 py-1 text-xs font-medium bg-green-100  rounded-full" th:text="${order.orderStatus}"></span>-->
                                 </div>
-                                
+
 <!--                                <div class="flex items-center justify-between">-->
 <!--                                    <div class="flex items-center">-->
 <!--                                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">-->

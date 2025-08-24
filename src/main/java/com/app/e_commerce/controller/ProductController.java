@@ -3,6 +3,7 @@ package com.app.e_commerce.controller;
 import com.app.e_commerce.entity.Category;
 import com.app.e_commerce.entity.Product;
 import com.app.e_commerce.entity.Rate;
+import com.app.e_commerce.exception.ProductNotFoundException;
 import com.app.e_commerce.services.CategoryService;
 import com.app.e_commerce.services.ProductService;
 import com.app.e_commerce.services.RateService;
@@ -94,17 +95,15 @@ public class ProductController {
 
     @GetMapping("/edit/{id}")
     public String showUpdateProductForm(@PathVariable Long id, Model model) {
-        Optional<Product> productOptional = productService.getProductById(id);
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
-            List<Category> categories = categoryService.getAllCategories();
-            model.addAttribute("product", product);
-            model.addAttribute("categories", categories);
-            return "product/edit-product";
-        } else {
-            return "redirect:/products";
-        }
+        Product product = productService.getProductById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        List<Category> categories = categoryService.getAllCategories();
+        model.addAttribute("product", product);
+        model.addAttribute("categories", categories);
+        return "product/edit-product";
     }
+
 
     @PostMapping("/update/{id}")
     public String updateProduct(@PathVariable Long id,

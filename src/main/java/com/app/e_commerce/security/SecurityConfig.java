@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .permitAll()
 
                         .requestMatchers("/products/**").authenticated()
+
                         .requestMatchers(HttpMethod.POST, "/products/create").authenticated()
                         .requestMatchers("/users/**").permitAll()
                         .requestMatchers("/user/**").authenticated()

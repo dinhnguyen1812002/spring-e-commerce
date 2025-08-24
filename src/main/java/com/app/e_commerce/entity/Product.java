@@ -41,8 +41,8 @@ public class Product {
 
     private Integer stock;
 
-    @Version
-    private Long version;
+//    @Version
+//    private Long version;
 
     private LocalDateTime createdAt;
 

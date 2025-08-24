@@ -53,4 +53,20 @@ public interface OrderRepository extends JpaRepository<Order, String> {
             @Param("orderId") Long orderId,
             @Param("user") User user
     );
+
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    BigDecimal findTotalRevenue(LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.orderStatus = :status AND o.orderDate BETWEEN :startDate AND :endDate")
+    BigDecimal findPaidRevenue(LocalDateTime startDate, LocalDateTime endDate, OrderStatus status);
+
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.orderStatus IN :statuses AND o.paymentTransactionId IS NULL AND o.orderDate BETWEEN :startDate AND :endDate")
+    BigDecimal findUnpaidRevenue(LocalDateTime startDate, LocalDateTime endDate, List<OrderStatus> statuses);
+
+    long countByOrderStatusAndOrderDateBetween(OrderStatus status, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT AVG(o.totalAmount) FROM Order o WHERE o.orderStatus = :status AND o.orderDate BETWEEN :startDate AND :endDate")
+    BigDecimal findAverageOrderValue(LocalDateTime startDate, LocalDateTime endDate, OrderStatus status);
+
+
 }

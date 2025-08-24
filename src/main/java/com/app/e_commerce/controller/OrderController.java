@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/orders")
@@ -119,7 +120,9 @@ public class OrderController {
         }
         User user = userService.findByUsername(userDetails.getUsername());
         Order order = orderService.findByIdAndUserOrThrow(orderId, user);
+
         model.addAttribute("order", order);
+
         return "cart/view";
     }
 
@@ -134,7 +137,7 @@ public class OrderController {
         }
         User user = userService.findByUsername(userDetails.getUsername());
         model.addAttribute("orders", orderService.getOrdersByUser(user));
-        return "cart/list";
+        return "cart/orderHistory";
     }
 
     /**

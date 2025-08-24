@@ -1,142 +1,298 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" class="h-full bg-gray-100">
+<html xmlns:th="http://www.thymeleaf.org" class="h-full bg-gray-50">
 <head>
-    <title>Giỏ hàng</title>
+    <title>Chi tiết đơn hàng</title>
     <th:block th:replace="~{Layout :: link-css}"></th:block>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="h-full bg-white">
-<div th:replace="~{fragments/header :: header}"></div>
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white">
-    <h2 class="text-3xl font-extrabold text-gray-900 mb-8 text-center">Giỏ hàng của bạn</h2>
-<!-- Progress Bar -->
-<div class="max-w-3xl mx-auto mt-6 mb-8">
-    <ol class="flex items-center w-full text-sm font-medium text-center text-gray-500">
-        <li class="flex-1 flex items-center">
-            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-600 text-white">1</span>
-            <span class="ml-2 font-semibold text-indigo-700">Giỏ hàng</span>
-            <span class="flex-1 h-1 bg-indigo-300 mx-2"></span>
-        </li>
-        <li class="flex-1 flex items-center">
-            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200">2</span>
-            <span class="ml-2">Địa chỉ</span>
-            <span class="flex-1 h-1 bg-gray-200 mx-2"></span>
-        </li>
-        <li class="flex-1 flex items-center">
-            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200">3</span>
-            <span class="ml-2">Thanh toán</span>
-            <span class="flex-1 h-1 bg-gray-200 mx-2"></span>
-        </li>
-        <li class="flex items-center">
-            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200">4</span>
-            <span class="ml-2">Xác nhận</span>
-        </li>
-    </ol>
-</div>
+<body class="h-full bg-gray-50">
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-    <!-- Nút tiếp tục mua sắm -->
-    <div class="mb-4 flex justify-end">
-        <a href="/" class="inline-flex items-center px-5 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-md shadow hover:bg-indigo-50 transition">
-            <i class="fa-solid fa-arrow-left mr-2"></i> Tiếp tục mua sắm
-        </a>
-    </div>
-    <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Cart Items -->
-        <div class="w-full lg:w-2/3">
-            <!-- Empty Cart -->
-            <div th:if="${cart.cartItems.size() == 0}" class="bg-white shadow rounded-lg flex flex-col items-center py-16">
-                <i class="fa-solid fa-cart-shopping text-6xl text-gray-300 mb-4"></i>
-                <p class="text-xl text-gray-700 mb-4">Giỏ hàng của bạn đang trống.</p>
-                <a href="/" class="inline-block px-6 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition">Tiếp tục mua sắm</a>
+
+<div class="flex min-h-screen">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Chi tiết đơn hàng</h1>
+                    <p class="text-gray-600 mt-1">Thông tin chi tiết về đơn hàng của bạn</p>
+                </div>
+                <a href="/" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
+                    <i class="fa-solid fa-arrow-left mr-2 text-sm"></i>
+                    Tiếp tục mua sắm
+                </a>
             </div>
-            <!-- Cart List -->
-            <div th:if="${cart.cartItems.size() > 0}" class="space-y-6">
-                <div th:each="item : ${cart.cartItems}" class="bg-white shadow rounded-lg flex flex-col sm:flex-row items-center p-4 gap-6">
-                    <!-- Product Image -->
-                    <img th:src="${item.product.image}" alt="Product image" class="w-32 h-32 object-cover rounded-lg border">
-                    <!-- Product Info -->
-                    <div class="flex-grow w-full sm:w-auto">
-                        <h3 th:text="${item.product.name}" class="text-lg font-bold text-gray-900 mb-2"></h3>
-                        <div class="flex items-center text-gray-500 text-sm mb-2">
-                            <span>Số lượng:</span>
-                            <form th:action="@{/cart/update}" method="post" class="ml-2">
-                                <input type="hidden" name="productId" th:value="${item.product.id}"/>
-                                <input type="number" name="quantity" th:value="${item.quantity}"
-                                       class="w-16 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-2 py-1"
-                                       min="1" onchange="this.form.submit()"/>
-                            </form>
+
+<!--            &lt;!&ndash; Progress Bar &ndash;&gt;-->
+<!--            <div class="mt-8">-->
+<!--                <div class="flex items-center justify-between">-->
+<!--                    <div class="flex items-center">-->
+<!--                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-500 text-white shadow-lg">-->
+<!--                            <i class="fa-solid fa-check text-xs"></i>-->
+<!--                        </div>-->
+<!--                        <span class="ml-3 text-sm font-medium text-primary-600">Đặt hàng</span>-->
+<!--                    </div>-->
+<!--                    <div class="flex-1 h-0.5 bg-primary-200 mx-4"></div>-->
+<!--                    <div class="flex items-center">-->
+<!--                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-500 text-white shadow-lg">-->
+<!--                            <i class="fa-solid fa-check text-xs"></i>-->
+<!--                        </div>-->
+<!--                        <span class="ml-3 text-sm font-medium text-primary-600">Xác nhận</span>-->
+<!--                    </div>-->
+<!--                    <div class="flex-1 h-0.5 bg-gray-200 mx-4"></div>-->
+<!--                    <div class="flex items-center">-->
+<!--                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-500">-->
+<!--                            3-->
+<!--                        </div>-->
+<!--                        <span class="ml-3 text-sm text-gray-500">Đang giao</span>-->
+<!--                    </div>-->
+<!--                    <div class="flex-1 h-0.5 bg-gray-200 mx-4"></div>-->
+<!--                    <div class="flex items-center">-->
+<!--                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-500">-->
+<!--                            4-->
+<!--                        </div>-->
+<!--                        <span class="ml-3 text-sm text-gray-500">Hoàn thành</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Order Information -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Order Details Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-white flex items-center">
+                            <i class="fa-solid fa-receipt mr-3"></i>
+                            Thông tin đơn hàng
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-hashtag text-gray-400 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Mã đơn hàng</p>
+                                        <p class="font-semibold text-gray-900" th:text="${order.id}">#DH001</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-calendar text-gray-400 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Ngày đặt hàng</p>
+                                        <p class="font-semibold text-gray-900" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">25/08/2024 14:30</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-truck text-gray-400 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Trạng thái</p>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" th:text="${order.orderStatus}">
+                                                Đang xử lý
+                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-user text-gray-400 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Người nhận</p>
+                                        <p class="font-semibold text-gray-900" th:text="${order.name}">Nguyễn Văn A</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-phone text-gray-400 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Số điện thoại</p>
+                                        <p class="font-semibold text-gray-900" th:text="${order.phoneNumber}">0123456789</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-credit-card text-gray-400 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Thanh toán</p>
+                                        <p class="font-semibold text-gray-900" th:text="${order.paymentMethod}">COD</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <span th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'" class="text-base font-semibold text-indigo-700"></span>
+                        <div class="mt-6 pt-6 border-t border-gray-100">
+                            <div class="flex items-start space-x-3">
+                                <i class="fa-solid fa-location-dot text-gray-400 mt-0.5"></i>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-600">Địa chỉ giao hàng</p>
+                                    <p class="font-semibold text-gray-900" th:text="${order.shippingAddress}">123 Đường ABC, Quận 1, TP.HCM</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Remove/Edit Buttons -->
-                    <div class="flex flex-col gap-2 ml-auto">
-                        <form th:action="@{/cart/remove}" method="post">
-                            <input type="hidden" name="productId" th:value="${item.product.id}"/>
-                            <button type="submit" class="w-10 h-10 flex items-center justify-center bg-red-100 hover:bg-red-200 rounded-full text-red-600" title="Xóa">
-                                <i class="fa-solid fa-trash"></i>
+                </div>
+
+                <!-- Order Items -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-white flex items-center">
+                            <i class="fa-solid fa-shopping-bag mr-3"></i>
+                            Sản phẩm đã đặt
+                        </h3>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div th:if="${order.orderItems.size() == 0}" class="p-12 text-center">
+                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-shopping-cart text-3xl text-gray-400"></i>
+                        </div>
+                        <p class="text-xl text-gray-600 mb-6">Đơn hàng không có sản phẩm nào</p>
+                        <a href="/" class="inline-flex items-center px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200">
+                            <i class="fa-solid fa-plus mr-2"></i>
+                            Thêm sản phẩm ngay
+                        </a>
+                    </div>
+
+                    <!-- Product Items -->
+                    <div th:if="${order.orderItems.size() > 0}" class="divide-y divide-gray-100">
+                        <div th:each="item, itemStat : ${order.orderItems}"
+                             class="p-6 hover:bg-gray-50 transition-colors duration-200">
+                            <div class="flex items-center space-x-4">
+                                <div class="relative">
+                                    <img th:src="${'/' + item.product.image}"
+                                         alt="Product image"
+                                         class="w-20 h-20 object-cover rounded-lg border-2 border-gray-100">
+                                    <div class="absolute -top-2 -right-2 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-semibold"
+                                         th:text="${item.quantity}">2</div>
+                                </div>
+
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-1" th:text="${item.product.name}">
+                                        Áo thun nam basic
+                                    </h4>
+                                    <p class="text-sm text-gray-600 mb-2">
+                                        Số lượng: <span class="font-medium" th:text="${item.quantity}">2</span>
+                                    </p>
+                                    <div class="flex items-center justify-between">
+                                            <span class="text-lg font-bold text-primary-600"
+                                                  th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                                450,000 VND
+                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="space-y-6">
+                <div th:if="${order.orderItems.size() > 0}"
+                     class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-8">
+                    <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-white flex items-center">
+                            <i class="fa-solid fa-calculator mr-3"></i>
+                            Tóm tắt đơn hàng
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Tạm tính:</span>
+                                <span class="font-semibold" th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">800,000 VND</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Thuế (10%):</span>
+                                <span class="font-semibold" th:text="${#numbers.formatDecimal(order.tax, 0, 'COMMA', 0, 'POINT')} + ' VND'">80,000 VND</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Phí vận chuyển:</span>
+                                <span class="font-semibold" th:text="${#numbers.formatDecimal(order.shippingCost, 0, 'COMMA', 0, 'POINT')} + ' VND'">30,000 VND</span>
+                            </div>
+                            <div th:if="${order.discountAmount > 0}" class="flex justify-between items-center text-green-600">
+                                <span>Giảm giá:</span>
+                                <span class="font-semibold" th:text="'- ' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">- 50,000 VND</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-lg font-bold text-gray-900">Tổng cộng:</span>
+                                    <span class="text-xl font-bold text-primary-600" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">860,000 VND</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 space-y-3">
+                            <button class="w-full bg-primary-500 text-white py-3 px-4 rounded-lg hover:bg-primary-600 transition-colors duration-200 font-medium">
+                                <i class="fa-solid fa-print mr-2"></i>
+                                In hóa đơn
                             </button>
-                        </form>
-                        <!-- Nút chỉnh sửa có thể mở modal (giả lập) -->
-                        <!-- <button class="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600" title="Chỉnh sửa">
-                            <i class="fa-solid fa-pen"></i>
-                        </button> -->
+                            <button class="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium">
+                                <i class="fa-solid fa-headset mr-2"></i>
+                                Liên hệ hỗ trợ
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- Đề xuất sản phẩm liên quan (giả lập) -->
-            <div th:if="${cart.cartItems.size() > 0}" class="mt-10">
-                <h4 class="text-lg font-semibold text-gray-800 mb-4">Có thể bạn sẽ thích</h4>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div class="bg-white rounded-lg shadow p-3 flex flex-col items-center" th:each="prod : ${relatedProducts}">
-                        <img th:src="${prod.image}" alt="Ảnh sản phẩm" class="w-20 h-20 object-cover rounded mb-2">
-                        <div th:text="${prod.name}" class="text-sm font-medium text-gray-700 mb-1"></div>
-                        <div th:text="${#numbers.formatDecimal(prod.price, 0, 'COMMA', 0, 'POINT')} + ' VND'" class="text-xs text-indigo-600 mb-2"></div>
-                        <form th:action="@{/cart/add}" method="post">
-                            <input type="hidden" name="productId" th:value="${prod.id}"/>
-                            <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700">Thêm vào giỏ</button>
-                        </form>
+
+                <!-- Order Tracking -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-white flex items-center">
+                            <i class="fa-solid fa-route mr-3"></i>
+                            Theo dõi đơn hàng
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Đơn hàng đã được xác nhận</p>
+                                    <p class="text-sm text-gray-500">25/08/2024 14:35</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Đang chuẩn bị hàng</p>
+                                    <p class="text-sm text-gray-500">25/08/2024 15:00</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                                <div>
+                                    <p class="font-medium text-gray-400">Đang giao hàng</p>
+                                    <p class="text-sm text-gray-400">Dự kiến 26/08/2024</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Order Summary -->
-        <div class="w-full lg:w-1/3">
-            <div th:if="${cart.cartItems.size() > 0}" class="bg-white shadow-lg rounded-lg p-8 sticky top-8">
-                <h3 class="text-lg font-bold text-gray-900 mb-6 text-center">Tóm tắt đơn hàng</h3>
-                <div class="flex justify-between mb-2">
-                    <span>Tổng phụ:</span>
-                    <span th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                </div>
-                <div class="flex justify-between mb-2">
-                    <span>Phí vận chuyển:</span>
-                    <span>20,000 VND</span>
-                </div>
-                <div class="flex justify-between mb-2">
-                    <span>Thuế (10%):</span>
-                    <span th:text="${#numbers.formatDecimal(cart.totalPrice * 0.1, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                </div>
-                <div class="border-t my-4"></div>
-                <div class="flex justify-between text-lg font-bold">
-                    <span>Tổng cộng:</span>
-                    <span th:text="${#numbers.formatDecimal(cart.totalPrice + 20000 + cart.totalPrice * 0.1, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
-                </div>
-                <!-- <form method="get" th:action="@{/cart/checkout}" class="mt-6"> -->
-                    <a href="/orders/checkout"
-                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
-                        Thanh toán
-                    </a>
-                <!-- </form> -->
             </div>
         </div>
     </div>
 </div>
 
-</div>
-
-
-<div th:replace="~{fragments/footer :: footer}"></div>
 <script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
 </body>
 </html>

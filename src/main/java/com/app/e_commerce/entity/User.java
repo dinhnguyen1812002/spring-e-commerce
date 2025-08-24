@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -34,7 +36,8 @@ public class User  {
 
     @Column(nullable = false)
     private boolean enabled = true;
-
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
     // Field for storing avatar image as binary data
     @Column(columnDefinition = "TEXT")
     private String avatar;
@@ -48,5 +51,10 @@ public class User  {
     private Set<Role> roles = new HashSet<>();
 
     // Getters and Setters
-
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }
