@@ -27,7 +27,7 @@
 *.code-workspace
 
 # Application properties with sensitive data
-**/application-*.properties
+
 **/application-*.yml
 **/*-secrets.properties
 **/*-secrets.yml
