@@ -1,7 +1,8 @@
 package com.app.e_commerce.controller;
 
 import com.app.e_commerce.entity.*;
-import com.app.e_commerce.exception.ProductNotFoundException;
+
+import com.app.e_commerce.service.impl.DashboardServiceImpl;
 import com.app.e_commerce.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,12 +14,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+//    @Autowired
+//    private ProductService productService;
 
     @Autowired
     private ProductService productService;
@@ -33,19 +40,47 @@ public class AdminController {
 
     @Autowired
     private TrafficService trafficService;
-
+@Autowired
+private DashboardServiceImpl dashboardService;
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // Add dashboard statistics
-        List<Order> orders = orderService.getAllOrders();
+        List<Order> recentOrders = orderService.getRecentOrders(5); // Get 5 most recent orders
         long totalProducts = productService.countProducts();
         long totalUsers = userService.countUsers();
         long totalCategories = categoryService.countCategories();
+        
+        // Get current month revenue
+        LocalDate now = LocalDate.now();
+        BigDecimal currentMonthRevenue = dashboardService.getMonthlyRevenue(now.getYear(), now.getMonthValue());
+        if (currentMonthRevenue == null) {
+            currentMonthRevenue = BigDecimal.ZERO;
+        }
+        
+        // Calculate growth from last month
+        LocalDate lastMonth = now.minusMonths(1);
+        BigDecimal lastMonthRevenue = dashboardService.getMonthlyRevenue(lastMonth.getYear(), lastMonth.getMonthValue());
+        if (lastMonthRevenue == null) {
+            lastMonthRevenue = BigDecimal.ZERO;
+        }
+        
+        double growthPercentage = 0.0;
+        if (lastMonthRevenue.compareTo(BigDecimal.ZERO) > 0) {
+            growthPercentage = currentMonthRevenue.subtract(lastMonthRevenue)
+                    .divide(lastMonthRevenue, 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100))
+                    .doubleValue();
+        } else if (currentMonthRevenue.compareTo(BigDecimal.ZERO) > 0) {
+            growthPercentage = 100.0;
+        }
 
         model.addAttribute("totalProducts", totalProducts);
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("totalCategories", totalCategories);
-        model.addAttribute("orders", orders);
+        model.addAttribute("totalRevenue", dashboardService.getTotalRevenue() != null ? dashboardService.getTotalRevenue() : BigDecimal.ZERO);
+        model.addAttribute("currentMonthRevenue", currentMonthRevenue);
+        model.addAttribute("revenueGrowth", growthPercentage);
+        model.addAttribute("orders", recentOrders);
         return "admin/admin-dashboard";
     }
 //    @GetMapping("/products/edit/{id}")

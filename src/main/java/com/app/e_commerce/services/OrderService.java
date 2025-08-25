@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,6 +200,19 @@ public class OrderService {
                         String.format("Order with ID %s not found for user %s", orderId, user.getUsername())
                 ));
     }
+    
+    /**
+     * Get recent orders with pagination
+     * @param limit maximum number of orders to return
+     * @return list of recent orders, ordered by order date descending
+     */
+    public List<Order> getRecentOrders(int limit) {
+        return orderRepository
+                .findAllByOrderByOrderDateDesc(PageRequest.of(0, limit))
+                .getContent();
+    }
+
+
 
     public boolean isOrderOwnedByUser(String orderId, User user) {
         return findByIdAndUser(orderId, user).isPresent();
@@ -354,12 +368,10 @@ public class OrderService {
 
         return order;
     }
+
+
     public Page<Order> getAllOrders(Pageable pageable) {
         return orderRepository.findAll(pageable);
     }
-
-
-
-
 
 }

@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -103,6 +111,39 @@
                         </div>
                     </div>
 
+                    <!-- Charts -->
+                    <div class="grid grid-cols-1 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">Revenue Statistics</h3>
+                                <div class="flex space-x-2">
+                                    <button onclick="updateRevenueChart('day')" class="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200">Daily</button>
+                                    <button onclick="updateRevenueChart('month')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Monthly</button>
+                                    <button onclick="updateRevenueChart('quarter')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Quarterly</button>
+                                    <button onclick="updateRevenueChart('year')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Yearly</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">Sales Statistics</h3>
+                                <div class="flex space-x-2">
+                                    <button onclick="updateSalesChart('day')" class="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200">Daily</button>
+                                    <button onclick="updateSalesChart('month')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Monthly</button>
+                                    <button onclick="updateSalesChart('quarter')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Quarterly</button>
+                                    <button onclick="updateSalesChart('year')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Yearly</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Quick Actions -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                         <div class="bg-white rounded-lg shadow p-6">
@@ -170,7 +211,6 @@
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between" th:each="order : ${orders}">
                                     <a th:href="@{/orders/{orderId}(orderId =  ${order.id})}">
-<!--                                        <a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}"></a>-->
                                         <div class="flex items-center">
                                             <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                                                 <img th:src="'data:image/jpeg;base64,' + ${order.user.avatar}" alt="User" class="w-8 h-8 rounded-full">
@@ -181,26 +221,8 @@
                                                 <p class="text-sm text-gray-500" th:text="${order.user.username} + ' - ' + ${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' VND'"></p>
                                             </div>
                                         </div>
-
                                     </a>
-
-
-
-<!--                                    <span class="px-2 py-1 text-xs font-medium bg-green-100  rounded-full" th:text="${order.orderStatus}"></span>-->
                                 </div>
-
-<!--                                <div class="flex items-center justify-between">-->
-<!--                                    <div class="flex items-center">-->
-<!--                                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">-->
-<!--                                            <i class="fas fa-clock text-yellow-600"></i>-->
-<!--                                        </div>-->
-<!--                                        <div class="ml-3">-->
-<!--                                            <p class="text-sm font-medium text-gray-900">Order #12344</p>-->
-<!--                                            <p class="text-sm text-gray-500">Jane Smith - $199.99</p>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Pending</span>-->
-<!--                                </div>-->
                             </div>
                         </div>
                     </div>
@@ -208,5 +230,153 @@
             </main>
         </div>
     </div>
+
+    <script>
+        // Initialize charts
+        let revenueChart, salesChart;
+
+        // Format currency
+        const formatCurrency = (value) => {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        };
+
+        // Initialize charts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+
+            // Initial chart configuration
+            const chartConfig = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return formatCurrency(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return formatCurrency(context.raw);
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Initialize Revenue Chart
+            revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: chartConfig
+            });
+
+            // Initialize Sales Chart
+            salesChart = new Chart(salesCtx, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    ...chartConfig,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.raw.toLocaleString() + ' sales';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Load initial data
+            updateRevenueChart('month');
+            updateSalesChart('month');
+        });
+
+        // Update Revenue Chart
+        async function updateRevenueChart(period) {
+            try {
+                const response = await fetch(`/api/admin/dashboard/revenue?period=${period}`);
+                const data = await response.json();
+
+                revenueChart.data.labels = data.labels;
+                revenueChart.data.datasets = [{
+                    label: 'Revenue',
+                    data: data.data,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }];
+
+                revenueChart.update();
+                updateActiveButton('revenue', period);
+            } catch (error) {
+                console.error('Error fetching revenue data:', error);
+            }
+        }
+
+        // Update Sales Chart
+        async function updateSalesChart(period) {
+            try {
+                const response = await fetch(`/api/admin/dashboard/sales?period=${period}`);
+                const data = await response.json();
+
+                salesChart.data.labels = data.labels;
+                salesChart.data.datasets = [{
+                    label: 'Sales',
+                    data: data.data,
+                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                    borderColor: 'rgb(16, 185, 129)',
+                    borderWidth: 1
+                }];
+
+                salesChart.update();
+                updateActiveButton('sales', period);
+            } catch (error) {
+                console.error('Error fetching sales data:', error);
+            }
+        }
+
+        // Update active button state
+        function updateActiveButton(chartType, period) {
+            const buttons = document.querySelectorAll(`#${chartType}Chart`)
+                .closest('.bg-white')
+                .querySelectorAll('button');
+
+            buttons.forEach(btn => {
+                if (btn.textContent.toLowerCase() === period) {
+                    btn.classList.add('bg-blue-100', 'text-blue-700');
+                    btn.classList.remove('hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('bg-blue-100', 'text-blue-700');
+                    btn.classList.add('hover:bg-gray-100');
+                }
+            });
+        }
+    </script>
 </body>
-</html> 
+</html>

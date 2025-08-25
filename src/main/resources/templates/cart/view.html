@@ -107,11 +107,27 @@
                                 </div>
                                 <div class="flex items-start space-x-3">
                                     <i class="fa-solid fa-truck text-gray-400 mt-0.5"></i>
-                                    <div>
+                                    <div class="flex flex-col">
                                         <p class="text-sm text-gray-600">Trạng thái</p>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" th:text="${order.orderStatus}">
-                                                Đang xử lý
-                                            </span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" 
+                                              th:class="${order.orderStatus.name() == 'CANCELLED' ? 'bg-red-100 text-red-800' : 
+                                                       order.orderStatus.name() == 'COMPLETED' ? 'bg-green-100 text-green-800' : 
+                                                       'bg-yellow-100 text-yellow-800'}"
+                                              th:text="${order.orderStatus}">
+                                            Đang xử lý
+                                        </span>
+                                        <!-- Cancel Order Button (only show if order is not already cancelled or completed) -->
+                                        <form th:if="${order.orderStatus.name() != 'CANCELLED' && order.orderStatus.name() != 'COMPLETED'}" 
+                                              th:action="@{'/orders/' + ${order.id} + '/cancel'}" 
+                                              method="post" 
+                                              class="mt-2">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                            <button type="submit" 
+                                                    class="text-xs text-red-600 hover:text-red-800 flex items-center"
+                                                    onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                                                <i class="fas fa-times-circle mr-1"></i> Hủy đơn hàng
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
