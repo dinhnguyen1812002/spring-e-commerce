@@ -53,7 +53,11 @@
                 </a>
                 <div sec:authorize="isAuthenticated()" class="relative">
                     <button id="userDropdownButton" class="flex items-center focus:outline-none">
-                        <img th:src="'data:image/jpeg;base64,' + ${#authentication.principal.avatar}" alt="User Avatar" class="w-8 h-8 rounded-full" />
+                        <img th:src="${#authentication.principal.avatar != null}
+                                      ? 'data:image/jpeg;base64,' + ${#authentication.principal.avatar}
+                                      : @{/images/avatar.png}"
+                             alt="User Avatar"
+                             class="w-8 h-8 rounded-full" />
 
 
                         <svg class="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

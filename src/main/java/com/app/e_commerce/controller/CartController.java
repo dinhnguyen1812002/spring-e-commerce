@@ -19,6 +19,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
+
 @Controller
 @RequestMapping("/cart")
 public class CartController {
@@ -35,6 +37,8 @@ public class CartController {
     /**
      * Hiển thị giỏ hàng
      */
+
+
     @GetMapping
     public String viewCart(@AuthenticationPrincipal UserDetails userDetails,
                            HttpSession session,
@@ -44,8 +48,18 @@ public class CartController {
                 : null;
 
         Cart cart = cartService.getOrCreateCart(user, session);
+
+        // Tính tổng tiền từ cartItems
+        BigDecimal total = cart.getCartItems()
+                .stream()
+                .map(item -> item.getProduct().getPrice()
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         model.addAttribute("cart", cart);
-        return "cart/view"; // return view name (tuỳ theo template engine bạn dùng)
+        model.addAttribute("total", total);
+
+        return "cart/shopping-cart";
     }
 
     /**

@@ -34,7 +34,11 @@
   </tr>
   </tbody>
 </table>
-<p>Total: <span th:text="${#numbers.formatDecimal(cart.cartItems.stream().mapToDouble(item -> item.product.price * item.quantity).sum(), 0, 'COMMA', 2, 'POINT')}"></span></p>
+
+<p>Total:
+  <span th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}"></span>
+</p>
+
 <a th:href="@{/order/create}">Proceed to Checkout</a>
 <script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
 </body>
