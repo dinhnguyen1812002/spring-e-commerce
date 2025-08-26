@@ -76,7 +76,7 @@
                                 th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',2,'POINT')} + ' VND'">500,000 VND</td>
                             <td class="px-6 py-4 text-sm">
                                 <!-- Form update status -->
-                                <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post" class="flex items-center space-x-2">
+                                <form th:action="@{'/orders/' + ${order.id} + '/status'}" method="post" class="flex items-center space-x-2">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                     <select name="status" class="px-2 py-1 border rounded-md text-sm">
                                         <option th:each="st : ${T(com.app.e_commerce.Enum.OrderStatus).values()}"
