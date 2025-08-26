@@ -237,12 +237,10 @@
 
         // Format currency
         const formatCurrency = (value) => {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
+            return new Intl.NumberFormat('vi-VN', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(value);
+            }).format(value) + ' VND';
         };
 
         // Initialize charts on page load

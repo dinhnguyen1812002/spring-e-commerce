@@ -63,6 +63,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query(value = "SELECT CAST(DATE(o.order_date) AS string) as day, SUM(o.total_amount) as revenue " +
             "FROM orders o " +
             "WHERE o.order_date >= CURRENT_DATE - INTERVAL '30 days' " +
+            "AND o.order_status = 'SUCCESS' " +
             "GROUP BY DATE(o.order_date) " +
             "ORDER BY day", nativeQuery = true)
     List<Object[]> findDailyRevenueForLast30Days();
@@ -70,6 +71,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query(value = "SELECT EXTRACT(MONTH FROM o.order_date) as month, SUM(o.total_amount) as revenue " +
             "FROM orders o " +
             "WHERE EXTRACT(YEAR FROM o.order_date) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND o.order_status = 'SUCCESS' " +
             "GROUP BY EXTRACT(MONTH FROM o.order_date) " +
             "ORDER BY month", nativeQuery = true)
     List<Object[]> findMonthlyRevenueForCurrentYear();
@@ -77,6 +79,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query(value = "SELECT EXTRACT(QUARTER FROM o.order_date) as quarter, SUM(o.total_amount) as revenue " +
             "FROM orders o " +
             "WHERE EXTRACT(YEAR FROM o.order_date) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND o.order_status = 'SUCCESS' " +
             "GROUP BY EXTRACT(QUARTER FROM o.order_date) " +
             "ORDER BY quarter", nativeQuery = true)
     List<Object[]> findQuarterlyRevenueForCurrentYear();
@@ -84,6 +87,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query(value = "SELECT EXTRACT(YEAR FROM o.order_date) as year, SUM(o.total_amount) as revenue " +
             "FROM orders o " +
             "WHERE o.order_date >= CURRENT_DATE - INTERVAL '5 years' " +
+            "AND o.order_status = 'SUCCESS' " +
             "GROUP BY EXTRACT(YEAR FROM o.order_date) " +
             "ORDER BY year", nativeQuery = true)
     List<Object[]> findYearlyRevenueForLast5Years();

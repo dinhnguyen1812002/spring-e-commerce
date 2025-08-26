@@ -99,7 +99,7 @@ public class OrderController {
             }
             Order order = orderService.checkoutCart(user, fullName, phone, note, address, paymentMethod, session);
 
-            return "redirect:/orders/" + order.getId();
+            return "orders/success";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("paymentMethods", PaymentMethod.values());
