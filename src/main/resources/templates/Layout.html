@@ -1,409 +1,45 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<!--
+This is the main layout file. Pages can use this layout by setting the following in their root element:
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{Layout :: layout(~{::title}, ~{::main})}">
+
+This requires the page to have a <title> and a <main> element.
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(mainContent)">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Của Tôi - Trang Chủ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/main.css}">
 
-    <link rel="stylesheet" th:href="@{/css/hero.css}">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .hero-gradient {
-            background: linear-gradient(to right, #4f46e5, #7c3aed);
-        }
-    </style>
+    <!-- The title of the page will be replaced by the content of the <title> tag in the child template -->
+<!--    <title th:replace="${pageTitle}">E-Commerce Application</title>-->
+
+    <!--
+      This block is defined as a fragment so that other pages,
+      which do not use the full layout, can still include the CSS.
+      e.g., <th:block th:replace="~{Layout :: link-css}"></th:block>
+    -->
+    <th:block th:fragment="link-css">
+        <link rel="stylesheet" th:href="@{/css/main.css}">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+              integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+              crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    </th:block>
+
 </head>
-<body class="min-h-screen flex flex-col">
-<div th:replace="~{fragments/header :: header}"></div>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen font-sans">
 
-<!-- Hero Section -->
-<div class="bg-white overflow-hidden">
-    <header class="absolute inset-x-0 top-0 z-50">
-        <!-- Mobile menu code unchanged -->
-        <div class="lg:hidden" role="dialog" aria-modal="true">
-            <!-- Background backdrop code unchanged -->
-            <div class="fixed inset-0 z-50"></div>
-            <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-                <!-- Mobile menu content unchanged -->
-                <div class="flex items-center justify-between">
-<!--                    <a href="#" class="-m-1.5 p-1.5">-->
-<!--                        <span class="sr-only">Your Company</span>-->
-<!--                        <img class="h-8 w-auto" src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="">-->
-<!--                    </a>-->
-                    <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700">
-                        <span class="sr-only">Close menu</span>
-                        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-6 flow-root">
-                    <div class="-my-6 divide-y divide-gray-500/10">
-                        <div class="space-y-2 py-6">
-                            <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Product</a>
-                            <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Features</a>
-                            <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Marketplace</a>
-                            <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Company</a>
-                        </div>
-                        <div class="py-6">
-                            <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Log in</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+<!-- Header fragment is inserted here -->
+<header th:replace="~{fragments/header :: header}"></header>
 
-    <!-- Enhanced Hero Section with Background Image & Advanced Animations -->
-    <div th:replace="~{fragments/hero :: hero}" ></div>
-</div>
+<!-- Main content from the calling page is inserted here. -->
+<div th:insert="${mainContent}"></div>
+<!-- Footer fragment is inserted here -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<!-- Categories Section -->
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-8">Danh Mục Sản Phẩm</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4"
-        >
-            <a href="#" class="group"  th:each="categories , i :${categories} " th:if="${i.index< 4}">
-                <div class="bg-gray-100 rounded-lg overflow-hidden aspect-square relative">
-                    <img src="/images/category.jpg" alt="Danh mục 1" class="w-full h-full
-                    object-cover group-hover:scale-110 transition-transform duration-300" />
-                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                        <h3 class="text-white text-xl font-bold" th:text="${categories.name}"></h3>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-</section>
+<!-- Global Scripts -->
+<script th:src="@{/js/toggle.js}"></script>
 
-<!-- Featured Products Section -->
-<section id="featured-products" class="py-12 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800">Sản Phẩm Nổi Bật</h2>
-            <a href="/products" class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center">
-                Xem tất cả
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </a>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <div th:each="product, iterStat : ${products}" th:if="${iterStat.index < 8}"
-                 class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col">
-                <div class="relative pt-[100%] overflow-hidden group">
-                    <img th:src="@{'/' + ${product.image}}" alt="Hình ảnh sản phẩm"
-                         class="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"/>
-                    <div class="absolute top-3 right-3">
-                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">-20%</span>
-                    </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <div class="flex flex-col gap-2">
-                            <a th:href="@{/products/{id}(id=${product.id})}" class="bg-white text-gray-800 py-2 px-4 rounded-full font-medium hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                Xem chi tiết
-                            </a>
-                            <button class="bg-indigo-600 text-white py-2 px-4 rounded-full hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-4 flex flex-col flex-grow">
-                    <h2 th:text="${product.name}" class="text-lg font-semibold mb-2 text-gray-800 hover:text-indigo-600 transition-colors duration-200 truncate">Tên sản phẩm</h2>
-                    <div class="flex items-center mb-2">
-                        <div class="flex text-yellow-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                        </div>
-                        <span class="text-gray-500 text-sm ml-2">(120)</span>
-                    </div>
-                    <p th:text="${product.description}" class="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">Mô tả sản phẩm</p>
-                    <div class="flex items-center justify-between mt-auto">
-                        <div>
-                            <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"
-                               class="text-lg font-bold text-indigo-600">Giá sản phẩm</p>
-                            <p class="text-sm text-gray-500 line-through">
-                                <span th:text="${#numbers.formatDecimal(product.price * 1.2, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Giá gốc</span>
-                            </p>
-                        </div>
-<!--                        <form th:action="@{/cart/add}" method="post">-->
-<!--                            <input type="hidden" name="productId" th:value="${product.id}" />-->
-<!--                            <input type="hidden" name="quantity" value="1" />-->
-<!--                            <button class="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">-->
-<!--                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />-->
-<!--                                </svg>-->
-<!--                            </button>-->
-<!--                        </form>-->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Recommended Products Section -->
-<section class="py-12 bg-gradient-to-r from-indigo-50 to-purple-50">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800">Sản Phẩm Dành Cho Bạn</h2>
-            <a href="/recommendations" class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center">
-                Xem tất cả
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </a>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <div th:each="product, iterStat : ${recommendedProducts}" th:if="${iterStat.index < 4}"
-                 class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col">
-                <div class="relative pt-[100%] overflow-hidden group">
-                    <img th:src="@{'/' + ${product.image}}" alt="Hình ảnh sản phẩm"
-                         class="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"/>
-                    <div class="absolute top-3 right-3">
-                        <span class="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-full">Gợi ý</span>
-                    </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <div class="flex flex-col gap-2">
-                            <a th:href="@{/products/{id}(id=${product.id})}" class="bg-white text-gray-800 py-2 px-4 rounded-full font-medium hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                Xem chi tiết
-                            </a>
-
-<!--                            <form th:action="@{/cart/add}" method="post">-->
-<!--                                <input type="hidden" name="productId" th:value="${product.id}" />-->
-<!--                                <input type="hidden" name="quantity" value="1" />-->
-<!--                                <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-full hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center w-full">-->
-<!--                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />-->
-<!--                                    </svg>-->
-<!--                                    Thêm vào giỏ-->
-<!--                                </button>-->
-<!--                            </form>-->
-                        </div>
-                    </div>
-                </div>
-                <div class="p-4 flex flex-col flex-grow">
-                    <h2 th:text="${product.name}" class="text-lg font-semibold mb-2 text-gray-800 hover:text-indigo-600 transition-colors duration-200 truncate">Tên sản phẩm</h2>
-                    <div class="flex items-center mb-2">
-                        <div class="flex text-yellow-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                        </div>
-                        <span class="text-gray-500 text-sm ml-2">(120)</span>
-                    </div>
-                    <p th:text="${product.description}" class="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">Mô tả sản phẩm</p>
-                    <div class="flex items-center justify-between mt-auto">
-                        <div>
-                            <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"
-                               class="text-lg font-bold text-indigo-600">Giá sản phẩm</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- No Recommendations Message -->
-        <div th:if="${#lists.isEmpty(recommendedProducts)}" class="text-center py-8 bg-white rounded-lg shadow-md">
-            <p class="text-gray-600">Chưa có sản phẩm gợi ý dành cho bạn.</p>
-            <p class="text-gray-600 mt-2">Tiếp tục mua sắm để nhận được gợi ý phù hợp hơn.</p>
-            <a href="/products" class="inline-block mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors duration-300">
-                Xem tất cả sản phẩm
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- New Arrivals Section -->
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12">Sản Phẩm Mới Nhất</h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div th:each="product, iterStat : ${newProducts}" th:if="${iterStat.index < 4}"
-                 class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                <div class="aspect-square bg-gray-200 overflow-hidden">
-                    <img th:src="@{'/' + ${product.image}}" alt="Hình ảnh sản phẩm"
-                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"/>
-                </div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div class="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 th:text="${product.name}" class="text-white font-bold text-lg mb-2 truncate">Tên sản phẩm</h3>
-                        <!--/*@thymesVar id="product" type=""*/-->
-                        <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'" class="text-white font-semibold">Giá sản phẩm</p>
-                        <a th:href="@{/products/{id}(id=${product.id})}" class="mt-3 inline-block bg-white text-gray-800 px-4 py-2 rounded-full font-medium hover:bg-gray-100 transition-colors duration-200">
-                            Xem ngay
-                        </a>
-                    </div>
-                </div>
-                <div class="absolute top-2 left-2">
-                    <span class="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-full">MỚI</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Promotion Banner -->
-<section class="py-12 bg-indigo-100">
-    <div class="container mx-auto px-4">
-        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl overflow-hidden shadow-xl">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 p-8 md:p-12">
-                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Giảm giá đến 50% cho khách hàng mới</h2>
-                    <p class="text-indigo-100 mb-8">Đăng ký thành viên ngay hôm nay để nhận ưu đãi đặc biệt và theo dõi các chương trình khuyến mãi hấp dẫn.</p>
-                    <form class="flex flex-col sm:flex-row gap-3">
-                        <input type="email" placeholder="Email của bạn" class="flex-grow px-4 py-3 rounded-lg focus:outline-none"/>
-                        <button type="submit" class="bg-white text-indigo-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors duration-300">
-                            Đăng ký ngay
-                        </button>
-                    </form>
-                </div>
-                <div class="md:w-1/2">
-                    <img src="/images/" class="w-full h-auto" alt="Khuyến mãi"/>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Brand Showcase -->
-<section class="py-12 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12">Thương Hiệu Nổi Bật</h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-            <div class="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                <img src="/images/brand1.png" alt="Brand 1" class="max-h-12 opacity-70 hover:opacity-100 transition-opacity duration-300"/>
-            </div>
-            <div class="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                <img src="/images/brand2.png" alt="Brand 2" class="max-h-12 opacity-70 hover:opacity-100 transition-opacity duration-300"/>
-            </div>
-            <div class="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                <img src="/images/brand3.png" alt="Brand 3" class="max-h-12 opacity-70 hover:opacity-100 transition-opacity duration-300"/>
-            </div>
-            <div class="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                <img src="/images/brand4.png" alt="Brand 4" class="max-h-12 opacity-70 hover:opacity-100 transition-opacity duration-300"/>
-            </div>
-            <div class="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                <img src="/images/brand5.png" alt="Brand 5" class="max-h-12 opacity-70 hover:opacity-100 transition-opacity duration-300"/>
-            </div>
-            <div class="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                <img src="/images/brand6.png" alt="Brand 6" class="max-h-12 opacity-70 hover:opacity-100 transition-opacity duration-300"/>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Benefits Section -->
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="flex flex-col items-center text-center p-6">
-                <div class="bg-indigo-100 p-4 rounded-full mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold mb-2">Giao Hàng Toàn Quốc</h3>
-                <p class="text-gray-600">Miễn phí giao hàng cho đơn hàng từ 500.000đ</p>
-            </div>
-            <div class="flex flex-col items-center text-center p-6">
-                <div class="bg-indigo-100 p-4 rounded-full mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold mb-2">Bảo Hành Chính Hãng</h3>
-                <p class="text-gray-600">Tất cả sản phẩm đều được bảo hành 12 tháng</p>
-            </div>
-            <div class="flex flex-col items-center text-center p-6">
-                <div class="bg-indigo-100 p-4 rounded-full mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold mb-2">Thanh Toán An Toàn</h3>
-                <p class="text-gray-600">Nhiều phương thức thanh toán an toàn và bảo mật</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<div th:replace="~{fragments/footer :: footer}"></div>
-<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
-
-<script>
-    // This will only execute if you're using this in a full HTML document
-    document.addEventListener('DOMContentLoaded', () => {
-        // Create particles dynamically (optional enhancement)
-        const particlesContainer = document.querySelector('.particles-container');
-        if (particlesContainer) {
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-
-                // Random styles
-                particle.style.width = Math.random() * 5 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.background = `rgba(${Math.floor(Math.random() * 100) + 100}, ${Math.floor(Math.random() * 100) + 100}, 255, ${Math.random() * 0.3})`;
-                particle.style.position = 'absolute';
-                particle.style.borderRadius = '50%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.left = Math.random() * 100 + '%';
-
-                // Random animation
-                particle.style.animation = `particle-move ${Math.random() * 10 + 5}s ease-in-out infinite`;
-                particle.style.animationDelay = `${Math.random() * 5}s`;
-
-                particlesContainer.appendChild(particle);
-            }
-        }
-    });
-</script>
 </body>
 </html>

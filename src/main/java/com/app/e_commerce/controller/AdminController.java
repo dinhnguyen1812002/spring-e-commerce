@@ -143,7 +143,7 @@ private DashboardServiceImpl dashboardService;
 
     @GetMapping("/traffic")
     public String traffic(Model model) {
-        List<Traffic> visits = trafficService.getAllVisits();
+        List<Traffic> visits = trafficService.getAllTraffic();
         model.addAttribute("visits", visits);
         return "admin/admin-traffic";
     }

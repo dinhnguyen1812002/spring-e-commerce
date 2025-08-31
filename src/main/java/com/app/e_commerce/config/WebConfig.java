@@ -27,6 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(visitTrackingInterceptor);
+
+//        registry.addInterceptor(visitTrackingInterceptor);
+        registry.addInterceptor(visitTrackingInterceptor)
+                .addPathPatterns("/");
     }
 }

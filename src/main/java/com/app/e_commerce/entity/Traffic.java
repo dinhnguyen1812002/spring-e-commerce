@@ -1,14 +1,15 @@
 package com.app.e_commerce.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
+
 @Entity
-@Table
+@Table(
+        name = "traffic",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"date"})} // đảm bảo 1 ngày chỉ có 1 record
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,8 +18,13 @@ public class Traffic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true)
     private LocalDate date;
-    private  Long count;
+
+    @Column(nullable = false)
+    private Long count = 0L;
+
     public Traffic(LocalDate date, Long visitCount) {
         this.date = date;
         this.count = visitCount;

@@ -41,6 +41,8 @@ public class Product {
 
     private Integer stock;
 
+//    private Double average_rating;
+
 //    @Version
 //    private Long version;
 

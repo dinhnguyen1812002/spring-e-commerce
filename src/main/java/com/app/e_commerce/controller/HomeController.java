@@ -51,7 +51,7 @@ public class HomeController {
         model.addAttribute("popularProducts", popularProducts);
         model.addAttribute("newProducts", newProducts);
 
-        return "Layout";
+        return "home";
     }
     @GetMapping("/user-list")
     public String getAllUser(Model model){

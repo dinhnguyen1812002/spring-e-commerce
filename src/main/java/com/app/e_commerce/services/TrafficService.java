@@ -5,6 +5,7 @@ import com.app.e_commerce.repository.TrafficRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,22 +18,22 @@ public class TrafficService {
     private TrafficRepo trafficRepo;
 
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;  // Inject messaging template
+    private SimpMessagingTemplate messagingTemplate;
 
+    @Transactional
     public void trackVisit() {
         LocalDate today = LocalDate.now();
-        Optional<Traffic> optionalVisit = trafficRepo.findByDate(today);
-        Traffic traffic;
 
-        if (optionalVisit.isPresent()) {
-            traffic = optionalVisit.get();
-            traffic.setCount(traffic.getCount() + 1);
-        } else {
-            traffic = new Traffic(today, 1L);
+        // update count, nếu có record
+        int updated = trafficRepo.incrementCount(today);
+
+        if (updated == 0) {
+            // chưa có record => insert mới
+            Traffic traffic = new Traffic(today, 1L);
+            trafficRepo.save(traffic);
         }
 
-        trafficRepo.save(traffic);
-
+        // gửi realtime update
         messagingTemplate.convertAndSend("/topic/trafficUpdates", getAllTraffic());
     }
 
@@ -43,9 +44,4 @@ public class TrafficService {
     public Optional<Traffic> getVisitByDay(LocalDate date) {
         return trafficRepo.findByDate(date);
     }
-
-    public List<Traffic> getAllVisits() {
-        return trafficRepo.findAll();
-    }
 }
-
