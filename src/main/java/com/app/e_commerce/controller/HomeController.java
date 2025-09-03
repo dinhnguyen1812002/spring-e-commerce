@@ -7,6 +7,7 @@ import com.app.e_commerce.services.CategoryService;
 import com.app.e_commerce.services.ProductService;
 import com.app.e_commerce.services.RecommendationService;
 import com.app.e_commerce.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,8 +32,9 @@ public class HomeController {
     private RecommendationService recommendationService;
 
     @GetMapping
-    public String home(Model model)
+    public String home(HttpServletRequest request, Model model)
     {
+        request.getSession(); // ép tạo session ngay từ đầu
         List<Product> listProduct = productService.getAllProducts();
         List<Category> categories = categoryService.getAllCategories();
 
