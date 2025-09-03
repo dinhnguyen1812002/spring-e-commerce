@@ -26,7 +26,9 @@ public class CategoryController {
         if (result.hasErrors()) {
             return "Category/category-form";
         }
+
         categoryService.saveCategory(category);
+
         return "redirect:/admin/categories";
     }
     @GetMapping("/edit/{id}")
@@ -39,11 +41,23 @@ public class CategoryController {
             return "redirect:/categories";
         }
     }
+    @PostMapping("/update/{id}")
+    public String updateCategory(@PathVariable("id") Long id,
+                                 @ModelAttribute("category") @Valid Category category,
+                                 BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "Category/category-form";
+        }
+        // Đảm bảo id được set đúng
+        category.setId(id);
+        categoryService.saveCategory(category); // service save có thể handle cả create/update
+        return "redirect:/admin/categories";
+    }
 
     @GetMapping("/delete/{id}")
     public String deleteCategory(@PathVariable("id") Long id) {
         categoryService.deleteCategory(id);
-        return "redirect:/categories";
+        return "redirect:/admin/categories";
     }
     @GetMapping
     public String listCategories(Model model) {

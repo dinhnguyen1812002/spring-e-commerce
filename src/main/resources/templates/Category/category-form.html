@@ -51,16 +51,36 @@
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="max-w-4xl mx-auto mt-10">
                         <h1 class="text-2xl font-bold mb-4">Create Category</h1>
-                        <form th:action="@{/categories/save}" th:object="${category}" method="post" class="w-full max-w-lg">
+                        <form th:action="@{${category.id} != null ? '/categories/update/' + ${category.id} : '/categories/save'}"
+                              th:object="${category}"
+                              method="post"
+                              class="w-full max-w-lg">
+
+                            <!-- Trường ẩn id để Thymeleaf bind khi update -->
+                            <input type="hidden" th:if="${category.id != null}" th:field="*{id}"/>
+
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Category Name</label>
-                                <input type="text" th:field="*{name}" id="name" placeholder="Enter category name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <input type="text" th:field="*{name}" id="name" placeholder="Enter category name"
+                                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500 text-xs italic"></p>
                             </div>
+
                             <div class="mb-4">
-                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Save</button>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="slug">Slug</label>
+                                <input type="text" th:field="*{slug}" id="slug" placeholder="Enter slug"
+                                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <p th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}" class="text-red-500 text-xs italic"></p>
+                            </div>
+
+                            <div class="mb-4">
+                                <button type="submit"
+                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    <span th:text="${category.id != null ? 'Update' : 'Save'}"></span>
+                                </button>
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>

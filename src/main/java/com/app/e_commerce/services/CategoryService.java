@@ -20,6 +20,7 @@ public class CategoryService {
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
+
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id).orElse(null);
     }
@@ -27,6 +28,7 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }
+
     public Category findByName(String name) {
         return categoryRepository.findByName(name);
     }

@@ -39,15 +39,17 @@
                 </form>
 
                 <!-- Filter + Add Button -->
-                <div class="flex items-center space-x-4">
-                    <!-- Filter dropdown -->
+                <form th:action="@{/products}" method="get" class="flex items-center space-x-4">
                     <div class="relative">
-                        <select class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-8 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option>All Categories</option>
-                            <option>Electronics</option>
-                            <option>Fashion</option>
-                            <option>Home & Living</option>
-                            <option>Sports</option>
+                        <select name="category"
+                                class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-8 text-sm
+                               text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">All Categories</option>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat.slug}"
+                                    th:text="${cat.name}"
+                                    th:selected="${cat.slug == selectedCategory}">
+                            </option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,17 +57,11 @@
                             </svg>
                         </div>
                     </div>
-
-                    <!-- Add button -->
-<!--                    <div sec:authorize="hasRole('ADMIN')">-->
-<!--                        <a href="/products/add" class="flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm">-->
-<!--                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
-<!--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>-->
-<!--                            </svg>-->
-<!--                            Add Product-->
-<!--                        </a>-->
-<!--                    </div>-->
-                </div>
+                    <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Filter
+                    </button>
+                </form>
             </div>
         </div>
 

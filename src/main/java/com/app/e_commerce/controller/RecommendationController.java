@@ -1,6 +1,8 @@
 package com.app.e_commerce.controller;
 
+import com.app.e_commerce.entity.Category;
 import com.app.e_commerce.entity.Product;
+import com.app.e_commerce.services.CategoryService;
 import com.app.e_commerce.services.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,8 @@ public class RecommendationController {
     @Autowired
     private RecommendationService recommendationService;
 
+    @Autowired
+    private CategoryService categoryService;
     /**
      * Get recommended products for the current user.
      * 
@@ -30,10 +34,16 @@ public class RecommendationController {
      * @return The recommendations view
      */
     @GetMapping
-    public String getRecommendations(Model model, @RequestParam(defaultValue = "4") int limit) {
-        List<Product> recommendedProducts = recommendationService.getRecommendedProducts(limit);
-        model.addAttribute("recommendedProducts", recommendedProducts);
-        return "product/recommendations";
+    public String getRecommendations(Model model,
+                                     @RequestParam(defaultValue = "4") int limit,
+                                     @RequestParam(required = false) String category
+                                     ) {
+        List<Product> recommendedProducts = recommendationService.getRecommendedProducts(limit, category);
+        List<Category > categories =  categoryService.getAllCategories();
+        model.addAttribute("categories", categories);
+        model.addAttribute("products", recommendedProducts);
+        model.addAttribute("selectedCategory", category); // để giữ trạng thái filter
+        return "product/products"; // Thymeleaf view name
     }
 
     /**
@@ -44,8 +54,11 @@ public class RecommendationController {
      */
     @GetMapping("/api")
     @ResponseBody
-    public List<Product> getRecommendationsApi(@RequestParam(defaultValue = "4") int limit) {
-        return recommendationService.getRecommendedProducts(limit);
+    public List<Product> getRecommendationsApi(@RequestParam(defaultValue = "4") int limit,
+                                               @RequestParam(required = false) String category
+
+                                               ) {
+        return recommendationService.getRecommendedProducts(limit, category);
     }
 
     /**
@@ -56,9 +69,15 @@ public class RecommendationController {
      * @return The popular products view
      */
     @GetMapping("/popular")
-    public String getPopularProducts(Model model, @RequestParam(defaultValue = "4") int limit) {
-        List<Product> popularProducts = recommendationService.getPopularProducts(limit);
-        model.addAttribute("popularProducts", popularProducts);
-        return "product/popular";
+    public String getPopularProducts(Model model,
+                                     @RequestParam(defaultValue = "4") int limit,
+                                     @RequestParam(required = false) String category) {
+        List<Product> popularProducts = recommendationService.getPopularProducts(limit, category);
+        List<Category> categories = categoryService.getAllCategories();
+
+        model.addAttribute("categories", categories);
+        model.addAttribute("products", popularProducts);
+        model.addAttribute("selectedCategory", category);
+        return "product/products";
     }
 }

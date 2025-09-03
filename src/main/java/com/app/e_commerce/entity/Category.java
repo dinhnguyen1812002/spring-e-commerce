@@ -18,6 +18,8 @@ public class Category {
 
     private String name;
 
+    private String slug;
+
     // Thiết lập mối quan hệ nhiều-nhiều với Product
     @ManyToMany(mappedBy = "categories", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Product> products = new HashSet<>();
@@ -45,6 +47,14 @@ public class Category {
 
     public void setProducts(Set<Product> products) {
         this.products = products;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public Category() {

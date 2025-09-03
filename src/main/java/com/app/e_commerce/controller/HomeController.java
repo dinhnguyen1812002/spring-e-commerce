@@ -39,10 +39,10 @@ public class HomeController {
         List<Category> categories = categoryService.getAllCategories();
 
         // Get recommended products (limit to 4)
-        List<Product> recommendedProducts = recommendationService.getRecommendedProducts(4);
+        List<Product> recommendedProducts = recommendationService.getRecommendedProducts(4, null);
 
         // Get popular products (limit to 4)
-        List<Product> popularProducts = recommendationService.getPopularProducts(4);
+        List<Product> popularProducts = recommendationService.getPopularProducts(4, null);
 
         // Get latest products
         List<Product> newProducts = productService.getLatestProducts();

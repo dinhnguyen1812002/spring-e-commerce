@@ -42,12 +42,15 @@
                 <div class="flex items-center space-x-4">
                     <!-- Filter dropdown -->
                     <div class="relative">
-                        <select class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-8 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option>All Categories</option>
-                            <option>Electronics</option>
-                            <option>Fashion</option>
-                            <option>Home & Living</option>
-                            <option>Sports</option>
+                        <select name="category"
+                                class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-8 text-sm
+                               text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">All Categories</option>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat.slug}"
+                                    th:text="${cat.name}"
+                                    th:selected="${cat.slug == selectedCategory}">
+                            </option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -68,23 +68,40 @@ public class ProductController {
     @GetMapping
     public String listProducts(Model model,
                                @RequestParam(value = "page", defaultValue = "0") int page,
-                               @RequestParam(value = "size", defaultValue = "5") int size) {
-        Page<Product> productPage = productService.listProduct(page, size);
+                               @RequestParam(value = "size", defaultValue = "5") int size,
+                               @RequestParam(value = "category", required = false) String categorySlug) {
+
+        Page<Product> productPage;
+
+        if (categorySlug != null && !categorySlug.isEmpty()) {
+            // Lọc theo category (slug)
+            productPage = productService.listProductsByCategorySlug(categorySlug, page, size);
+            model.addAttribute("selectedCategory", categorySlug);
+        } else {
+            // Hiển thị tất cả
+            productPage = productService.listProduct(page, size);
+            model.addAttribute("selectedCategory", "");
+        }
+
+        List<Category> categories = categoryService.getAllCategories();
 
         model.addAttribute("products", productPage.getContent());
+        model.addAttribute("categories", categories);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("totalItems", productPage.getTotalElements());
         model.addAttribute("size", size);
+
         return "product/products"; // Thymeleaf view name
     }
 
     @GetMapping("/search")
     public String searchProducts(@RequestParam("keyword") String keyword, Model model) {
         List<Product> searchResults = productService.searchProducts(keyword.trim().toLowerCase());
+        List<Category> categories  = categoryService.getAllCategories();
         model.addAttribute("products", searchResults);
         model.addAttribute("keyword", keyword);
-
+        model.addAttribute("categories", categories);
         model.addAttribute("currentPage", 0);
         model.addAttribute("totalPages", 1);
         model.addAttribute("totalItems", searchResults.size());

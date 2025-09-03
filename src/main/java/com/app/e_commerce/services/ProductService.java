@@ -52,6 +52,10 @@ public class ProductService {
         Pageable pageable= PageRequest.of(page, size, Sort.by("id").descending());
         return productRepository.findAll(pageable);
     }
+    public Page<Product> listProductsByCategorySlug(String slug, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return productRepository.findByCategories_Slug(slug, pageable);
+    }
 //    public List<Product> getAllProductsWithCategories() {
 //        return productRepository.findAllWithCategories();
 //    }

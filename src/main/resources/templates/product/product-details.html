@@ -1,411 +1,311 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{Layout :: layout(~{::main})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết sản phẩm</title>
-    <th:block th:replace="~{Layout :: link-css}"></th:block>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <title>Product Details</title>
 </head>
-<body class="text-gray-800 flex flex-col min-h-screen bg-gray-50">
-<div th:replace="~{fragments/header :: header}"></div>
+<body>
+<main class="min-h-screen bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-<div class="container mx-auto px-4 py-8 max-w-7xl">
-    <nav class="mb-6">
-        <a href="/products"
-           class="inline-flex items-center text-blue-600 hover:text-blue-800 transition duration-300 font-medium">
-            <i class="fas fa-chevron-left mr-2"></i>
-            Quay lại danh sách sản phẩm
-        </a>
-    </nav>
+        <!-- Breadcrumb Navigation -->
+        <nav class="mb-8">
+            <ol class="flex items-center space-x-2 text-sm">
+                <li>
+                    <a href="/" class="text-gray-500 hover:text-blue-600 transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                        </svg>
+                    </a>
+                </li>
+                <li class="text-gray-300">/</li>
+                <li>
+                    <a href="/products" class="text-gray-500 hover:text-blue-600 transition-colors">Products</a>
+                </li>
+                <li class="text-gray-300">/</li>
+                <li>
+                    <span th:each="category, iterStat : ${product.categories}"
+                          th:text="${category.name + (iterStat.last ? '' : ', ')}"
+                          class="text-gray-500 hover:text-blue-600 transition-colors cursor-pointer">
+                    </span>
+                </li>
+                <li class="text-gray-300">/</li>
+                <li class="text-gray-900 font-medium" th:text="${product.name}">Product Name</li>
+            </ol>
+        </nav>
 
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="md:flex">
-            <!-- Hình ảnh sản phẩm -->
-            <div class="md:w-1/2 p-6">
-                <div class="relative mb-4">
-                    <img th:src="@{'/' + ${product.image}}" alt="Hình ảnh sản phẩm"
-                         class="object-contain w-full h-96 rounded-lg shadow-sm" id="mainImage">
+        <!-- Main Product Section -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-x-8">
+
+                <!-- Product Images -->
+                <div class="lg:aspect-w-3 lg:aspect-h-4">
+                    <div class="relative p-8">
+                        <!-- Main Image -->
+                        <div class="aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg overflow-hidden mb-6">
+                            <img th:src="@{'/' + ${product.image}}"
+                                 th:alt="${product.name}"
+                                 id="mainImage"
+                                 class="w-full h-96 object-contain object-center group-hover:opacity-75 transition-opacity">
+                        </div>
+
+                        <!-- Thumbnail Gallery (placeholder for additional images) -->
+<!--                        <div class="grid grid-cols-4 gap-4">-->
+<!--                            <div th:each="i : ${#numbers.sequence(1, 4)}"-->
+<!--                                 class="aspect-w-1 aspect-h-1 bg-gray-100 rounded-md overflow-hidden cursor-pointer hover:opacity-75 transition-opacity">-->
+<!--                                <img th:src="@{'/' + ${product.image}}"-->
+<!--                                     th:alt="${product.name}"-->
+<!--                                     class="w-full h-full object-cover object-center"-->
+<!--                                     onclick="changeMainImage(this.src)">-->
+<!--                            </div>-->
+<!--                        </div>-->
+                    </div>
                 </div>
 
-                <!-- Thêm phần gallery hình ảnh nhỏ (nếu có nhiều hình) -->
-                <!--                <div class="grid grid-cols-5 gap-2 mt-4">-->
-                <!--                    <div class="aspect-square cursor-pointer border-2 border-transparent hover:border-blue-500 rounded-md overflow-hidden">-->
-                <!--                        <img th:src="@{'/' + ${product.image}}" alt="Thumbnail" class="object-cover w-full h-full" onclick="changeMainImage(this.src)">-->
-                <!--                    </div>-->
-                <!--                    &lt;!&ndash; Có thể thêm các thumbnail khác nếu sản phẩm có nhiều hình &ndash;&gt;-->
-                <!--                </div>-->
-            </div>
+                <!-- Product Information -->
+                <div class="p-8 lg:p-12">
+                    <!-- Product Category Tags -->
+                    <div class="mb-4">
+                        <span th:each="category : ${product.categories}"
+                              th:text="${category.name}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
+                        </span>
+                    </div>
 
-            <!-- Chi tiết sản phẩm -->
-            <div class="md:w-1/2 p-6">
-                <h1 class="text-3xl font-bold mb-3" th:text="${product.name}">Tên sản phẩm</h1>
+                    <!-- Product Title -->
+                    <h1 class="text-3xl font-bold text-gray-900 mb-4" th:text="${product.name}">
+                        Product Name
+                    </h1>
 
-                <div class="flex items-center mb-3">
-                    <div class="flex text-yellow-400 mr-2">
-
-                        <!--                        <i class="fas fa-star"></i>-->
-                        <!--                        <i class="fas fa-star"></i>-->
-                        <!--                        <i class="fas fa-star"></i>-->
-                        <!--                        <span th:each="i : ${#numbers.sequence(1, 5)}" ></span>-->
-                        <div class="flex text-yellow-400 mr-2">
-                            <!-- Ngôi sao đầy -->
-                            <span th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(averageRating))}">
-                                <i class="fas fa-star"></i>
-                            </span>
-                            <!-- Nửa sao nếu cần -->
-                            <span th:if="${averageRating - T(java.lang.Math).floor(averageRating) >= 0.5}">
-                                    <i class="fas fa-star-half-alt"></i>
+                    <!-- Rating and Reviews -->
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 mr-2">
+                                <span th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(averageRating ?: 4.5))}">
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
                                 </span>
-                            <!-- Ngôi sao trống -->
-                            <span th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(averageRating))}">
-                                <i class="far fa-star"></i>
+                                <span th:if="${(averageRating ?: 4.5) - T(java.lang.Math).floor(averageRating ?: 4.5) >= 0.5}">
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                                        <defs>
+                                            <linearGradient id="half-fill">
+                                                <stop offset="50%" stop-color="currentColor"/>
+                                                <stop offset="50%" stop-color="#D1D5DB"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path fill="url(#half-fill)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                </span>
+                                <span th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(averageRating ?: 4.5))}">
+                                    <svg class="w-5 h-5 fill-current text-gray-300" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="text-lg font-medium text-gray-700 mr-2" th:text="${#numbers.formatDecimal(averageRating ?: 4.5, 1, 1)}">4.5</span>
+                            <span class="text-gray-500" th:text="'(' + (ratingCount ?: 128) + ' reviews)'">
+                                (128 reviews)
                             </span>
                         </div>
-                        <!--                        <i class="fas fa-star"></i>-->
-                        <!--                        <i class="fas fa-star-half-alt"></i>-->
                     </div>
-                    <span class="text-gray-600 text-sm" th:text="${ratingCount} + ' đánh giá'"></span>
-                </div>
 
-                <div class="flex items-center mb-6">
-                    <p class="text-2xl font-bold text-blue-600"
-                       th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</p>
-                    <span class="ml-2 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Còn hàng</span>
-                </div>
-
-                <form id="addToCartForm" th:action="@{/cart/add}" method="post" class="mb-6">
-                    <input type="hidden" name="productId" th:value="${product.id}">
-
-                    <div class="mb-6">
-                        <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Số lượng</label>
-                        <div class="flex items-center border border-gray-300 rounded-lg w-36 overflow-hidden">
-                            <button type="button"
-                                    class="flex-none px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                    onclick="decrementQuantity()">-
-                            </button>
-                            <input type="number" id="quantity" name="quantity"
-                                   class="flex-1 text-center border-none focus:outline-none focus:ring-0" value="1"
-                                   min="1">
-                            <button type="button"
-                                    class="flex-none px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                    onclick="incrementQuantity()">+
-                            </button>
+                    <!-- Price Section -->
+                    <div class="mb-8">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="text-3xl font-bold text-gray-900"
+                                  th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                                1.299.000 ₫
+                            </span>
+                            <span class="text-lg text-gray-500 line-through">
+                                1.599.000 ₫
+                            </span>
+                            <span class="bg-red-100 text-red-800 text-sm font-semibold px-2.5 py-0.5 rounded">
+                                -20%
+                            </span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                            <span class="text-green-600 font-medium">In Stock</span>
+                            <span class="text-gray-500 ml-4">Free shipping on orders over 500.000₫</span>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <button type="submit"
-                                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            <i class="fas fa-shopping-cart mr-2"></i>
-                            Thêm vào giỏ hàng
-                        </button>
-                        <button type="button"
-                                class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                onclick="buyNow()">
-                            <i class="fas fa-bolt mr-2"></i>
-                            Mua ngay
-                        </button>
+                    <!-- Product Description -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Description</h3>
+                        <p class="text-gray-600 leading-relaxed" th:text="${product.description}">
+                            High-quality product with premium features designed for modern users.
+                            Crafted with attention to detail and built to last.
+                        </p>
                     </div>
-                </form>
 
-                <div class="border-t border-gray-200 pt-6">
-                    <h2 class="text-xl font-semibold mb-4">Thông tin sản phẩm</h2>
-                    <div class="space-y-4">
+                    <!-- Quantity and Add to Cart -->
+                    <form th:action="@{/cart/add}" method="post" id="addToCartForm" class="space-y-6">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+
+                        <!-- Quantity Selector -->
                         <div>
-                            <h3 class="font-medium text-gray-800 mb-2">Mô tả</h3>
-                            <p class="text-gray-600" th:text="${product.description}">Mô tả sản phẩm ở đây...</p>
+                            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">
+                                Quantity
+                            </label>
+                            <div class="flex items-center space-x-3">
+                                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                    <button type="button"
+                                            class="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                            onclick="decrementQuantity()">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                        </svg>
+                                    </button>
+                                    <input type="number"
+                                           id="quantity"
+                                           name="quantity"
+                                           value="1"
+                                           min="1"
+                                           class="w-16 text-center border-none focus:outline-none focus:ring-0 py-2">
+                                    <button type="button"
+                                            class="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                            onclick="incrementQuantity()">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <!--                        <div>-->
-                        <!--                            <h3 class="font-medium text-gray-800 mb-2">Đặc điểm nổi bật</h3>-->
-                        <!--                            <ul class="list-disc list-inside text-gray-600 space-y-1">-->
-                        <!--                                <li>Tính năng 1</li>-->
-                        <!--                                <li>Tính năng 2</li>-->
-                        <!--                                <li>Tính năng 3</li>-->
-                        <!--                            </ul>-->
-                        <!--                        </div>-->
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button type="submit"
+                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center group">
+                                <svg class="w-5 h-5 mr-2 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v5a2 2 0 11-4 0v-5m4 0V8a2 2 0 10-4 0v5"/>
+                                </svg>
+                                Add to Cart
+                            </button>
+                            <button type="button"
+                                    onclick="buyNow()"
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                Buy Now
+                            </button>
+                        </div>
+
+                        <!-- Wishlist and Share -->
+                        <div class="flex items-center justify-center space-x-6 pt-4 border-t border-gray-200">
+                            <button type="button" class="flex items-center text-gray-600 hover:text-red-500 transition-colors">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                                Add to Wishlist
+                            </button>
+                            <button type="button" class="flex items-center text-gray-600 hover:text-blue-500 transition-colors">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+                                </svg>
+                                Share
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Features -->
+        <div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Free Shipping</h3>
+                        <p class="text-gray-600">On orders over 500.000₫</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Easy Returns</h3>
+                        <p class="text-gray-600">30-day return policy</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Warranty</h3>
+                        <p class="text-gray-600">1-year manufacturer warranty</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Reviews Section -->
+        <div th:replace="~{Rate/product-ratings :: ratings-section(product=${product})}"></div>
     </div>
 
-    <!-- Đánh giá sản phẩm -->
-    <!--    <div class="mt-12">-->
-    <!--        <h2 class="text-2xl font-bold mb-6">Đánh giá sản phẩm</h2>-->
-
-    <!--        <div class="bg-white rounded-xl shadow-md p-6">-->
-    <!--            &lt;!&ndash; Existing Ratings &ndash;&gt;-->
-    <!--            <div th:if="${#lists.isEmpty(rates)}" class="text-center py-6 text-gray-500">-->
-    <!--                <i class="fas fa-comment-slash text-4xl mb-3"></i>-->
-    <!--                <p>Chưa có đánh giá nào cho sản phẩm này</p>-->
-    <!--            </div>-->
-
-    <!--            <div th:unless="${#lists.isEmpty(rates)}" class="space-y-6">-->
-    <!--                <div th:each="rate : ${rates}" class="border-b border-gray-100 pb-4 last:border-b-0">-->
-    <!--                    <div class="flex items-start">-->
-    <!--                        <img th:src="@{'data:image/jpeg;base64,' + ${rate.user.avatar}}" alt="User Avatar" class="w-10 h-10 rounded-full mr-4 object-cover">-->
-    <!--                        <div class="flex-1">-->
-    <!--                            <div class="flex items-center">-->
-    <!--                                <span class="font-semibold mr-2" th:text="${rate.user.username}">Username</span>-->
-    <!--                                <div class="flex text-yellow-400">-->
-    <!--                                    <i class="fas fa-star text-xs" th:each="i : ${#numbers.sequence(1, rate.star)}"></i>-->
-    <!--                                </div>-->
-    <!--                            </div>-->
-    <!--                            <p class="text-gray-700 my-2" th:text="${rate.comment}">User's comment here</p>-->
-    <!--                            <small th:text="${#temporals.format(rate.createdAt, 'dd-MM-yyyy HH:mm')}" class="text-gray-400 text-xs">Date</small>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </div>-->
-
-    <!--            &lt;!&ndash; Add New Rating - Show only if user is authenticated &ndash;&gt;-->
-    <!--            <div sec:authorize="isAuthenticated()" class="mt-8 border-t border-gray-100 pt-6">-->
-    <!--                <h3 class="font-semibold text-lg mb-4">Đánh giá của bạn</h3>-->
-    <!--                <form th:action="@{/ratings/add}" method="post">-->
-    <!--                    <input type="hidden" name="productId" th:value="${product.id}">-->
-
-    <!--                    <div class="flex items-center mb-4">-->
-    <!--                        <label for="star" class="block text-sm font-medium text-gray-700 mr-4">Đánh giá của bạn:</label>-->
-    <!--                        <div class="flex items-center">-->
-    <!--                            <div class="star-rating flex space-x-1">-->
-    <!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="1">-->
-    <!--                                    <i class="fas fa-star"></i>-->
-    <!--                                </button>-->
-    <!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="2">-->
-    <!--                                    <i class="fas fa-star"></i>-->
-    <!--                                </button>-->
-    <!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="3">-->
-    <!--                                    <i class="fas fa-star"></i>-->
-    <!--                                </button>-->
-    <!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="4">-->
-    <!--                                    <i class="fas fa-star"></i>-->
-    <!--                                </button>-->
-    <!--                                <button type="button" class="text-gray-300 hover:text-yellow-400 focus:outline-none star-btn" data-rating="5">-->
-    <!--                                    <i class="fas fa-star"></i>-->
-    <!--                                </button>-->
-    <!--                            </div>-->
-    <!--                            <input type="hidden" id="star" name="star" value="5">-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-
-    <!--                    <div class="mb-4">-->
-    <!--                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Nhận xét của bạn</label>-->
-    <!--                        <textarea id="comment" name="comment" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..." class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>-->
-    <!--                    </div>-->
-
-    <!--                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">-->
-    <!--                        Gửi đánh giá-->
-    <!--                    </button>-->
-    <!--                </form>-->
-    <!--            </div>-->
-
-    <!--            <div sec:authorize="!isAuthenticated()" class="mt-6 text-center py-4 bg-gray-50 rounded-lg">-->
-    <!--                <p>Vui lòng <a href="/login" class="text-blue-600 hover:underline">đăng nhập</a> để đánh giá sản phẩm</p>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </div>-->
-    <!--    <div th:replace="~{ratings/product-ratings :: rating}"></div>-->
-    <div th:replace="~{Rate/product-ratings :: ratings-section(product=${product})}"></div>
-</div>
-
-<div th:replace="~{fragments/footer :: footer}"></div>
-<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
-
-<script>
-    function changeMainImage(src) {
-        document.getElementById('mainImage').src = src;
-    }
-
-    function incrementQuantity() {
-        const quantityInput = document.getElementById('quantity');
-        quantityInput.value = parseInt(quantityInput.value) + 1;
-    }
-
-    function decrementQuantity() {
-        const quantityInput = document.getElementById('quantity');
-        if (parseInt(quantityInput.value) > 1) {
-            quantityInput.value = parseInt(quantityInput.value) - 1;
+    <script>
+        function changeMainImage(src) {
+            document.getElementById('mainImage').src = src;
         }
-    }
 
-    function buyNow() {
-        const form = document.getElementById('addToCartForm');
-        // Thêm input hidden cho việc mua ngay
-        const buyNowInput = document.createElement('input');
-        buyNowInput.type = 'hidden';
-        buyNowInput.name = 'buyNow';
-        buyNowInput.value = 'true';
-        form.appendChild(buyNowInput);
-        form.submit();
-    }
-
-    // Star rating functionality
-    document.addEventListener('DOMContentLoaded', function () {
-        const starButtons = document.querySelectorAll('.star-btn');
-        const starInput = document.getElementById('star');
-
-        starButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const rating = parseInt(this.getAttribute('data-rating'));
-                starInput.value = rating;
-
-                // Reset all stars
-                starButtons.forEach(button => {
-                    button.classList.remove('text-yellow-400');
-                    button.classList.add('text-gray-300');
-                });
-
-                // Fill stars up to selected rating
-                for (let i = 0; i < rating; i++) {
-                    starButtons[i].classList.remove('text-gray-300');
-                    starButtons[i].classList.add('text-yellow-400');
-                }
-            });
-        });
-
-        // Set default 5 stars
-        for (let i = 0; i < 5; i++) {
-            starButtons[i].classList.remove('text-gray-300');
-            starButtons[i].classList.add('text-yellow-400');
+        function incrementQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            quantityInput.value = parseInt(quantityInput.value) + 1;
         }
-        // Star hover effect
-        starButtons.forEach((btn, index) => {
-            btn.addEventListener('mouseenter', function () {
-                // Reset all stars
-                starButtons.forEach(button => {
-                    button.classList.remove('text-yellow-400');
-                    button.classList.add('text-gray-300');
-                });
 
-                // Fill stars up to current hover position
-                for (let i = 0; i <= index; i++) {
-                    starButtons[i].classList.remove('text-gray-300');
-                    starButtons[i].classList.add('text-yellow-400');
-                }
-            });
-        });
-
-        // Restore selected rating when mouse leaves the rating container
-        const starRating = document.querySelector('.star-rating');
-        starRating.addEventListener('mouseleave', function () {
-            const rating = parseInt(starInput.value);
-
-            // Reset all stars
-            starButtons.forEach(button => {
-                button.classList.remove('text-yellow-400');
-                button.classList.add('text-gray-300');
-            });
-
-            // Fill stars up to saved rating
-            for (let i = 0; i < rating; i++) {
-                starButtons[i].classList.remove('text-gray-300');
-                starButtons[i].classList.add('text-yellow-400');
+        function decrementQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            if (parseInt(quantityInput.value) > 1) {
+                quantityInput.value = parseInt(quantityInput.value) - 1;
             }
+        }
+
+        function buyNow() {
+            const form = document.getElementById('addToCartForm');
+            const buyNowInput = document.createElement('input');
+            buyNowInput.type = 'hidden';
+            buyNowInput.name = 'buyNow';
+            buyNowInput.value = 'true';
+            form.appendChild(buyNowInput);
+            form.submit();
+        }
+
+        // Image zoom functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainImage = document.getElementById('mainImage');
+
+            mainImage.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const xPercent = (x / rect.width) * 100;
+                const yPercent = (y / rect.height) * 100;
+
+                this.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+                this.style.transform = 'scale(1.5)';
+            });
+
+            mainImage.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
         });
-    });
-</script>
-
-<!--&lt;!&ndash; Thêm phần sản phẩm liên quan &ndash;&gt;-->
-<!--<div class="mt-12 mb-16">-->
-<!--    <h2 class="text-2xl font-bold mb-6">Sản phẩm tương tự</h2>-->
-
-<!--    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">-->
-<!--        &lt;!&ndash; Sản phẩm liên quan (có thể sử dụng vòng lặp Thymeleaf nếu có dữ liệu) &ndash;&gt;-->
-<!--        <div th:each="relatedProduct : ${relatedProducts}" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300">-->
-<!--            <a th:href="@{'/products/' + ${relatedProduct.id}}">-->
-<!--                <div class="aspect-square overflow-hidden">-->
-<!--                    <img th:src="@{'/' + ${relatedProduct.image}}" class="object-cover w-full h-full hover:scale-105 transition duration-300" th:alt="${relatedProduct.name}">-->
-<!--                </div>-->
-<!--                <div class="p-4">-->
-<!--                    <h3 class="font-medium text-gray-800 mb-2 line-clamp-2" th:text="${relatedProduct.name}">Tên sản phẩm liên quan</h3>-->
-<!--                    <p class="text-blue-600 font-bold" th:text="${#numbers.formatDecimal(relatedProduct.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</p>-->
-<!--                </div>-->
-<!--            </a>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Placeholder nếu không có dữ liệu sản phẩm liên quan &ndash;&gt;-->
-<!--        <div th:if="${#lists.isEmpty(relatedProducts)}" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300">-->
-<!--            <div class="aspect-square overflow-hidden bg-gray-100 flex items-center justify-center">-->
-<!--                <i class="fas fa-image text-4xl text-gray-300"></i>-->
-<!--            </div>-->
-<!--            <div class="p-4">-->
-<!--                <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>-->
-<!--                <div class="h-4 bg-gray-200 rounded w-1/2"></div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; Thêm tiện ích và thông tin bổ sung &ndash;&gt;-->
-<!--<div class="bg-white rounded-xl shadow-md p-6 mb-12">-->
-<!--    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">-->
-<!--        <div class="flex items-center">-->
-<!--            <div class="bg-blue-100 p-3 rounded-full mr-4">-->
-<!--                <i class="fas fa-truck text-blue-600"></i>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <h3 class="font-medium text-gray-800">Vận chuyển miễn phí</h3>-->
-<!--                <p class="text-sm text-gray-600">Cho đơn hàng từ 500.000đ</p>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="flex items-center">-->
-<!--            <div class="bg-green-100 p-3 rounded-full mr-4">-->
-<!--                <i class="fas fa-exchange-alt text-green-600"></i>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <h3 class="font-medium text-gray-800">Đổi trả dễ dàng</h3>-->
-<!--                <p class="text-sm text-gray-600">Trong vòng 7 ngày</p>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="flex items-center">-->
-<!--            <div class="bg-purple-100 p-3 rounded-full mr-4">-->
-<!--                <i class="fas fa-shield-alt text-purple-600"></i>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <h3 class="font-medium text-gray-800">Bảo hành chính hãng</h3>-->
-<!--                <p class="text-sm text-gray-600">12 tháng trên toàn quốc</p>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; Thêm phần thông số kỹ thuật chi tiết &ndash;&gt;-->
-<!--<div class="bg-white rounded-xl shadow-md p-6 mb-12">-->
-<!--    <h2 class="text-xl font-semibold mb-4">Thông số kỹ thuật</h2>-->
-
-<!--    <div class="overflow-hidden">-->
-<!--        <table class="min-w-full">-->
-<!--            <tbody>-->
-<!--            <tr class="bg-gray-50">-->
-<!--                <td class="py-3 px-4 font-medium">Thương hiệu</td>-->
-<!--                <td class="py-3 px-4" th:text="${product.brand != null ? product.brand : 'N/A'}">Tên thương hiệu</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <td class="py-3 px-4 font-medium">Xuất xứ</td>-->
-<!--                <td class="py-3 px-4" th:text="${product.origin != null ? product.origin : 'N/A'}">Quốc gia</td>-->
-<!--            </tr>-->
-<!--            <tr class="bg-gray-50">-->
-<!--                <td class="py-3 px-4 font-medium">Bảo hành</td>-->
-<!--                <td class="py-3 px-4" th:text="${product.warranty != null ? product.warranty : '12 tháng'}">12 tháng</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <td class="py-3 px-4 font-medium">Kích thước</td>-->
-<!--                <td class="py-3 px-4" th:text="${product.dimensions != null ? product.dimensions : 'N/A'}">Kích thước sản phẩm</td>-->
-<!--            </tr>-->
-<!--            <tr class="bg-gray-50">-->
-<!--                <td class="py-3 px-4 font-medium">Trọng lượng</td>-->
-<!--                <td class="py-3 px-4" th:text="${product.weight != null ? product.weight : 'N/A'}">Trọng lượng sản phẩm</td>-->
-<!--            </tr>-->
-<!--            &lt;!&ndash; Có thể thêm nhiều thông số kỹ thuật khác tùy theo loại sản phẩm &ndash;&gt;-->
-<!--            </tbody>-->
-<!--        </table>-->
-<!--    </div>-->
-<!--</div>-->
-
+    </script>
+</main>
 </body>
 </html>

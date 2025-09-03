@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/static/**")
                         .permitAll()
-
+                        .requestMatchers("/products/{id}").permitAll()
                         .requestMatchers("/products/**").authenticated()
 
                         .requestMatchers(HttpMethod.POST, "/products/create").authenticated()
@@ -56,6 +56,9 @@ public class SecurityConfig {
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/orders/**").authenticated()
                         .requestMatchers("/ratings/add").authenticated()
+
+                        .requestMatchers("/recommendations/popular").permitAll()
+                        .requestMatchers("/recommendations").authenticated()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
 
 

@@ -2,6 +2,8 @@ package com.app.e_commerce.repository;
 
 import com.app.e_commerce.entity.Product;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +20,8 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     List<Product> searchProductsByKeyword(@Param("keyword") String keyword);
     @Query("SELECT p FROM Product p ORDER BY p.createdAt DESC")
     List<Product> findOrderByCreatedAtDesc();// top 10 newest product
+
+    Page<Product> findByCategories_Slug(String slug, Pageable pageable);
 
 }
 

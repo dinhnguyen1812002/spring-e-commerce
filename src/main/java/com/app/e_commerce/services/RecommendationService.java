@@ -35,40 +35,57 @@ public class RecommendationService {
 
     @Autowired
     private ApplicationContext context;
+
     /**
-     * Get recommended products for the current user.
-     * If the user is not logged in, returns popular products.
+     * Get recommended products for the current user, with optional category filter.
      *
      * @param limit Maximum number of recommendations to return
+     * @param categorySlug Optional category slug to filter by (nullable)
      * @return List of recommended products
      */
-    public List<Product> getRecommendedProducts(int limit) {
+    public List<Product> getRecommendedProducts(int limit, String categorySlug) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             // For anonymous users, return popular products
-            return getPopularProducts(limit);
+            return getPopularProducts(limit, categorySlug);
         }
 
         // Get recommendations for the current user
-        List<ProductRecommendation> recommendations = 
-            recommendationRepository.findByUserOrderByScoreDescLimit(currentUser, PageRequest.of(0, limit));
+        List<ProductRecommendation> recommendations =
+                recommendationRepository.findByUserOrderByScoreDescLimit(
+                        currentUser, PageRequest.of(0, limit * 3) // lấy nhiều hơn để lọc
+                );
 
         // If no recommendations exist, generate them
         if (recommendations.isEmpty()) {
             context.getBean(RecommendationService.class).generateRecommendations(currentUser);
-
+            recommendations = recommendationRepository.findByUserOrderByScoreDescLimit(
+                    currentUser, PageRequest.of(0, limit * 3)
+            );
         }
 
         // If still no recommendations, return popular products
         if (recommendations.isEmpty()) {
-            return getPopularProducts(limit);
+            return getPopularProducts(limit, categorySlug);
         }
 
-        // Extract products from recommendations
-        return recommendations.stream()
+        // Extract products and filter by category
+        List<Product> products = recommendations.stream()
                 .map(ProductRecommendation::getProduct)
+                .filter(product -> categorySlug == null ||
+                        product.getCategories().stream()
+                                .anyMatch(cat -> categorySlug.equals(cat.getSlug())))
+                .limit(limit)
                 .collect(Collectors.toList());
+
+        // Nếu sau khi lọc rỗng -> fallback sang popular
+        if (products.isEmpty()) {
+            return getPopularProducts(limit, categorySlug);
+        }
+
+        return products;
     }
+
 
     /**
      * Get the currently authenticated user.
@@ -93,32 +110,27 @@ public class RecommendationService {
         }
     }
 
-    /**
-     * Get popular products based on order history.
-     *
-     * @param limit Maximum number of products to return
-     * @return List of popular products
-     */
-    public List<Product> getPopularProducts(int limit) {
-        // Get all order items
+    public List<Product> getPopularProducts(int limit, String categorySlug) {
         List<OrderItem> allOrderItems = orderRepository.findAll().stream()
                 .flatMap(order -> order.getOrderItems().stream())
                 .toList();
 
-        // Count product occurrences
         Map<Product, Integer> productCounts = new HashMap<>();
         for (OrderItem item : allOrderItems) {
-            productCounts.put(item.getProduct(), 
+            productCounts.put(item.getProduct(),
                     productCounts.getOrDefault(item.getProduct(), 0) + item.getQuantity());
         }
 
-        // Sort products by count (descending)
         return productCounts.entrySet().stream()
-                .sorted(Map.Entry.<Product, Integer>comparingByValue().reversed())
-                .limit(limit)
                 .map(Map.Entry::getKey)
+                .filter(product -> categorySlug == null ||
+                        product.getCategories().stream()
+                                .anyMatch(cat -> categorySlug.equals(cat.getSlug())))
+                .sorted(Comparator.comparingInt(p -> -productCounts.get(p)))
+                .limit(limit)
                 .collect(Collectors.toList());
     }
+
 
     /**
      * Generate recommendations for a specific user.
@@ -135,7 +147,7 @@ public class RecommendationService {
         List<Order> userOrders = orderRepository.findByUser(user);
         if (userOrders.isEmpty()) {
             // If user has no orders, recommend popular products
-            List<Product> popularProducts = getPopularProducts(10);
+            List<Product> popularProducts = getPopularProducts(10, null);
             saveRecommendations(user, popularProducts, 1.0);
             return;
         }
