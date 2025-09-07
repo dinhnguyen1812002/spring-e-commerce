@@ -75,6 +75,7 @@ com\app\e_commerce\controller\CustomErrorController.class
 com\app\e_commerce\DB\DataInitializer.class
 com\app\e_commerce\services\UserService.class
 com\app\e_commerce\services\PaymentService$1.class
+com\app\e_commerce\services\CloudflareR2Service.class
 com\app\e_commerce\services\ImageService.class
 com\app\e_commerce\entity\User.class
 com\app\e_commerce\controller\AuthController.class

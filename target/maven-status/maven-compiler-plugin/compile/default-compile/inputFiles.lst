@@ -4,6 +4,7 @@ F:\Java\e-commerce\src\main\java\com\app\e_commerce\controller\OrderController.j
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\controller\ProductController.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\services\CouponService.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\controller\AuthController.java
+F:\Java\e-commerce\src\main\java\com\app\e_commerce\services\CloudflareR2Service.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\services\FileStorageService.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\exception\EmptyCartException.java
 F:\Java\e-commerce\src\main\java\com\app\e_commerce\controller\HomeController.java
