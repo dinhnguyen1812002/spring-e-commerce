@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -49,21 +50,21 @@ private DashboardServiceImpl dashboardService;
         long totalProducts = productService.countProducts();
         long totalUsers = userService.countUsers();
         long totalCategories = categoryService.countCategories();
-        
+
         // Get current month revenue
         LocalDate now = LocalDate.now();
         BigDecimal currentMonthRevenue = dashboardService.getMonthlyRevenue(now.getYear(), now.getMonthValue());
         if (currentMonthRevenue == null) {
             currentMonthRevenue = BigDecimal.ZERO;
         }
-        
+
         // Calculate growth from last month
         LocalDate lastMonth = now.minusMonths(1);
         BigDecimal lastMonthRevenue = dashboardService.getMonthlyRevenue(lastMonth.getYear(), lastMonth.getMonthValue());
         if (lastMonthRevenue == null) {
             lastMonthRevenue = BigDecimal.ZERO;
         }
-        
+
         double growthPercentage = 0.0;
         if (lastMonthRevenue.compareTo(BigDecimal.ZERO) > 0) {
             growthPercentage = currentMonthRevenue.subtract(lastMonthRevenue)
@@ -81,7 +82,7 @@ private DashboardServiceImpl dashboardService;
         model.addAttribute("currentMonthRevenue", currentMonthRevenue);
         model.addAttribute("revenueGrowth", growthPercentage);
         model.addAttribute("orders", recentOrders);
-        return "admin/admin-dashboard";
+        return "admin/dashboard";
     }
 //    @GetMapping("/products/edit/{id}")
 //    public String editProduct(@PathVariable Long id, Model model) {
@@ -143,8 +144,18 @@ private DashboardServiceImpl dashboardService;
 
     @GetMapping("/traffic")
     public String traffic(Model model) {
+        // Get traffic data for dashboard
+        Map<String, Object> trafficData = trafficService.getTrafficDataForDashboard();
+
+        // Add all traffic data to model
+        for (Map.Entry<String, Object> entry : trafficData.entrySet()) {
+            model.addAttribute(entry.getKey(), entry.getValue());
+        }
+
+        // Add raw visit data for the table
         List<Traffic> visits = trafficService.getAllTraffic();
         model.addAttribute("visits", visits);
+
         return "admin/admin-traffic";
     }
 

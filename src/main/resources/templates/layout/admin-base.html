@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="color-scheme" content="light dark" />
+  <title th:text="${title != null ? title : 'Admin Dashboard'}">Admin Dashboard</title>
+
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- SockJS and STOMP for WebSocket -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/lib/stomp.min.js"></script>
+
+  <!-- Alpine.js for interactive components -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <!-- Page specific head block if needed -->
+  <th:block th:fragment="head"></th:block>
+
+</head>
+<body class="bg-gray-50 min-w-full" x-data="{ sidebarOpen: false }">
+  <!--
+    Base layout fragment for Admin pages.
+    Usage (child template):
+    <th:block th:replace="~{layout/admin-base :: layout(title=${title}, pageTitle=${pageTitle}, pageDescription=${pageDescription})}">
+      <th:block th:fragment="content">
+        ... page content ...
+      </th:block>
+    </th:block>
+  -->
+  <th:block th:fragment="layout (title, pageTitle, pageDescription)">
+    <!-- Mobile sidebar backdrop -->
+    <div 
+      x-show="sidebarOpen" 
+      @click="sidebarOpen = false" 
+      class="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+    ></div>
+
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside 
+        class="bg-white border-r border-gray-200  flex-shrink-0 transition-all duration-300 ease-in-out fixed inset-y-0 z-30 lg:static transform"
+
+        id="admin-sidebar" 
+        aria-label="Admin sidebar"
+      >
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+      </aside>
+
+      <!-- Main wrapper -->
+      <div class="flex-1 flex flex-col min-w-0">
+        <!-- Top bar / header -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+          <div class="flex items-center justify-between px-4 py-3 lg:px-6">
+            <!-- Left: Menu button and page title -->
+            <div class="flex items-center">
+              <!-- Mobile menu button -->
+              <button 
+                @click="sidebarOpen = !sidebarOpen" 
+                class="text-gray-500 hover:text-gray-600 lg:hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1"
+              >
+                <span class="sr-only">Open sidebar</span>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+
+              <!-- Page title -->
+              <div class="ml-4">
+                <h1 class="text-xl font-semibold text-gray-800" th:text="${pageTitle != null ? pageTitle : 'Dashboard'}">Dashboard</h1>
+                <p class="text-sm text-gray-600" th:text="${pageDescription != null ? pageDescription : ''}">Overview and statistics</p>
+              </div>
+            </div>
+
+            <!-- Right: User menu and notifications -->
+            <div class="flex items-center space-x-4">
+              <!-- Notifications dropdown -->
+              <div class="relative" x-data="{ open: false }">
+                <button 
+                  @click="open = !open" 
+                  class="text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-full p-1"
+                >
+                  <span class="sr-only">View notifications</span>
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  <!-- Notification badge -->
+                  <span id="notification-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">0</span>
+                </button>
+
+                <!-- Notifications panel -->
+                <div 
+                  x-show="open" 
+                  @click.away="open = false" 
+                  class="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-50"
+                  x-transition:enter="transition ease-out duration-100"
+                  x-transition:enter-start="transform opacity-0 scale-95"
+                  x-transition:enter-end="transform opacity-100 scale-100"
+                  x-transition:leave="transition ease-in duration-75"
+                  x-transition:leave-start="transform opacity-100 scale-100"
+                  x-transition:leave-end="transform opacity-0 scale-95"
+                >
+                  <div class="px-4 py-3">
+                    <p class="text-sm font-medium text-gray-900">Notifications</p>
+                  </div>
+                  <div class="max-h-60 overflow-y-auto" id="notifications-list">
+                    <!-- Notifications will be inserted here by JavaScript -->
+                    <div class="px-4 py-3 text-sm text-gray-500 text-center">
+                      No new notifications
+                    </div>
+                  </div>
+                  <div class="px-4 py-3">
+                    <a href="/admin/notifications" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all notifications</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- User menu -->
+              <div class="relative" x-data="{ open: false }">
+                <button 
+                  @click="open = !open" 
+                  class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-full"
+                >
+                  <img 
+                    th:if="${#authentication != null && #authentication.principal != null && #authentication.principal.avatar != null}"
+                    th:src="'data:image/jpeg;base64,' + ${#authentication.principal.avatar}" 
+                    alt="User avatar" 
+                    class="h-8 w-8 rounded-full object-cover border border-gray-200"
+                  />
+                  <img 
+                    th:unless="${#authentication != null && #authentication.principal != null && #authentication.principal.avatar != null}"
+                    src="/images/default-avatar.png" 
+                    alt="Default avatar" 
+                    class="h-8 w-8 rounded-full object-cover border border-gray-200"
+                  />
+                  <span class="text-sm font-medium hidden md:block" th:text="${#authentication != null && #authentication.principal != null ? #authentication.principal.username : 'Admin'}">Admin</span>
+                  <svg class="h-5 w-5 text-gray-400 hidden md:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <!-- User dropdown -->
+                <div 
+                  x-show="open" 
+                  @click.away="open = false" 
+                  class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-50"
+                  x-transition:enter="transition ease-out duration-100"
+                  x-transition:enter-start="transform opacity-0 scale-95"
+                  x-transition:enter-end="transform opacity-100 scale-100"
+                  x-transition:leave="transition ease-in duration-75"
+                  x-transition:leave-start="transform opacity-100 scale-100"
+                  x-transition:leave-end="transform opacity-0 scale-95"
+                >
+                  <div class="py-1">
+                    <a href="/admin/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
+                    <a href="/admin/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                  </div>
+                  <div class="py-1">
+                    <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Sign out</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Page content slot -->
+        <main id="main-content" class="flex-1 overflow-x-hidden bg-gray-50">
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <th:block th:replace="~{::content}"> <!-- content fragment from child -->
+              <!-- Default content placeholder -->
+              <div class="text-gray-500">No content provided.</div>
+            </th:block>
+          </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-gray-200">
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+              <p class="text-sm text-gray-500">
+                &copy; 2023 E-Commerce Admin. All rights reserved.
+              </p>
+              <div class="flex space-x-4 mt-2 md:mt-0">
+                <a href="#" class="text-gray-400 hover:text-gray-500">
+                  <span class="sr-only">Documentation</span>
+                  <i class="fas fa-book"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-gray-500">
+                  <span class="sr-only">Support</span>
+                  <i class="fas fa-question-circle"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-gray-500">
+                  <span class="sr-only">GitHub</span>
+                  <i class="fab fa-github"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </th:block>
+
+  <!-- JS (defer) -->
+  <script src="/js/admin/notifications.js" defer></script>
+
+  <!-- Optional page-specific scripts injected by children -->
+  <th:block th:replace="~{::scripts}"></th:block>
+</body>
+</html>

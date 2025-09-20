@@ -1,141 +1,108 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <th:block th:replace="~{Layout :: link-css}"></th:block>
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
         }
+        .nav-active {
+            color: #1d4ed8;
+            background-color: #eff6ff;
+        }
+        .nav-active i {
+            color: #1d4ed8 !important;
+        }
     </style>
 </head>
 <body>
+<div class="flex flex-col h-full bg-white border-r border-gray-200" th:fragment="sidebar">
+    <!-- Logo -->
+    <div class="p-6 border-b border-gray-100">
+        <a href="/admin/dashboard" class="flex items-center">
+            <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <h1 class="ml-3 text-lg font-semibold text-gray-800">Admin Panel</h1>
+        </a>
+    </div>
 
-    <div class="bg-white shadow-lg w-64 flex-shrink-0" th:fragment="sidebar">
-        <div class="p-6">
-            <h1 class="text-2xl font-bold text-gray-800">
-                <a th:href="@{/}">
-                    Admin Panel
-                </a>
-            </h1>
-        </div>
-        
-        <nav class="mt-6">
-            <div class="px-4 space-y-2">
-                 <a th:href="@{/admin/dashboard}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
-                    <span>Dashboard</span>
-                </a>
-                
-                <a href="/admin/products" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
-                    <i class="fas fa-box mr-3"></i>
-                    <span>Products</span>
-                </a>
-                
-                <a href="/admin/categories" class="flex items-center px-4 py-3 text-gray-700 bg-blue-50 border-r-4 border-blue-500 rounded-lg">
-                    <i class="fas fa-tags mr-3"></i>
-                    <span>Categories</span>
-                </a>
-                
-                <a href="/admin/users" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
-                    <i class="fas fa-users mr-3"></i>
-                    <span>Users</span>
-                </a>
-                
-                <a href="/admin/traffic" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
-                    <i class="fas fa-chart-line mr-3"></i>
-                    <span>Traffic</span>
-                </a>
-                
-                <a href="/admin/orders" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
-                    <i class="fas fa-shopping-cart mr-3"></i>
-                    <span>Orders</span>
-                </a>
-                
-                <a href="/admin/revenue" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
-                    <i class="fas fa-dollar-sign mr-3"></i>
-                    <span>Revenue</span>
-                </a>
-            </div>
-        </nav>
-        
-        <div class="absolute bottom-0 w-64 p-4">
-            <a href="/logout" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
-                <i class="fas fa-sign-out-alt mr-3"></i>
-                <span>Logout</span>
+    <!-- Navigation -->
+    <nav class="flex-1 py-4">
+        <!-- Main Navigation -->
+        <div class="px-4 space-y-1">
+            <a href="/admin/dashboard" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <i class="fas fa-tachometer-alt w-5 h-5 mr-3 text-gray-400"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/admin/products" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <i class="fas fa-box w-5 h-5 mr-3 text-gray-400"></i>
+                <span>Products</span>
+            </a>
+
+            <a href="/admin/categories" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <i class="fas fa-tags w-5 h-5 mr-3 text-gray-400"></i>
+                <span>Categories</span>
+            </a>
+
+            <a href="/admin/users" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <i class="fas fa-users w-5 h-5 mr-3 text-gray-400"></i>
+                <span>Users</span>
+            </a>
+
+            <a href="/admin/traffic" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <i class="fas fa-chart-line w-5 h-5 mr-3 text-gray-400"></i>
+                <span>Traffic</span>
+            </a>
+
+            <a href="/admin/orders" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <i class="fas fa-shopping-cart w-5 h-5 mr-3 text-gray-400"></i>
+                <span>Orders</span>
+                <span id="notification-counter"
+                      class="ml-auto bg-red-600 text-white text-xs font-medium px-2 py-0.5 rounded-full"
+                      style="display: none;">0</span>
+            </a>
+
+            <a href="/admin/revenue" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <i class="fas fa-dollar-sign w-5 h-5 mr-3 text-gray-400"></i>
+                <span>Revenue</span>
             </a>
         </div>
-    </div>
 
-<!--    <div th:fragment="profile-sidebar" class="w-64 bg-white h-screen left-0">-->
-<!--        <div class="p-6">-->
-<!--            <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>-->
-<!--        </div>-->
-<!--        <nav class="mt-6">-->
-<!--            <a th:href="@{/users/edit/{id}(id=${#authentication.principal.id})}"-->
-<!--               class="block py-3 px-6 text-gray-600 hover:bg-gray-100-->
-<!--               hover:text-gray-900">Profile</a>-->
-<!--            <a th:href="@{/orders}" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Orders</a>-->
-<!--            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Settings</a>-->
-<!--            <a th:href="@{/logout}" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Logout</a>-->
+        <!-- Settings -->
+        <div class="px-4 mt-8">
+            <h3 class="px-3 text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Settings</h3>
+            <div class="space-y-1">
+                <a href="/admin/settings" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                    <i class="fas fa-cog w-5 h-5 mr-3 text-gray-400"></i>
+                    <span>Settings</span>
+                </a>
 
-
-<!--        </nav>-->
-
-
-<!--        <div >-->
-<!--            <img th:src="'data:image/jpeg;base64,' + ${#authentication.principal.avatar}" alt="User Avatar" class="w-8 h-8 rounded-full" />-->
-<!--            <span th:text="${#authentication.name}"></span>-->
-
-<!--        </div>-->
-<!--    </div>-->
-
-
-    <div th:fragment="profile-sidebar" class="w-64 bg-white h-screen flex flex-col border-r shadow-sm">
-        <!-- Header -->
-        <div class="p-6 border-b">
-            <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="mt-6 flex-1">
-            <a th:href="@{/users/edit/{id}(id=${#authentication.principal.id})}"
-               class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Profile</a>
-            <a th:href="@{/orders}"
-               class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Orders</a>
-            <a href="#"
-               class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Settings</a>
-        </nav>
-
-        <!-- User Section at Bottom -->
-        <div x-data="{ open: false }" class="border-t p-4 relative">
-            <!-- Avatar + Name -->
-            <button @click="open = !open"
-                    class="flex items-center gap-3 w-full text-left hover:bg-gray-100 px-2 py-2 rounded-md">
-                <img th:src="'data:image/jpeg;base64,' + ${#authentication.principal.avatar}"
-                     alt="User Avatar" class="w-10 h-10 rounded-full object-cover border"/>
-                <span class="font-medium text-gray-800" th:text="${#authentication.name}"></span>
-                <i class="fa-solid fa-chevron-down ml-auto text-gray-500"></i>
-            </button>
-
-            <!-- Dropdown -->
-            <div x-show="open" @click.away="open = false"
-                 class="absolute bottom-16 left-4 right-4 bg-white shadow-lg rounded-md overflow-hidden border z-50">
-                <a th:href="@{/users/edit/{id}(id=${#authentication.principal.id})}"
-                   class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Tài khoản của tôi</a>
-                <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Cài đặt</a>
-                <a th:href="@{/logout}"
-                   class="block px-4 py-2 text-red-600 hover:bg-red-100">Đăng xuất</a>
+                <a href="/admin/help" class="nav-link flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                    <i class="fas fa-question-circle w-5 h-5 mr-3 text-gray-400"></i>
+                    <span>Help</span>
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Alpine.js (nhẹ, chỉ 7kb) -->
-    <script src="//unpkg.com/alpinejs" defer></script>
+    <!-- Logout -->
+    <div class="p-4 border-t border-gray-200">
+        <a href="/logout"
+           class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md">
+            <i class="fas fa-sign-out-alt mr-2"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</div>
+
 
 </body>
 </html>

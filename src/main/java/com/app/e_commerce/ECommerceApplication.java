@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.unit.DataSize;
 
 @SpringBootApplication
-
 public class ECommerceApplication {
 
 	public static void main(String[] args) {

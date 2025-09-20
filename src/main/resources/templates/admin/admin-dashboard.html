@@ -1,380 +1,230 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#64748B',
-                        success: '#10B981',
-                        warning: '#F59E0B',
-                        danger: '#EF4444'
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin Dashboard - Overview and statistics">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
-<body class="bg-gray-50">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
-            <header class="bg-white shadow-sm border-b border-gray-200">
-                <div class="flex items-center justify-between px-6 py-4">
-                    <div>
-                        <h2 class="text-xl font-semibold text-gray-800">Dashboard Overview</h2>
-                        <p class="text-sm text-gray-600" th:text="${#authentication.principal.username}">Welcome back, Admin!</p>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="relative">
-                            <i class="fas fa-bell text-gray-600 text-xl"></i>
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <img th:src="'data:image/jpeg;base64,' + ${#authentication.principal.avatar}" alt="Admin" class="w-8 h-8 rounded-full">
-                            <span class="text-sm font-medium text-gray-700">Admin</span>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Dashboard Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
-                <div class="container mx-auto px-6 py-8">
-                    <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                                    <i class="fas fa-box text-2xl"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Total Products</p>
-                                    <p class="text-2xl font-semibold text-gray-900" th:text="${totalProducts}">1,234</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-green-100 text-green-600">
-                                    <i class="fas fa-users text-2xl"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Total Users</p>
-                                    <p class="text-2xl font-semibold text-gray-900" th:text="${totalUsers}">5,678</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                                    <i class="fas fa-shopping-cart text-2xl"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Total Orders</p>
-                                    <p class="text-2xl font-semibold text-gray-900" th:text="${totalCategories}">892</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                                    <i class="fas fa-dollar-sign text-2xl"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Revenue</p>
-                                    <p class="text-2xl font-semibold text-gray-900">$45,678</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Charts -->
-                    <div class="grid grid-cols-1 gap-6 mb-8">
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-semibold text-gray-800">Revenue Statistics</h3>
-                                <div class="flex space-x-2">
-                                    <button onclick="updateRevenueChart('day')" class="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200">Daily</button>
-                                    <button onclick="updateRevenueChart('month')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Monthly</button>
-                                    <button onclick="updateRevenueChart('quarter')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Quarterly</button>
-                                    <button onclick="updateRevenueChart('year')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Yearly</button>
-                                </div>
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="revenueChart"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-semibold text-gray-800">Sales Statistics</h3>
-                                <div class="flex space-x-2">
-                                    <button onclick="updateSalesChart('day')" class="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200">Daily</button>
-                                    <button onclick="updateSalesChart('month')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Monthly</button>
-                                    <button onclick="updateSalesChart('quarter')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Quarterly</button>
-                                    <button onclick="updateSalesChart('year')" class="px-3 py-1 text-xs rounded-md hover:bg-gray-100">Yearly</button>
-                                </div>
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="salesChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <a href="/admin/products/add" class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                                    <i class="fas fa-plus text-blue-600 mr-3"></i>
-                                    <span class="text-blue-800 font-medium">Add Product</span>
-                                </a>
-                                <a href="/admin/categories/add" class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-                                    <i class="fas fa-tag text-green-600 mr-3"></i>
-                                    <span class="text-green-800 font-medium">Add Category</span>
-                                </a>
-                                <a href="/admin/users" class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
-                                    <i class="fas fa-users text-purple-600 mr-3"></i>
-                                    <span class="text-purple-800 font-medium">Manage Users</span>
-                                </a>
-                                <a href="/admin/traffic" class="flex items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
-                                    <i class="fas fa-chart-line text-orange-600 mr-3"></i>
-                                    <span class="text-orange-800 font-medium">View Analytics</span>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
-                            <div class="space-y-4">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                        <i class="fas fa-box text-blue-600 text-sm"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">New product added</p>
-                                        <p class="text-xs text-gray-500">2 minutes ago</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                        <i class="fas fa-shopping-cart text-green-600 text-sm"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">New order received</p>
-                                        <p class="text-xs text-gray-500">5 minutes ago</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
-                                        <i class="fas fa-user text-yellow-600 text-sm"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">New user registered</p>
-                                        <p class="text-xs text-gray-500">10 minutes ago</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Orders -->
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
-                        </div>
-                        <div class="p-6">
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between" th:each="order : ${orders}">
-                                    <a th:href="@{/orders/{orderId}(orderId =  ${order.id})}">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                                <img th:src="'data:image/jpeg;base64,' + ${order.user.avatar}" alt="User" class="w-8 h-8 rounded-full">
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-medium text-gray-900" th:text="'Order #' + ${order.id}">Order #12345</p>
-                                                <p class="text-sm text-gray-500" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></p>
-                                                <p class="text-sm text-gray-500" th:text="${order.user.username} + ' - ' + ${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' VND'"></p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+<body>
+  <th:block th:replace="~{layout/admin-base :: layout(
+    title=${title != null ? title : 'Dashboard'},
+    pageTitle=${pageTitle != null ? pageTitle : 'Dashboard Overview'},
+    pageDescription=${pageDescription != null ? pageDescription : 'Welcome back, ' + ((#authentication != null and #authentication.principal != null) ? #authentication.principal.username : 'Admin')}
+  )}">
+    <th:block th:fragment="content">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Products Card -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+              <i class="fas fa-box text-2xl" aria-hidden="true"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Total Products</p>
+              <p class="text-2xl font-semibold text-gray-900" data-stat="product-count" th:text="${totalProducts}">1,234</p>
+            </div>
+          </div>
+          <div class="mt-4">
+            <a href="/admin/products" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
+              View all products
+              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
         </div>
-    </div>
 
-    <script>
-        // Initialize charts
-        let revenueChart, salesChart;
+        <!-- Users Card -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-green-100 text-green-600">
+              <i class="fas fa-users text-2xl" aria-hidden="true"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Total Users</p>
+              <p class="text-2xl font-semibold text-gray-900" data-stat="user-count" th:text="${totalUsers}">5,678</p>
+            </div>
+          </div>
+          <div class="mt-4">
+            <a href="/admin/users" class="text-sm text-green-600 hover:text-green-800 font-medium flex items-center">
+              View all users
+              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
 
-        // Format currency
-        const formatCurrency = (value) => {
-            return new Intl.NumberFormat('vi-VN', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(value) + ' VND';
-        };
+        <!-- Orders Card -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+              <i class="fas fa-shopping-cart text-2xl" aria-hidden="true"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Total Orders</p>
+              <p class="text-2xl font-semibold text-gray-900" data-stat="order-count" th:text="${totalCategories}">892</p>
+            </div>
+          </div>
+          <div class="mt-4">
+            <a href="/admin/orders" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium flex items-center">
+              View all orders
+              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
 
-        // Initialize charts on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-            const salesCtx = document.getElementById('salesChart').getContext('2d');
+        <!-- Revenue Card -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+              <i class="fas fa-dollar-sign text-2xl" aria-hidden="true"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Revenue</p>
+              <p class="text-2xl font-semibold text-gray-900" data-stat="revenue">$45,678</p>
+            </div>
+          </div>
+          <div class="mt-4">
+            <a href="/admin/revenue" class="text-sm text-purple-600 hover:text-purple-800 font-medium flex items-center">
+              View details
+              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
 
-            // Initial chart configuration
-            const chartConfig = {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return formatCurrency(value);
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return formatCurrency(context.raw);
-                            }
-                        }
-                    }
-                }
-            };
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Revenue Chart -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-semibold text-gray-800">Revenue Statistics</h3>
+            <div class="flex space-x-1">
+              <button data-chart="revenue" data-period="day" class="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Daily</button>
+              <button data-chart="revenue" data-period="month" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Monthly</button>
+              <button data-chart="revenue" data-period="quarter" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Quarterly</button>
+              <button data-chart="revenue" data-period="year" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Yearly</button>
+            </div>
+          </div>
+          <div class="relative h-[300px] w-full">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
 
-            // Initialize Revenue Chart
-            revenueChart = new Chart(revenueCtx, {
-                type: 'line',
-                data: { labels: [], datasets: [] },
-                options: chartConfig
-            });
+        <!-- Sales Chart -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-semibold text-gray-800">Sales Statistics</h3>
+            <div class="flex space-x-1">
+              <button data-chart="sales" data-period="day" class="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Daily</button>
+              <button data-chart="sales" data-period="month" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Monthly</button>
+              <button data-chart="sales" data-period="quarter" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Quarterly</button>
+              <button data-chart="sales" data-period="year" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Yearly</button>
+            </div>
+          </div>
+          <div class="relative h-[300px] w-full">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+      </div>
 
-            // Initialize Sales Chart
-            salesChart = new Chart(salesCtx, {
-                type: 'bar',
-                data: { labels: [], datasets: [] },
-                options: {
-                    ...chartConfig,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toLocaleString();
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.raw.toLocaleString() + ' sales';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+      <!-- Recent Orders Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
+          <a href="/admin/orders" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
+            View all
+            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
 
-            // Load initial data
-            updateRevenueChart('month');
-            updateSalesChart('month');
-        });
+        <!-- Orders List -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="recent-orders-list">
+              <!-- Orders will be listed here -->
+              <tr th:each="order : ${orders}" th:data-order-id="${order.id}" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900" th:text="'#' + ${order.id}">Order #12345</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                      <img th:src="'data:image/jpeg;base64,' + ${order.user.avatar}" alt="User" class="h-10 w-10 rounded-full object-cover">
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900" th:text="${order.user.username}">John Doe</div>
+                      <div class="text-sm text-gray-500" th:text="${order.phoneNumber}">+1234567890</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">01/01/2023</div>
+                  <div class="text-sm text-gray-500" th:text="${#temporals.format(order.orderDate, 'HH:mm')}">10:00 AM</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">$100.00</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span th:class="${'order-status-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + 
+                    (order.orderStatus == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
+                    (order.orderStatus == 'PROCESSING' ? 'bg-blue-100 text-blue-800' : 
+                    (order.orderStatus == 'SHIPPED' ? 'bg-indigo-100 text-indigo-800' : 
+                    (order.orderStatus == 'DELIVERED' || order.orderStatus == 'SUCCESS' ? 'bg-green-100 text-green-800' : 
+                    (order.orderStatus == 'CANCELLED' || order.orderStatus == 'CANCELED' || order.orderStatus == 'FAILED' ? 'bg-red-100 text-red-800' : 
+                    'bg-gray-100 text-gray-800')))))}">
+                    <span th:text="${order.orderStatus}">PENDING</span>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
+                  <a th:href="@{/admin/orders/{id}/edit(id=${order.id})}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                </td>
+              </tr>
 
-        // Update Revenue Chart
-        async function updateRevenueChart(period) {
-            try {
-                const response = await fetch(`/api/admin/dashboard/revenue?period=${period}`);
-                const data = await response.json();
+              <!-- Empty state if no orders -->
+              <tr th:if="${#lists.isEmpty(orders)}">
+                <td colspan="6" class="px-6 py-10 text-center text-sm text-gray-500">
+                  <div class="flex flex-col items-center justify-center">
+                    <svg class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <p>No orders found</p>
+                    <a href="/admin/orders/new" class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                      Create Order
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </th:block>
 
-                revenueChart.data.labels = data.labels;
-                revenueChart.data.datasets = [{
-                    label: 'Revenue',
-                    data: data.data,
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                }];
-
-                revenueChart.update();
-                updateActiveButton('revenue', period);
-            } catch (error) {
-                console.error('Error fetching revenue data:', error);
-            }
-        }
-
-        // Update Sales Chart
-        async function updateSalesChart(period) {
-            try {
-                const response = await fetch(`/api/admin/dashboard/sales?period=${period}`);
-                const data = await response.json();
-
-                salesChart.data.labels = data.labels;
-                salesChart.data.datasets = [{
-                    label: 'Sales',
-                    data: data.data,
-                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                    borderColor: 'rgb(16, 185, 129)',
-                    borderWidth: 1
-                }];
-
-                salesChart.update();
-                updateActiveButton('sales', period);
-            } catch (error) {
-                console.error('Error fetching sales data:', error);
-            }
-        }
-
-        // Update active button state
-        function updateActiveButton(chartType, period) {
-            const buttons = document.querySelectorAll(`#${chartType}Chart`)
-                .closest('.bg-white')
-                .querySelectorAll('button');
-
-            buttons.forEach(btn => {
-                if (btn.textContent.toLowerCase() === period) {
-                    btn.classList.add('bg-blue-100', 'text-blue-700');
-                    btn.classList.remove('hover:bg-gray-100');
-                } else {
-                    btn.classList.remove('bg-blue-100', 'text-blue-700');
-                    btn.classList.add('hover:bg-gray-100');
-                }
-            });
-        }
-    </script>
+    <th:block th:fragment="scripts">
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="/js/admin/charts-dashboard.js" defer></script>
+    </th:block>
+  </th:block>
 </body>
 </html>

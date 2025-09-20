@@ -38,6 +38,9 @@ public class OrderService {
 
     @Autowired
     private UserRepo userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
     /**
      * API mới: tạo Order từ Order skeleton + Cart đã có (được CartService chuẩn bị).
      * Thực hiện:
@@ -93,6 +96,9 @@ public class OrderService {
         // Lưu order và orderItems (cascade nếu đã cấu hình; ở đây dùng save trước cho chắc)
         Order saved = orderRepository.save(order);
         orderItemRepository.saveAll(orderItems);
+
+        // Send notification to admin about new order
+        notificationService.notifyAdminAboutNewOrder(saved);
 
         return saved;
     }
@@ -200,7 +206,7 @@ public class OrderService {
                         String.format("Order with ID %s not found for user %s", orderId, user.getUsername())
                 ));
     }
-    
+
     /**
      * Get recent orders with pagination
      * @param limit maximum number of orders to return
@@ -235,6 +241,10 @@ public class OrderService {
             throw new ResourceNotFoundException("Order not found with id: " + orderId);
         }
 
+        // Store previous status for notification
+        OrderStatus previousStatus = order.getOrderStatus();
+
+        // Update status
         order.setOrderStatus(status);
 
         // Update date fields based on status
@@ -244,7 +254,13 @@ public class OrderService {
             order.setDeliveredDate(LocalDateTime.now());
         }
 
-        return orderRepository.save(order);
+        // Save the order
+        Order updatedOrder = orderRepository.save(order);
+
+        // Send notification to user about status change
+        notificationService.notifyUserAboutOrderStatusChange(updatedOrder, previousStatus);
+
+        return updatedOrder;
     }
 
     /**
@@ -365,6 +381,9 @@ public class OrderService {
 
         // clear cart sau khi tạo đơn
         cartService.clearCart(session);
+
+        // Send notification to admin about new order
+        notificationService.notifyAdminAboutNewOrder(order);
 
         return order;
     }

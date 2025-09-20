@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+<div th:fragment="profile-sidebar" class="w-64 bg-white h-screen flex flex-col border-r shadow-sm">
+    <!-- Header -->
+    <div class="p-6 border-b">
+        <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-6 flex-1">
+        <a th:href="@{/users/edit/{id}(id=${#authentication.principal.id})}"
+           class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Profile</a>
+        <a th:href="@{/orders}"
+           class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Orders</a>
+        <a href="#"
+           class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Settings</a>
+    </nav>
+
+    <!-- User Section at Bottom -->
+    <div x-data="{ open: false }" class="border-t p-4 relative">
+        <!-- Avatar + Name -->
+        <button @click="open = !open"
+                class="flex items-center gap-3 w-full text-left hover:bg-gray-100 px-2 py-2 rounded-md">
+            <img th:src="'data:image/jpeg;base64,' + ${#authentication.principal.avatar}"
+                 alt="User Avatar" class="w-10 h-10 rounded-full object-cover border"/>
+            <span class="font-medium text-gray-800" th:text="${#authentication.name}"></span>
+            <i class="fa-solid fa-chevron-down ml-auto text-gray-500"></i>
+        </button>
+
+        <!-- Dropdown -->
+        <div x-show="open" @click.away="open = false"
+             class="absolute bottom-16 left-4 right-4 bg-white shadow-lg rounded-md overflow-hidden border z-50">
+            <a th:href="@{/users/edit/{id}(id=${#authentication.principal.id})}"
+               class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Tài khoản của tôi</a>
+            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Cài đặt</a>
+            <a th:href="@{/logout}"
+               class="block px-4 py-2 text-red-600 hover:bg-red-100">Đăng xuất</a>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
