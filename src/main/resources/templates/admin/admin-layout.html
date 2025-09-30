@@ -66,6 +66,16 @@
                         <i class="fas fa-dollar-sign mr-3"></i>
                         <span>Revenue</span>
                     </a>
+                    
+                    <a href="/admin/product-import" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors" th:classappend="${#httpServletRequest.requestURI == '/admin/product-import' ? 'bg-blue-50 border-r-4 border-blue-500 text-gray-700' : ''}">
+                        <i class="fas fa-file-import mr-3"></i>
+                        <span>Import Products</span>
+                    </a>
+                    
+                    <a href="/admin/import-history" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors" th:classappend="${#httpServletRequest.requestURI == '/admin/import-history' ? 'bg-blue-50 border-r-4 border-blue-500 text-gray-700' : ''}">
+                        <i class="fas fa-history mr-3"></i>
+                        <span>Import History</span>
+                    </a>
                 </div>
             </nav>
             

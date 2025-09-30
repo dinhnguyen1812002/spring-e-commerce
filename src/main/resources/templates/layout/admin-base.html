@@ -20,6 +20,11 @@
   <!-- Alpine.js for interactive components -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+  <!-- Alpine.js cloak style -->
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
+
   <!-- Page specific head block if needed -->
   <th:block th:fragment="head"></th:block>
 
@@ -111,6 +116,8 @@
                   x-transition:leave="transition ease-in duration-75"
                   x-transition:leave-start="transform opacity-100 scale-100"
                   x-transition:leave-end="transform opacity-0 scale-95"
+                  style="display: none;"
+                  x-cloak
                 >
                   <div class="px-4 py-3">
                     <p class="text-sm font-medium text-gray-900">Notifications</p>
@@ -162,6 +169,8 @@
                   x-transition:leave="transition ease-in duration-75"
                   x-transition:leave-start="transform opacity-100 scale-100"
                   x-transition:leave-end="transform opacity-0 scale-95"
+                  style="display: none;"
+                  x-cloak
                 >
                   <div class="py-1">
                     <a href="/admin/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>

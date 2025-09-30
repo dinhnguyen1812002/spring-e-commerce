@@ -1,12 +1,13 @@
 package com.app.e_commerce.security;
 
+import java.util.List;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,10 +20,6 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import javax.sql.DataSource;
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -57,10 +54,11 @@ public class SecurityConfig {
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/orders/**").authenticated()
                         .requestMatchers("/ratings/add").authenticated()
-
+                        
                         .requestMatchers("/recommendations/popular").permitAll()
                         .requestMatchers("/recommendations").permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/api/**").hasAnyAuthority("ADMIN")
 
 
                         .anyRequest().permitAll()

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Import - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#64748B',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="bg-white shadow-lg w-64 flex-shrink-0">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
+            </div>
+            
+            <nav class="mt-6">
+                <div class="px-4 space-y-2">
+                    <a href="/admin/dashboard" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <a href="/admin/products" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-box mr-3"></i>
+                        <span>Products</span>
+                    </a>
+                    
+                    <a href="/admin/categories" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-tags mr-3"></i>
+                        <span>Categories</span>
+                    </a>
+                    
+                    <a href="/admin/users" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-users mr-3"></i>
+                        <span>Users</span>
+                    </a>
+                    
+                    <a href="/admin/traffic" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        <span>Traffic</span>
+                    </a>
+                    
+                    <a href="/admin/orders" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-shopping-cart mr-3"></i>
+                        <span>Orders</span>
+                    </a>
+                    
+                    <a href="/admin/revenue" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-dollar-sign mr-3"></i>
+                        <span>Revenue</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="absolute bottom-0 w-64 p-4">
+                <a href="/logout" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-700 rounded-lg transition-colors">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800">Product Import</h2>
+                        <p class="text-sm text-gray-600">Import products from Excel files or Google Sheets</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <i class="fas fa-bell text-gray-600 text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <img src="/images/avatar.png" alt="Admin" class="w-8 h-8 rounded-full">
+                            <span class="text-sm font-medium text-gray-700">Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                <!-- Import Steps -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-center space-x-8">
+                        <div class="flex items-center space-x-2" :class="{'text-primary': currentStep >= 1, 'text-gray-400': currentStep < 1}">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center" :class="{'bg-primary text-white': currentStep >= 1, 'bg-gray-200 text-gray-500': currentStep < 1}">
+                                <i class="fas fa-upload text-sm"></i>
+                            </div>
+                            <span class="font-medium">Upload File</span>
+                        </div>
+                        <div class="w-16 h-0.5" :class="{'bg-primary': currentStep >= 2, 'bg-gray-200': currentStep < 2}"></div>
+                        <div class="flex items-center space-x-2" :class="{'text-primary': currentStep >= 2, 'text-gray-400': currentStep < 2}">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center" :class="{'bg-primary text-white': currentStep >= 2, 'bg-gray-200 text-gray-500': currentStep < 2}">
+                                <i class="fas fa-cogs text-sm"></i>
+                            </div>
+                            <span class="font-medium">Map Columns</span>
+                        </div>
+                        <div class="w-16 h-0.5" :class="{'bg-primary': currentStep >= 3, 'bg-gray-200': currentStep < 3}"></div>
+                        <div class="flex items-center space-x-2" :class="{'text-primary': currentStep >= 3, 'text-gray-400': currentStep < 3}">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center" :class="{'bg-primary text-white': currentStep >= 3, 'bg-gray-200 text-gray-500': currentStep < 3}">
+                                <i class="fas fa-play text-sm"></i>
+                            </div>
+                            <span class="font-medium">Import</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: File Upload -->
+                <div v-show="currentStep === 1" class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Upload File</h3>
+                        
+                        <!-- File Type Selection -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Select Import Source</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button @click="selectFileType('excel')" 
+                                        class="p-4 border-2 rounded-lg text-center transition-colors"
+                                        :class="fileType === 'excel' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 hover:border-gray-300'">
+                                    <i class="fas fa-file-excel text-3xl mb-2"></i>
+                                    <div class="font-medium">Excel File</div>
+                                    <div class="text-sm text-gray-500">Upload .xlsx or .xls file</div>
+                                </button>
+                                
+                                <button @click="selectFileType('google-sheets')" 
+                                        class="p-4 border-2 rounded-lg text-center transition-colors"
+                                        :class="fileType === 'google-sheets' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 hover:border-gray-300'">
+                                    <i class="fab fa-google-drive text-3xl mb-2"></i>
+                                    <div class="font-medium">Google Sheets</div>
+                                    <div class="text-sm text-gray-500">Import from Google Sheets URL</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Excel File Upload -->
+                        <div v-show="fileType === 'excel'" class="space-y-4">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors"
+                                 @dragover.prevent @drop.prevent="handleFileDrop">
+                                <input type="file" ref="fileInput" @change="handleFileSelect" 
+                                       accept=".xlsx,.xls" class="hidden">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                                <div class="text-lg font-medium text-gray-700 mb-2">Drop your Excel file here</div>
+                                <div class="text-sm text-gray-500 mb-4">or click to browse</div>
+                                <button @click="$refs.fileInput.click()" 
+                                        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+                                    Choose File
+                                </button>
+                            </div>
+                            
+                            <div v-if="uploadedFile" class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    <span class="text-green-700">{{ uploadedFile.name }}</span>
+                                    <button @click="removeFile" class="ml-auto text-red-500 hover:text-red-700">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Google Sheets URL -->
+                        <div v-show="fileType === 'google-sheets'" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Google Sheets URL</label>
+                                <input type="url" v-model="googleSheetsUrl" 
+                                       placeholder="https://docs.google.com/spreadsheets/d/..."
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            
+                            <div v-if="googleSheetsUrl" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-link text-blue-500 mr-2"></i>
+                                    <span class="text-blue-700">URL entered</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-end">
+                            <button @click="proceedToStep2" 
+                                    :disabled="!canProceedToStep2"
+                                    class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                Next: Map Columns
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Column Mapping -->
+                <div v-show="currentStep === 2" class="max-w-6xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Map Columns</h3>
+                        
+                        <!-- Sheet Selection -->
+                        <div v-if="availableSheets.length > 1" class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Sheet</label>
+                            <select v-model="selectedSheet" @change="loadSheetData" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option v-for="sheet in availableSheets" :key="sheet" :value="sheet">{{ sheet }}</option>
+                            </select>
+                        </div>
+
+                        <!-- Data Preview -->
+                        <div v-if="previewData" class="mb-6">
+                            <h4 class="text-md font-medium text-gray-700 mb-3">Data Preview (First 5 rows)</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full border border-gray-200 rounded-lg">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th v-for="header in previewData.columnHeaders" :key="header" 
+                                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                                                {{ header }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr v-for="(row, index) in previewData.sampleData.slice(0, 5)" :key="index">
+                                            <td v-for="header in previewData.columnHeaders" :key="header" 
+                                                class="px-4 py-2 text-sm text-gray-900 border-b">
+                                                {{ row[header] || '' }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Column Mapping -->
+                        <div v-if="previewData" class="space-y-4">
+                            <h4 class="text-md font-medium text-gray-700">Map Excel Columns to Product Fields</h4>
+                            
+                            <div v-for="header in previewData.columnHeaders" :key="header" 
+                                 class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                                <div class="w-48">
+                                    <span class="text-sm font-medium text-gray-700">{{ header }}</span>
+                                </div>
+                                <div class="flex-1">
+                                    <select v-model="columnMappings[header]" 
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option value="">-- Skip this column --</option>
+                                        <option v-for="field in productFields" :key="field.value" :value="field.value">
+                                            {{ field.label }} {{ field.required ? '(Required)' : '' }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="w-16 text-center">
+                                    <span v-if="columnMappings[header]" class="text-green-500">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-between">
+                            <button @click="currentStep = 1" 
+                                    class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                Back
+                            </button>
+                            <button @click="proceedToStep3" 
+                                    :disabled="!canProceedToStep3"
+                                    class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                Next: Import
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Import Process -->
+                <div v-show="currentStep === 3" class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Import Products</h3>
+                        
+                        <!-- Import Settings -->
+                        <div class="mb-6 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Import Settings</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" v-model="importSettings.updateExisting" class="mr-2">
+                                        <span class="text-sm text-gray-700">Update existing products</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" v-model="importSettings.skipDuplicates" class="mr-2">
+                                        <span class="text-sm text-gray-700">Skip duplicate products</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Batch Size</label>
+                                <input type="number" v-model="importSettings.batchSize" min="10" max="1000" 
+                                       class="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <!-- Import Summary -->
+                        <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                            <h4 class="font-medium text-gray-700 mb-2">Import Summary</h4>
+                            <div class="text-sm text-gray-600">
+                                <div>File: {{ uploadedFile ? uploadedFile.name : 'Google Sheets' }}</div>
+                                <div>Sheet: {{ selectedSheet }}</div>
+                                <div>Total Rows: {{ previewData ? previewData.totalRows : 0 }}</div>
+                                <div>Mapped Fields: {{ Object.keys(columnMappings).filter(key => columnMappings[key]).length }}</div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <button @click="currentStep = 2" 
+                                    class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                Back
+                            </button>
+                            <button @click="startImport" 
+                                    :disabled="isImporting"
+                                    class="px-6 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i v-if="isImporting" class="fas fa-spinner fa-spin mr-2"></i>
+                                {{ isImporting ? 'Importing...' : 'Start Import' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Import Progress -->
+                <div v-show="currentStep === 4" class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Import Progress</h3>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                <span>Progress</span>
+                                <span>{{ importProgress.processedRows }} / {{ importProgress.totalRows }}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary h-2 rounded-full transition-all duration-300" 
+                                     :style="{ width: importProgress.percentage + '%' }"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600">{{ importProgress.successfulImports }}</div>
+                                <div class="text-sm text-green-700">Successful</div>
+                            </div>
+                            <div class="text-center p-4 bg-red-50 rounded-lg">
+                                <div class="text-2xl font-bold text-red-600">{{ importProgress.failedImports }}</div>
+                                <div class="text-sm text-red-700">Failed</div>
+                            </div>
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600">{{ importProgress.percentage.toFixed(1) }}%</div>
+                                <div class="text-sm text-blue-700">Complete</div>
+                            </div>
+                        </div>
+
+                        <div v-if="importErrors.length > 0" class="mb-6">
+                            <h4 class="font-medium text-gray-700 mb-3">Import Errors</h4>
+                            <div class="max-h-40 overflow-y-auto space-y-2">
+                                <div v-for="error in importErrors.slice(0, 10)" :key="error.id" 
+                                     class="p-3 bg-red-50 border border-red-200 rounded-lg text-sm">
+                                    <div class="font-medium text-red-800">Row {{ error.rowNumber }}: {{ error.columnName }}</div>
+                                    <div class="text-red-600">{{ error.errorMessage }}</div>
+                                </div>
+                            </div>
+                            <div v-if="importErrors.length > 10" class="text-sm text-gray-500 mt-2">
+                                And {{ importErrors.length - 10 }} more errors...
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button @click="finishImport" 
+                                    :disabled="importProgress.status !== 'COMPLETED' && importProgress.status !== 'FAILED'"
+                                    class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                {{ importProgress.status === 'COMPLETED' ? 'View Results' : 'Close' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                currentStep: 1,
+                fileType: 'excel',
+                uploadedFile: null,
+                googleSheetsUrl: '',
+                availableSheets: [],
+                selectedSheet: '',
+                previewData: null,
+                columnMappings: {},
+                productFields: [
+                    { value: 'name', label: 'Product Name', required: true },
+                    { value: 'price', label: 'Price', required: true },
+                    { value: 'description', label: 'Description', required: false },
+                    { value: 'category', label: 'Category', required: false },
+                    { value: 'stock', label: 'Stock Quantity', required: false },
+                    { value: 'image', label: 'Image URL', required: false }
+                ],
+                importSettings: {
+                    updateExisting: false,
+                    skipDuplicates: true,
+                    batchSize: 100
+                },
+                isImporting: false,
+                importProgress: {
+                    totalRows: 0,
+                    processedRows: 0,
+                    successfulImports: 0,
+                    failedImports: 0,
+                    percentage: 0,
+                    status: 'PENDING'
+                },
+                importErrors: [],
+                currentImportId: null
+            },
+            computed: {
+                canProceedToStep2() {
+                    if (this.fileType === 'excel') {
+                        return this.uploadedFile !== null;
+                    } else if (this.fileType === 'google-sheets') {
+                        return this.googleSheetsUrl.trim() !== '';
+                    }
+                    return false;
+                },
+                canProceedToStep3() {
+                    return this.previewData && this.hasRequiredMappings();
+                }
+            },
+            methods: {
+                selectFileType(type) {
+                    this.fileType = type;
+                    this.uploadedFile = null;
+                    this.googleSheetsUrl = '';
+                },
+                handleFileSelect(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        this.uploadedFile = file;
+                        this.loadFileData();
+                    }
+                },
+                handleFileDrop(event) {
+                    const file = event.dataTransfer.files[0];
+                    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+                        this.uploadedFile = file;
+                        this.loadFileData();
+                    }
+                },
+                removeFile() {
+                    this.uploadedFile = null;
+                    this.previewData = null;
+                    this.columnMappings = {};
+                },
+                async loadFileData() {
+                    if (!this.uploadedFile) return;
+                    
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', this.uploadedFile);
+                        
+                        const response = await axios.post('/api/import/upload', formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                        });
+                        
+                        this.availableSheets = response.data.sheets;
+                        this.selectedSheet = this.availableSheets[0];
+                        await this.loadSheetData();
+                        
+                    } catch (error) {
+                        console.error('Error loading file:', error);
+                        alert('Error loading file: ' + error.response?.data || error.message);
+                    }
+                },
+                async loadSheetData() {
+                    if (this.fileType === 'excel' && this.uploadedFile) {
+                        try {
+                            const formData = new FormData();
+                            formData.append('file', this.uploadedFile);
+                            formData.append('sheetName', this.selectedSheet);
+                            
+                            const response = await axios.post('/api/import/preview', formData, {
+                                headers: { 'Content-Type': 'multipart/form-data' }
+                            });
+                            
+                            this.previewData = response.data;
+                            this.initializeColumnMappings();
+                            
+                        } catch (error) {
+                            console.error('Error loading sheet data:', error);
+                            alert('Error loading sheet data: ' + error.response?.data || error.message);
+                        }
+                    } else if (this.fileType === 'google-sheets' && this.googleSheetsUrl) {
+                        try {
+                            // Extract spreadsheet ID from URL
+                            const spreadsheetId = this.extractSpreadsheetId(this.googleSheetsUrl);
+                            
+                            const response = await axios.post('/api/import/preview-google-sheets', {
+                                spreadsheetId: spreadsheetId,
+                                sheetName: this.selectedSheet
+                            });
+                            
+                            this.previewData = response.data;
+                            this.initializeColumnMappings();
+                            
+                        } catch (error) {
+                            console.error('Error loading Google Sheets data:', error);
+                            alert('Error loading Google Sheets data: ' + error.response?.data || error.message);
+                        }
+                    }
+                },
+                extractSpreadsheetId(url) {
+                    const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                    return match ? match[1] : null;
+                },
+                initializeColumnMappings() {
+                    if (this.previewData && this.previewData.suggestedMappings) {
+                        this.columnMappings = { ...this.previewData.suggestedMappings };
+                    } else {
+                        this.columnMappings = {};
+                    }
+                },
+                hasRequiredMappings() {
+                    const mappedFields = Object.values(this.columnMappings).filter(field => field);
+                    return mappedFields.includes('name') && mappedFields.includes('price');
+                },
+                proceedToStep2() {
+                    this.currentStep = 2;
+                    if (this.fileType === 'excel') {
+                        this.loadFileData();
+                    } else {
+                        this.loadGoogleSheetsData();
+                    }
+                },
+                async loadGoogleSheetsData() {
+                    try {
+                        const spreadsheetId = this.extractSpreadsheetId(this.googleSheetsUrl);
+                        const response = await axios.post('/api/import/preview-google-sheets', {
+                            spreadsheetId: spreadsheetId,
+                            sheetName: 'Sheet1' // Default sheet
+                        });
+                        
+                        this.previewData = response.data;
+                        this.availableSheets = [this.selectedSheet];
+                        this.initializeColumnMappings();
+                        
+                    } catch (error) {
+                        console.error('Error loading Google Sheets:', error);
+                        alert('Error loading Google Sheets: ' + error.response?.data || error.message);
+                    }
+                },
+                proceedToStep3() {
+                    this.currentStep = 3;
+                },
+                async startImport() {
+                    this.isImporting = true;
+                    this.currentStep = 4;
+                    
+                    try {
+                        const request = {
+                            fileName: this.uploadedFile ? this.uploadedFile.name : 'Google Sheets',
+                            originalFileName: this.uploadedFile ? this.uploadedFile.name : 'Google Sheets',
+                            fileType: this.fileType === 'excel' ? 'EXCEL' : 'GOOGLE_SHEETS',
+                            googleSheetsUrl: this.googleSheetsUrl,
+                            googleSheetsId: this.fileType === 'google-sheets' ? this.extractSpreadsheetId(this.googleSheetsUrl) : null,
+                            sheetName: this.selectedSheet,
+                            columnMappings: this.columnMappings,
+                            updateExisting: this.importSettings.updateExisting,
+                            skipDuplicates: this.importSettings.skipDuplicates,
+                            batchSize: this.importSettings.batchSize
+                        };
+                        
+                        const response = await axios.post('/api/import/start', request);
+                        this.currentImportId = response.data.id;
+                        
+                        // Start polling for progress
+                        this.pollImportProgress();
+                        
+                    } catch (error) {
+                        console.error('Error starting import:', error);
+                        alert('Error starting import: ' + error.response?.data || error.message);
+                        this.isImporting = false;
+                        this.currentStep = 3;
+                    }
+                },
+                async pollImportProgress() {
+                    if (!this.currentImportId) return;
+                    
+                    try {
+                        const response = await axios.get(`/api/import/status/${this.currentImportId}`);
+                        const status = response.data;
+                        
+                        this.importProgress = {
+                            totalRows: status.totalRows || 0,
+                            processedRows: status.processedRows || 0,
+                            successfulImports: status.successfulImports || 0,
+                            failedImports: status.failedImports || 0,
+                            percentage: status.progressPercentage || 0,
+                            status: status.status
+                        };
+                        
+                        this.importErrors = status.errors || [];
+                        
+                        if (status.status === 'PROCESSING') {
+                            setTimeout(() => this.pollImportProgress(), 2000);
+                        } else {
+                            this.isImporting = false;
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error polling import progress:', error);
+                        this.isImporting = false;
+                    }
+                },
+                finishImport() {
+                    this.currentStep = 1;
+                    this.resetForm();
+                },
+                resetForm() {
+                    this.currentStep = 1;
+                    this.fileType = 'excel';
+                    this.uploadedFile = null;
+                    this.googleSheetsUrl = '';
+                    this.availableSheets = [];
+                    this.selectedSheet = '';
+                    this.previewData = null;
+                    this.columnMappings = {};
+                    this.isImporting = false;
+                    this.importProgress = {
+                        totalRows: 0,
+                        processedRows: 0,
+                        successfulImports: 0,
+                        failedImports: 0,
+                        percentage: 0,
+                        status: 'PENDING'
+                    };
+                    this.importErrors = [];
+                    this.currentImportId = null;
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</body>
+</html>

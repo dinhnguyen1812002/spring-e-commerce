@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Connect to WebSocket
     connectWebSocket();
     
-    // Initialize notification counter
+    // Initialize counters/badges
     initNotificationCounter();
+    initHeaderNotificationBadge();
 });
 
 /**
@@ -19,7 +20,7 @@ function connectWebSocket() {
     const stompClient = Stomp.over(socket);
     
     stompClient.connect({}, function(frame) {
-        console.log('Connected to WebSocket');
+        console.log('Connected to WebSocket for admin notifications');
         
         // Subscribe to admin order notifications
         stompClient.subscribe('/topic/admin/orders', function(message) {
@@ -55,12 +56,34 @@ function initNotificationCounter() {
 }
 
 /**
+ * Initialize header notification badge (bell icon)
+ */
+function initHeaderNotificationBadge() {
+    const badge = document.getElementById('notification-badge');
+    if (badge) {
+        // If badge shows invalid value, normalize
+        const val = parseInt(badge.textContent);
+        if (isNaN(val)) {
+            badge.textContent = '0';
+        }
+        // Hide if zero
+        if (parseInt(badge.textContent) === 0) {
+            badge.classList.add('hidden');
+        }
+    }
+}
+
+/**
  * Handle new order notification
  * @param {Object} notification - Order notification data
  */
 function handleNewOrderNotification(notification) {
-    // Update notification counter
+    // Update counters/badges
     updateNotificationCounter();
+    updateHeaderNotificationBadge();
+    
+    // Update dropdown list in header
+    appendNotificationToDropdown(notification);
     
     // Show toast notification
     showToastNotification(notification);
@@ -86,9 +109,97 @@ function updateNotificationCounter() {
     const counter = document.getElementById('notification-counter');
     if (counter) {
         const currentCount = parseInt(counter.textContent);
-        counter.textContent = (currentCount + 1).toString();
+        counter.textContent = (isNaN(currentCount) ? 1 : currentCount + 1).toString();
         counter.style.display = 'inline-flex';
     }
+}
+
+/**
+ * Update the header bell icon badge
+ */
+function updateHeaderNotificationBadge() {
+    const badge = document.getElementById('notification-badge');
+    if (!badge) return;
+    const current = parseInt(badge.textContent);
+    const next = isNaN(current) ? 1 : current + 1;
+    badge.textContent = next.toString();
+    badge.classList.remove('hidden');
+}
+
+/**
+ * Append a new notification entry to the header dropdown list
+ * @param {Object} notification - Order notification data
+ */
+function appendNotificationToDropdown(notification) {
+    const container = document.getElementById('notifications-list');
+    if (!container) return;
+
+    // Remove empty placeholder if present
+    const placeholder = container.querySelector('.text-center');
+    if (placeholder && placeholder.textContent.includes('No new notifications')) {
+        placeholder.remove();
+    }
+
+    // Format currency
+    const formatter = new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+    });
+
+    // Format date/time
+    const orderDate = notification.orderDate ? new Date(notification.orderDate) : new Date();
+    const formattedDate = orderDate.toLocaleString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    // Build item
+    const item = document.createElement('div');
+    item.className = 'px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100';
+    item.innerHTML = `
+        <div class="flex items-start">
+            <div class="flex-shrink-0 bg-blue-100 text-blue-600 rounded-full p-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+            </div>
+            <div class="ml-3 min-w-0 flex-1">
+                <p class="text-sm font-medium text-gray-900">${escapeHtml(notification.message || 'New order')}</p>
+                <p class="mt-1 text-xs text-gray-500">${escapeHtml(notification.username || 'Customer')} • ${formatter.format(notification.totalAmount || 0)}</p>
+                <p class="mt-1 text-xs text-gray-400">${formattedDate}</p>
+                <div class="mt-2">
+                    <a href="/admin/orders/${notification.id}" class="inline-flex items-center px-2 py-0.5 border border-transparent text-xs leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200">View Order</a>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Prepend the new item
+    container.prepend(item);
+
+    // Keep only the latest 10 items
+    const items = container.querySelectorAll(':scope > div');
+    if (items.length > 10) {
+        for (let i = 10; i < items.length; i++) {
+            items[i].remove();
+        }
+    }
+}
+
+/**
+ * Basic HTML escaping
+ */
+function escapeHtml(text) {
+    if (text == null) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 /**
@@ -127,10 +238,10 @@ function showToastNotification(notification) {
             </div>
             <div class="ml-3 w-0 flex-1">
                 <p class="text-sm font-medium text-gray-900">
-                    ${notification.message}
+                    ${escapeHtml(notification.message)}
                 </p>
                 <p class="mt-1 text-sm text-gray-500">
-                    ${notification.username} - ${formatter.format(notification.totalAmount)}
+                    ${escapeHtml(notification.username)} - ${formatter.format(notification.totalAmount)}
                 </p>
                 <div class="mt-2 flex">
                     <a href="/admin/orders/${notification.id}" class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -184,45 +295,55 @@ function playNotificationSound() {
  */
 function updateOrdersList(notification) {
     // Check if orders table exists
-    const ordersTable = document.querySelector('table tbody');
+    const ordersTable = document.querySelector('#recent-orders-list');
     if (!ordersTable) return;
     
     // Create new row for order
     const newRow = document.createElement('tr');
     newRow.className = 'bg-yellow-50 hover:bg-yellow-100 transition-colors duration-300';
+    newRow.setAttribute('data-order-id', notification.id);
     
     // Format date
     const orderDate = new Date(notification.orderDate);
-    const formattedDate = orderDate.toLocaleDateString('vi-VN');
+    const formattedDate = orderDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const formattedTime = orderDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     
     // Format currency
     const formatter = new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
+        style: 'decimal'
     });
     
-    // Set row content (adjust based on your actual table structure)
+    // Set row content
     newRow.innerHTML = `
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${notification.id}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">#${notification.id}</div>
+        </td>
         <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex items-center">
                 <div class="flex-shrink-0 h-10 w-10">
-                    <img class="h-10 w-10 rounded-full" src="data:image/jpeg;base64,${notification.userAvatar}" alt="${notification.username}">
+                    <img class="h-10 w-10 rounded-full object-cover" src="data:image/jpeg;base64,${notification.userAvatar}" alt="${escapeHtml(notification.username)}">
                 </div>
                 <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">${notification.username}</div>
+                    <div class="text-sm font-medium text-gray-900">${escapeHtml(notification.username)}</div>
+                    <div class="text-sm text-gray-500">New Order</div>
                 </div>
             </div>
         </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formattedDate}</td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatter.format(notification.totalAmount)}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${formattedDate}</div>
+            <div class="text-sm text-gray-500">${formattedTime}</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${formatter.format(notification.totalAmount)} VND</div>
+        </td>
         <td class="px-6 py-4 whitespace-nowrap">
             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                ${notification.status}
+                ${escapeHtml(notification.status || 'PENDING')}
             </span>
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <a href="/admin/orders/${notification.id}" class="text-blue-600 hover:text-blue-900">View</a>
+            <a href="/admin/orders/${notification.id}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
+            <a href="/admin/orders/${notification.id}/edit" class="text-indigo-600 hover:text-indigo-900">Edit</a>
         </td>
     `;
     
@@ -240,19 +361,24 @@ function updateOrdersList(notification) {
  */
 function updateDashboard() {
     // Refresh order count and other statistics
-    fetch('/admin/api/dashboard/stats')
+    fetch('/api/admin/dashboard/summary')
         .then(response => response.json())
         .then(data => {
-            // Update order count
+            // Update order count if element exists
             const orderCountElement = document.querySelector('[data-stat="order-count"]');
-            if (orderCountElement) {
+            if (orderCountElement && data.totalOrders) {
                 orderCountElement.textContent = data.totalOrders;
             }
             
             // Update revenue
             const revenueElement = document.querySelector('[data-stat="revenue"]');
-            if (revenueElement) {
-                revenueElement.textContent = data.revenue;
+            if (revenueElement && data.totalRevenue) {
+                revenueElement.textContent = new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                    notation: 'compact',
+                    compactDisplay: 'short'
+                }).format(data.totalRevenue);
             }
             
             // Update charts if they exist

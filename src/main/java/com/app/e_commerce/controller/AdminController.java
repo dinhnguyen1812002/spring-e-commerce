@@ -1,9 +1,11 @@
 package com.app.e_commerce.controller;
 
-import com.app.e_commerce.entity.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
-import com.app.e_commerce.service.impl.DashboardServiceImpl;
-import com.app.e_commerce.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +16,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.app.e_commerce.entity.Category;
+import com.app.e_commerce.entity.Order;
+import com.app.e_commerce.entity.Product;
+import com.app.e_commerce.entity.Traffic;
+import com.app.e_commerce.entity.User;
+import com.app.e_commerce.service.impl.DashboardServiceImpl;
+import com.app.e_commerce.services.CategoryService;
+import com.app.e_commerce.services.OrderService;
+import com.app.e_commerce.services.ProductService;
+import com.app.e_commerce.services.TrafficService;
+import com.app.e_commerce.services.UserService;
 
 @Controller
 @RequestMapping("/admin")
@@ -82,6 +89,7 @@ private DashboardServiceImpl dashboardService;
         model.addAttribute("currentMonthRevenue", currentMonthRevenue);
         model.addAttribute("revenueGrowth", growthPercentage);
         model.addAttribute("orders", recentOrders);
+
         return "admin/dashboard";
     }
 //    @GetMapping("/products/edit/{id}")
@@ -166,6 +174,16 @@ private DashboardServiceImpl dashboardService;
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orderPage.getTotalPages());
         return "admin/admin-orders";
+    }
+
+    @GetMapping("/product-import")
+    public String productImport() {
+        return "admin/product-import";
+    }
+
+    @GetMapping("/import-history")
+    public String importHistory() {
+        return "admin/import-history";
     }
 //
 //    @GetMapping("/revenue")
