@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-totalRevenue<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -469,10 +469,9 @@ totalRevenue<html lang="en" xmlns:th="http://www.thymeleaf.org">
                         class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
                       >
                         <a
-                          th:href="@{/admin/orders/{id}(id=${order.id})}"
+                          th:href="@{/orders/{id}(id=${order.id})}"
                           class="text-blue-600 hover:text-blue-900 mr-3"
-                          >View</a
-                        >
+                          >View</a>
                         <a
                           th:href="@{/admin/orders/{id}/edit(id=${order.id})}"
                           class="text-indigo-600 hover:text-indigo-900"
