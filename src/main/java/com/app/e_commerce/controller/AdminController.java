@@ -48,8 +48,10 @@ public class AdminController {
 
     @Autowired
     private TrafficService trafficService;
-@Autowired
-private DashboardServiceImpl dashboardService;
+
+    @Autowired
+    private DashboardServiceImpl dashboardService;
+
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // Add dashboard statistics
@@ -168,7 +170,8 @@ private DashboardServiceImpl dashboardService;
     }
 
     @GetMapping("/orders")
-    public String orders(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public String orders(Model model, @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "10") int size) {
         Page<Order> orderPage = orderService.getAllOrders(PageRequest.of(page, size));
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("currentPage", page);
