@@ -224,7 +224,7 @@ public class TrafficService {
         data.put("trafficSources", parseTrafficSources(traffic.getTrafficSources()));
 
         // Send update
-        messagingTemplate.convertAndSend("/topic/trafficUpdates", data);
+        messagingTemplate.convertAndSend("/topic/trafficUpdates", (Object) data);
     }
 
     /**
