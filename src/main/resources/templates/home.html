@@ -1,134 +1,155 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{Layout :: layout(~{::main})}">
-<main class="min-h-screen bg-gray-50">
-    <!-- Hero Section -->
-    <section class="bg-blue-600 text-white bg-[url(/images/storage.jpg)] ">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <main class="min-h-screen bg-gray-50">
+        <!-- Hero Section -->
+        <section class="bg-blue-600 text-white bg-[url(/images/storage.jpg)] ">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
-            <div class="max-w-3xl mx-auto text-center">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6">
-                    Discover Amazing Products
-                </h1>
-                <p class="text-xl md:text-2xl mb-8 text-blue-100">
-                    Shop the latest trends with unbeatable prices and quality
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button class="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 transform hover:scale-105">
-                        Shop Now
-                    </button>
-                    <button class="border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:text-blue-600 transition duration-300">
-                        Learn More
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
-        <!-- Recommended Products -->
-        <section id="recommended-products" class="mb-16">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Recommended For You</h2>
-                    <p class="text-gray-600">Handpicked products just for you</p>
-                </div>
-                <a th:href="@{/recommendations}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center group">
-                    View All
-                    <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </a>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <div th:each="product : ${recommendedProducts}" class="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-                    <!-- Product Image Container -->
-                    <div class="relative w-full h-56 bg-gray-100 overflow-hidden">
-                        <a th:href="@{/products/{id}(id=${product.id})}">
-                            <img th:src="@{'/' + ${product.image}}" th:alt="${product.name}" class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500">
-                        </a>
-
-                        <!-- Overlay badges -->
-                        <div class="absolute top-3 left-3 flex flex-col space-y-2">
-                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            -20%
-                        </span>
-                            <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            NEW
-                        </span>
-                        </div>
-
-                        <!-- Quick actions overlay -->
-                        <div class="absolute top-3 right-3 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
-                                <svg class="w-5 h-5 text-gray-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                </svg>
-                            </button>
-                            <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
-                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <!-- Quick view button -->
-                        <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                            <a th:href="@{/products/{id}(id=${product.id})}" class="bg-white text-gray-900 py-2 px-4 rounded-full font-semibold text-sm shadow-lg hover:bg-gray-50 transition-colors">
-                                Quick View
-                            </a>
-                        </div>
+                <div class="max-w-3xl mx-auto text-center">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                        Discover Amazing Products
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                        Shop the latest trends with unbeatable prices and quality
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button
+                            class="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 transform hover:scale-105">
+                            Shop Now
+                        </button>
+                        <button
+                            class="border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:text-blue-600 transition duration-300">
+                            Learn More
+                        </button>
                     </div>
+                </div>
+            </div>
+        </section>
 
-                    <!-- Product Info -->
-                    <div class="p-5">
-                        <!-- Category -->
-                        <div class="flex items-center justify-between mb-2">
-                       <span th:each="category, iterStat : ${product.categories}"
-                             th:text="${category.name + (iterStat.last ? '' : ', ')}"
-                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                       >
-                            <div class="flex items-center">
-                                <span class="text-sm font-medium text-gray-700 mr-1" th:number="${products}"></span>
-                                <div class="flex text-yellow-400">
-                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+            <!-- Recommended Products -->
+            <section id="recommended-products" class="mb-16">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">Recommended For You</h2>
+                        <p class="text-gray-600">Handpicked products just for you</p>
+                    </div>
+                    <a th:href="@{/recommendations}"
+                        class="text-blue-600 hover:text-blue-800 font-medium flex items-center group">
+                        View All
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div th:each="product : ${recommendedProducts}"
+                        class="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+                        <!-- Product Image Container -->
+                        <div class="relative w-full h-56 bg-gray-100 overflow-hidden">
+                            <a th:href="@{/products/{id}(id=${product.id})}">
+                                <img th:src="@{'/' + ${product.image}}" th:alt="${product.name}"
+                                    class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500">
+                            </a>
+
+                            <!-- Overlay badges -->
+                            <div class="absolute top-3 left-3 flex flex-col space-y-2">
+                                <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                    -20%
+                                </span>
+                                <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                    NEW
+                                </span>
+                            </div>
+
+                            <!-- Quick actions overlay -->
+                            <div
+                                class="absolute top-3 right-3 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-600 hover:text-red-500" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                     </svg>
-                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                </button>
+                                <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
-                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                    </svg>
-                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                    </svg>
-                                    <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
-                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                    </svg>
-                                </div>
-                                <span class="text-sm text-gray-500 ml-1">(128)</span>
+                                </button>
+                            </div>
+
+                            <!-- Quick view button -->
+                            <div
+                                class="absolute bottom-3 left-1/2 transform -translate-x-1/2 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                <a th:href="@{/products/{id}(id=${product.id})}"
+                                    class="bg-white text-gray-900 py-2 px-4 rounded-full font-semibold text-sm shadow-lg hover:bg-gray-50 transition-colors">
+                                    Quick View
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Product Name -->
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                            <a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}">
-                                Premium Wireless Headphones with Noise Cancellation
-                            </a>
-                        </h3>
+                        <!-- Product Info -->
+                        <div class="p-5">
+                            <!-- Category -->
+                            <div class="flex items-center justify-between mb-2">
+                                <span th:each="category, iterStat : ${product.categories}"
+                                    th:text="${category.name + (iterStat.last ? '' : ', ')}"
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <div class="flex items-center">
+                                        <span class="text-sm font-medium text-gray-700 mr-1"
+                                            th:number="${products}"></span>
+                                        <div class="flex text-yellow-400">
+                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                            </svg>
+                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                            </svg>
+                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                            </svg>
+                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                            </svg>
+                                            <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-gray-500 ml-1">(128)</span>
+                                    </div>
+                            </div>
 
-                        <!-- Product Description -->
-                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">
-                            High-quality audio with premium sound and comfort design for all-day use.
-                        </p>
+                            <!-- Product Name -->
+                            <h3
+                                class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                <a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}">
+                                    Premium Wireless Headphones with Noise Cancellation
+                                </a>
+                            </h3>
 
-                        <!-- Price and Stock -->
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center space-x-2">
-                            <span class="text-xl font-bold text-gray-900" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                            <!-- Product Description -->
+                            <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                High-quality audio with premium sound and comfort design for all-day use.
+                            </p>
+
+                            <!-- Price and Stock -->
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xl font-bold text-gray-900" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
                                 1.299.000 ₫
                             </span>
                                 <span class="text-sm text-gray-500 line-through">

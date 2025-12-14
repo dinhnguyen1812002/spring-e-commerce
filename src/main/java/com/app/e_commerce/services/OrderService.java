@@ -201,6 +201,19 @@ public class OrderService {
     }
 
     public Order findByIdAndUserOrThrow(String orderId, User user) {
+        // Check if user is admin - admins can view any order
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> "ADMIN".equals(role.getName()));
+        
+        if (isAdmin) {
+            // Admin can access any order
+            return orderRepository.findById(orderId)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            String.format("Order with ID %s not found", orderId)
+                    ));
+        }
+        
+        // Regular users can only access their own orders
         return findByIdAndUser(orderId, user)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Order with ID %s not found for user %s", orderId, user.getUsername())

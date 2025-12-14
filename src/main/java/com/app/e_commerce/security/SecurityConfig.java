@@ -57,6 +57,15 @@ public class SecurityConfig {
                         
                         .requestMatchers("/recommendations/popular").permitAll()
                         .requestMatchers("/recommendations").permitAll()
+                        
+                        // Invoice API endpoints
+                        .requestMatchers("/api/invoices/**").authenticated()
+                        .requestMatchers("/api/admin/invoice-templates/**").hasAnyAuthority("ADMIN", "INVOICE_MANAGER")
+                        
+                        // Invoice UI endpoints
+                        .requestMatchers("/invoices/**").authenticated()
+                        .requestMatchers("/admin/invoice-templates/**").hasAnyAuthority("ADMIN", "INVOICE_MANAGER")
+                        
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
                         .requestMatchers("/api/**").hasAnyAuthority("ADMIN")
 

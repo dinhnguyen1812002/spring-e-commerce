@@ -6,13 +6,14 @@ This is the main layout file. Pages can use this layout by setting the following
 This requires the page to have a <title> and a <main> element.
 -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:fragment="layout(mainContent)">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    th:fragment="layout(mainContent)">
 
-    <!-- Add user ID for WebSocket notifications if user is authenticated -->
-    <meta name="user-id" th:if="${#authentication != null && #authentication.principal != null}" 
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Add user ID for WebSocket notifications if user is authenticated -->
+        <meta name="user-id" th:if="${#authentication != null && #authentication.principal != null}" 
           th:content="${#authentication.principal}">
 
     <!-- The title of the page will be replaced by the content of the <title> tag in the child template -->
@@ -73,7 +74,7 @@ This requires the page to have a <title> and a <main> element.
 <header th:replace="~{fragments/header :: header}"></header>
 
 <!-- Main content from the calling page is inserted here. -->
-<div th:insert="${mainContent}"></div>
+<main th:insert="${mainContent}"></main>
 
 <!-- Footer fragment is inserted here -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
