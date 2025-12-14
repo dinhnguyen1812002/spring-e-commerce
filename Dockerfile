@@ -8,7 +8,7 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 # Stage 2: Create the final image
-FROM eclipse-temurin:25-jdk-alpine-jammy
+FROM eclipse-temurin:25-jdk-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
