@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title th:text="${title}">Template Form</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            .code-editor {
+                font-family: 'Monaco', 'Menlo', monospace;
+                font-size: 13px;
+                line-height: 1.6;
+            }
+
+            .code-editor:focus {
+                outline: none;
+            }
+
+            .color-preview {
+                background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            }
+
+            .tab-btn.active {
+                color: #2563eb;
+                border-color: #2563eb;
+                background: rgba(37, 99, 235, 0.05);
+            }
+
+            .tab-content {
+                display: none;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50">
+        <div class="min-h-screen flex">
+            <!-- Sidebar -->
+            <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-200">
+                <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="flex-1 lg:pl-64">
+                <!-- Header -->
+                <header class="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+                    <div class="flex items-center justify-between h-16 px-6">
+                        <div class="flex items-center gap-4">
+                            <a href="/admin/invoice-templates"
+                                class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-xl hover:bg-gray-200">
+                                <i class="fas fa-arrow-left text-gray-600"></i>
+                            </a>
+                            <div>
+                                <h1 class="text-xl font-semibold text-gray-800"
+                                    th:text="${isEdit ? 'Chỉnh sửa Template' : 'Tạo Template mới'}">Template Form</h1>
+                                <p class="text-sm text-gray-500">Thiết kế mẫu hóa đơn</p>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Content -->
+                <main class="p-6">
+                    <form
+                        th:action="${isEdit ? '/admin/invoice-templates/edit/' + template.id : '/admin/invoice-templates/create'}"
+                        method="post" th:object="${template}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Left Column -->
+                            <div class="lg:col-span-2 space-y-6">
+                                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                                    <!-- Tabs -->
+                                    <div class="flex border-b border-gray-100">
+                                        <button type="button" onclick="showTab('basic')" id="tab-basic"
+                                            class="tab-btn active flex-1 px-4 py-3.5 text-sm font-medium border-b-2 border-transparent">
+                                            <i class="fas fa-info-circle mr-2"></i>Thông tin
+                                        </button>
+                                        <button type="button" onclick="showTab('html')" id="tab-html"
+                                            class="tab-btn flex-1 px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-gray-500">
+                                            <i class="fas fa-code mr-2"></i>HTML
+                                        </button>
+                                        <button type="button" onclick="showTab('css')" id="tab-css"
+                                            class="tab-btn flex-1 px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-gray-500">
+                                            <i class="fas fa-paint-brush mr-2"></i>CSS
+                                        </button>
+                                    </div>
+
+                                    <div class="p-6">
+                                        <!-- Basic Tab -->
+                                        <div id="content-basic" class="tab-content active space-y-5">
+                                            <div>
+                                                <label for="name"
+                                                    class="block text-sm font-medium text-gray-700 mb-2">Tên Template
+                                                    <span class="text-red-500">*</span></label>
+                                                <input type="text" id="name" th:field="*{name}"
+                                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    placeholder="VD: Hóa đơn tiêu chuẩn">
+                                                <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="mt-2 text-sm text-red-600"></p>
+                                        </div>
+                                        <div>
+                                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                                            <textarea id="description" th:field="*{description}" rows="3" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Mô tả ngắn..."></textarea>
+                                        </div>
+                                        <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                                            <h4 class="text-sm font-semibold text-blue-900 mb-2"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Biến có sẵn</h4>
+                                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                                <code class="bg-white px-2 py-1 rounded text-blue-700">${invoice.invoiceNumber}</code>
+                                                <code class="bg-white px-2 py-1 rounded text-blue-700">${invoice.customerName}</code>
+                                                <code class="bg-white px-2 py-1 rounded text-blue-700">${invoice.totalAmount}</code>
+                                                <code class="bg-white px-2 py-1 rounded text-blue-700">${invoice.items}</code>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- HTML Tab -->
+                                    <div id="content-html" class="tab-content">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <label class="text-sm font-medium text-gray-700">Nội dung HTML <span class="text-red-500">*</span></label>
+                                            <button type="button" onclick="insertSampleTemplate()" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                                                <i class="fas fa-magic mr-1"></i>Chèn mẫu
+                                            </button>
+                                        </div>
+                                        <div class="rounded-xl overflow-hidden border border-gray-700">
+                                            <div class="flex items-center justify-between px-4 py-2 bg-gray-800">
+                                                <div class="flex gap-2">
+                                                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                                                </div>
+                                                <span class="text-xs text-gray-400">template.html</span>
+                                            </div>
+                                            <textarea id="htmlContent" th:field="*{htmlContent}" rows="20" class="code-editor w-full px-4 py-4 bg-gray-900 text-green-400 resize-none" placeholder="<!DOCTYPE html>..."></textarea>
+                                        </div>
+                                        <p th:if="${#fields.hasErrors('htmlContent')}" th:errors="*{htmlContent}" class="mt-2 text-sm text-red-600"></p>
+                                    </div>
+
+                                    <!-- CSS Tab -->
+                                    <div id="content-css" class="tab-content">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">CSS tùy chỉnh</label>
+                                        <div class="rounded-xl overflow-hidden border border-gray-700">
+                                            <div class="flex items-center justify-between px-4 py-2 bg-gray-800">
+                                                <div class="flex gap-2">
+                                                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                                                </div>
+                                                <span class="text-xs text-gray-400">styles.css</span>
+                                            </div>
+                                            <textarea id="customCss" th:field="*{customCss}" rows="14" class="code-editor w-full px-4 py-4 bg-gray-900 text-purple-400 resize-none" placeholder="/* Custom CSS */"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="space-y-6">
+                            <!-- Settings -->
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                                <h3 class="font-semibold text-gray-900 mb-4"><i class="fas fa-cog text-gray-400 mr-2"></i>Cài đặt</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Trạng thái</label>
+                                        <select id="status" th:field="*{status}" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white">
+                                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">Status</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-700">Mặc định</p>
+                                            <p class="text-xs text-gray-500">Sử dụng cho hóa đơn mới</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="isDefault" th:field="*{isDefault}" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Colors -->
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                                <h3 class="font-semibold text-gray-900 mb-4"><i class="fas fa-palette text-gray-400 mr-2"></i>Màu sắc</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Màu chính</label>
+                                        <div class="flex items-center gap-3">
+                                            <input type="color" id="primaryColorPicker" value="#3B82F6" onchange="document.getElementById('primaryColor').value = this.value; updateColorPreview();" class="w-12 h-12 rounded-xl cursor-pointer border-2 border-gray-200 p-1">
+                                            <input type="text" id="primaryColor" th:field="*{primaryColor}" oninput="updateColorPreview()" class="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm font-mono" placeholder="#3B82F6">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Màu phụ</label>
+                                        <div class="flex items-center gap-3">
+                                            <input type="color" id="secondaryColorPicker" value="#1E40AF" onchange="document.getElementById('secondaryColor').value = this.value; updateColorPreview();" class="w-12 h-12 rounded-xl cursor-pointer border-2 border-gray-200 p-1">
+                                            <input type="text" id="secondaryColor" th:field="*{secondaryColor}" oninput="updateColorPreview()" class="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm font-mono" placeholder="#1E40AF">
+                                        </div>
+                                    </div>
+                                    <div id="colorPreview" class="h-16 rounded-xl color-preview" style="--primary: #3B82F6; --secondary: #1E40AF;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Font -->
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                                <h3 class="font-semibold text-gray-900 mb-4"><i class="fas fa-font text-gray-400 mr-2"></i>Font</h3>
+                                <select id="fontFamily" th:field="*{fontFamily}" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white">
+                                    <option value="Arial, sans-serif">Arial</option>
+                                    <option value="'Times New Roman', serif">Times New Roman</option>
+                                    <option value="'Roboto', sans-serif">Roboto</option>
+                                </select>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex flex-col gap-3">
+                                <button type="submit" class="w-full px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium">
+                                    <i class="fas fa-save mr-2"></i><span th:text="${isEdit ? 'Cập nhật' : 'Tạo mới'}">Lưu</span>
+                                </button>
+                                <a href="/admin/invoice-templates" class="w-full px-6 py-3 text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 font-medium text-center">Hủy</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+                el.classList.add('text-gray-500');
+            });
+            // Show selected tab
+            document.getElementById('content-' + tabName).classList.add('active');
+            const btn = document.getElementById('tab-' + tabName);
+            btn.classList.add('active');
+            btn.classList.remove('text-gray-500');
+        }
+
+        function updateColorPreview() {
+            const primary = document.getElementById('primaryColor').value || '#3B82F6';
+            const secondary = document.getElementById('secondaryColor').value || '#1E40AF';
+            const preview = document.getElementById('colorPreview');
+            preview.style.setProperty('--primary', primary);
+            preview.style.setProperty('--secondary', secondary);
+        }
+
+        function insertSampleTemplate() {
+            const sample = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hóa đơn</title>
+    <style>
+        body { font-family: Arial; padding: 40px; }
+        .invoice { max-width: 800px; margin: 0 auto; }
+        h1 { color: #3B82F6; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #3B82F6; color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+    </style>
+</head>
+<body>
+    <div class="invoice">
+        <h1>HÓA ĐƠN</h1>
+        <p>Mã: <strong th:text="\${invoice.invoiceNumber}">INV-001</strong></p>
+        <p>Khách hàng: <span th:text="\${invoice.customerName}">Tên</span></p>
+        <table>
+            <thead>
+                <tr><th>Sản phẩm</th><th>SL</th><th>Thành tiền</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : \${invoice.items}">
+                    <td th:text="\${item.productName}">SP</td>
+                    <td th:text="\${item.quantity}">1</td>
+                    <td th:text="\${item.totalPrice}">0</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="text-align: right; margin-top: 20px;"><strong>Tổng: </strong><span th:text="\${invoice.totalAmount}">0</span> VND</p>
+    </div>
+</body>
+</html>`;
+            document.getElementById('htmlContent').value = sample;
+            showTab('html');
+        }
+
+        // Init color pickers
+        document.addEventListener('DOMContentLoaded', function () {
+            const primary = document.getElementById('primaryColor').value;
+            const secondary = document.getElementById('secondaryColor').value;
+            if (primary) document.getElementById('primaryColorPicker').value = primary;
+            if (secondary) document.getElementById('secondaryColorPicker').value = secondary;
+            updateColorPreview();
+        });
+    </script>
+</body>
+</html>

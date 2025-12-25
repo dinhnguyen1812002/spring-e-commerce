@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Panel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-</head>
-<body>
-<div th:fragment="profile-sidebar" class="w-64 bg-white h-screen flex flex-col border-r shadow-sm">
-    <!-- Header -->
-    <div class="p-6 border-b">
-        <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
-    </div>
+    <head>
+        <meta charset="UTF-8">
+        <title>Admin Panel</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- Navigation -->
-    <nav class="mt-6 flex-1">
-        <a th:href="@{/users/edit/{id}(id=${#authentication.principal.id})}"
+    </head>
+
+    <body>
+        <div th:fragment="profile-sidebar"
+            class="w-64 bg-white min-h-screen sticky top-0 flex flex-col border-r shadow-sm flex-shrink-0">
+            <!-- Header -->
+            <div class="p-6 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="mt-6 flex-1">
+                <a th:href="@{/users/edit/{id}(id=${#authentication.principal.id})}"
            class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Profile</a>
         <a th:href="@{/orders}"
            class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Orders</a>

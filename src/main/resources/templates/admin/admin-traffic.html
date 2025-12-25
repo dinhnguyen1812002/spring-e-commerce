@@ -1,136 +1,96 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Traffic Analytics</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#64748B',
-                        success: '#10B981',
-                        warning: '#F59E0B',
-                        danger: '#EF4444'
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-gray-50">
-<div class="flex h-screen">
-    <!-- Sidebar -->
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Header -->
-        <header class="bg-white shadow-sm border-b border-gray-200">
-            <div class="flex items-center justify-between px-6 py-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Traffic Analytics</h2>
-                    <p class="text-sm text-gray-600 mt-1">Monitor your website performance in real-time</p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <!-- Live Status -->
-                    <div class="flex items-center bg-green-50 px-3 py-1 rounded-full">
-                        <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin - Traffic Analytics</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+
+    <body>
+        <th:block th:replace="~{layout/admin-base :: layout(
+        title='Traffic Analytics',
+        pageTitle='Traffic Analytics',
+        pageDescription='Monitor your website performance in real-time'
+    )}">
+            <th:block th:fragment="content">
+                <!-- Live Status Badge -->
+                <div class="flex items-center justify-end mb-6">
+                    <div class="flex items-center bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                         <span class="text-sm font-medium text-green-700">Live</span>
                     </div>
-
-                    <!-- Time Filter -->
-                    <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
-                        <option>Last 7 days</option>
-                        <option>Last 30 days</option>
-                        <option>Last 90 days</option>
-                    </select>
-
-                    <!-- Notifications -->
-                    <div class="relative">
-                        <button class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
-                            <i class="fas fa-bell text-lg"></i>
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-                        </button>
-                    </div>
                 </div>
-            </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Today's Visitors -->
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Today's Visitors</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1" th:text="${todayVisitors}">2,547</p>
-                            <p th:class="${visitorGrowth >= 0 ? 'text-sm text-green-600 mt-1' : 'text-sm text-red-600 mt-1'}">
-                                <i th:class="${visitorGrowth >= 0 ? 'fas fa-arrow-up mr-1' : 'fas fa-arrow-down mr-1'}"></i>
-                                <span th:text="${visitorGrowth >= 0 ? '+' : ''} + ${#numbers.formatDecimal(visitorGrowth, 1, 1)} + '%'">+12.5%</span>
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Today's Visitors -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Today's Visitors</p>
+                                <p class="text-2xl font-bold text-gray-900 mt-1" th:text="${todayVisitors ?: 0}">2,547
+                                </p>
+                                <p th:if="${visitorGrowth != null}"
+                                    th:class="${visitorGrowth >= 0 ? 'text-sm text-green-600 mt-1' : 'text-sm text-red-600 mt-1'}">
+                                    <i
+                                        th:class="${visitorGrowth >= 0 ? 'fas fa-arrow-up mr-1' : 'fas fa-arrow-down mr-1'}"></i>
+                                    <span th:text="${visitorGrowth >= 0 ? '+' : ''} + ${#numbers.formatDecimal(visitorGrowth, 1, 1)} + '%'">+12.5%</span>
                             </p>
                         </div>
-                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                             <i class="fas fa-users text-blue-600 text-lg"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Page Views -->
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-600">Page Views</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1" th:text="${todayPageViews}">8,942</p>
-                            <p th:class="${pageViewGrowth >= 0 ? 'text-sm text-green-600 mt-1' : 'text-sm text-red-600 mt-1'}">
+                            <p class="text-sm font-medium text-gray-500">Page Views</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1" th:text="${todayPageViews ?: 0}">8,942</p>
+                            <p th:if="${pageViewGrowth != null}" th:class="${pageViewGrowth >= 0 ? 'text-sm text-green-600 mt-1' : 'text-sm text-red-600 mt-1'}">
                                 <i th:class="${pageViewGrowth >= 0 ? 'fas fa-arrow-up mr-1' : 'fas fa-arrow-down mr-1'}"></i>
                                 <span th:text="${pageViewGrowth >= 0 ? '+' : ''} + ${#numbers.formatDecimal(pageViewGrowth, 1, 1)} + '%'">+8.2%</span>
                             </p>
                         </div>
-                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                             <i class="fas fa-eye text-green-600 text-lg"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Bounce Rate -->
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-600">Bounce Rate</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1" th:text="${#numbers.formatDecimal(bounceRate, 1, 1)} + '%'">34.5%</p>
-                            <p th:class="${bounceRateChange <= 0 ? 'text-sm text-green-600 mt-1' : 'text-sm text-red-600 mt-1'}">
+                            <p class="text-sm font-medium text-gray-500">Bounce Rate</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1" th:text="${bounceRate != null ? #numbers.formatDecimal(bounceRate, 1, 1) + '%' : '0%'}">34.5%</p>
+                            <p th:if="${bounceRateChange != null}" th:class="${bounceRateChange <= 0 ? 'text-sm text-green-600 mt-1' : 'text-sm text-red-600 mt-1'}">
                                 <i th:class="${bounceRateChange <= 0 ? 'fas fa-arrow-down mr-1' : 'fas fa-arrow-up mr-1'}"></i>
                                 <span th:text="${bounceRateChange <= 0 ? '' : '+'} + ${#numbers.formatDecimal(bounceRateChange, 1, 1)} + '%'">-2.1%</span>
                             </p>
                         </div>
-                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                             <i class="fas fa-chart-line text-orange-600 text-lg"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Session Duration -->
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-600">Avg. Session</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1" th:text="${avgSessionDuration}">3m 42s</p>
-                            <p th:class="${sessionDurationChange >= 0 ? 'text-sm text-green-600 mt-1' : 'text-sm text-red-600 mt-1'}">
+                            <p class="text-sm font-medium text-gray-500">Avg. Session</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1" th:text="${avgSessionDuration ?: '0m 0s'}">3m 42s</p>
+                            <p th:if="${sessionDurationChange != null}" th:class="${sessionDurationChange >= 0 ? 'text-sm text-green-600 mt-1' : 'text-sm text-red-600 mt-1'}">
                                 <i th:class="${sessionDurationChange >= 0 ? 'fas fa-arrow-up mr-1' : 'fas fa-arrow-down mr-1'}"></i>
                                 <span th:text="${sessionDurationChange >= 0 ? '+' : ''} + ${#numbers.formatDecimal(sessionDurationChange, 1, 1)} + '%'">+15.3%</span>
                             </p>
                         </div>
-                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                             <i class="fas fa-clock text-purple-600 text-lg"></i>
                         </div>
                     </div>
@@ -140,15 +100,9 @@
             <!-- Charts Row -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- Visit Trends Chart -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-800">Visit Trends</h3>
-                            <div class="flex space-x-2">
-                                <button class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">Visitors</button>
-                                <button class="px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-full">Page Views</button>
-                            </div>
-                        </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900">Visit Trends</h3>
                     </div>
                     <div class="p-6">
                         <canvas id="visitsChart" height="300"></canvas>
@@ -156,9 +110,9 @@
                 </div>
 
                 <!-- Traffic Sources -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Traffic Sources</h3>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900">Traffic Sources</h3>
                     </div>
                     <div class="p-6">
                         <canvas id="sourceChart" height="300"></canvas>
@@ -169,87 +123,57 @@
             <!-- Data Tables Row -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- Top Pages -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Top Pages</h3>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900">Top Pages</h3>
                     </div>
-                    <div class="overflow-hidden">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Page</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Views</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
                             </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                            <tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 text-sm text-gray-900">/home</td>
                                 <td class="px-6 py-4 text-sm text-gray-900">3,247</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">2m 35s</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">2m 35s</td>
                             </tr>
-                            <tr>
+                            <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 text-sm text-gray-900">/products</td>
                                 <td class="px-6 py-4 text-sm text-gray-900">2,891</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">4m 12s</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">4m 12s</td>
                             </tr>
-                            <tr>
+                            <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 text-sm text-gray-900">/about</td>
                                 <td class="px-6 py-4 text-sm text-gray-900">1,543</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">1m 48s</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">1m 48s</td>
                             </tr>
-                            <tr>
-                                <td class="px-6 py-4 text-sm text-gray-900">/contact</td>
-                                <td class="px-6 py-4 text-sm text-gray-900">892</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">3m 22s</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Real-Time Visitors -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div class="p-6 border-b border-gray-200">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-800">Real-Time Visitors</h3>
-                            <span class="text-2xl font-bold text-green-600" th:text="${realTimeVisitors}">47</span>
+                            <h3 class="text-lg font-semibold text-gray-900">Real-Time Visitors</h3>
+                            <span class="text-2xl font-bold text-green-600" th:text="${realTimeVisitors ?: 0}">47</span>
                         </div>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4" id="real-time-visitors-list">
-                            <!-- Real-time visitors per page -->
-                            <div th:if="${realTimeVisitorsPerPage.isEmpty()}" class="text-center text-gray-500 py-4">
+                            <div th:if="${realTimeVisitorsPerPage == null || realTimeVisitorsPerPage.isEmpty()}" class="text-center text-gray-500 py-4">
                                 No active visitors
                             </div>
-
-                            <div th:each="entry, status : ${realTimeVisitorsPerPage}" 
-                                 th:if="${entry.value > 0}"
-                                 class="flex items-center justify-between">
+                            <div th:each="entry, status : ${realTimeVisitorsPerPage}" th:if="${entry.value > 0}" class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <div th:class="${'w-3 h-3 rounded-full mr-3 ' + 
-                                        (status.index % 4 == 0 ? 'bg-green-400' : 
-                                        (status.index % 4 == 1 ? 'bg-blue-400' : 
-                                        (status.index % 4 == 2 ? 'bg-yellow-400' : 'bg-purple-400')))}"></div>
+                                    <div th:class="${'w-3 h-3 rounded-full mr-3 ' + (status.index % 4 == 0 ? 'bg-green-400' : (status.index % 4 == 1 ? 'bg-blue-400' : (status.index % 4 == 2 ? 'bg-yellow-400' : 'bg-purple-400')))}"></div>
                                     <span class="text-sm text-gray-700" th:text="${entry.key}">Page</span>
                                 </div>
                                 <span class="text-sm font-medium text-gray-900" th:text="${entry.value} + ' users'">0 users</span>
-                            </div>
-
-                            <!-- Fallback static data -->
-                            <div th:if="${realTimeVisitorsPerPage.isEmpty() || realTimeVisitorsPerPage.size() == 0}" class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
-                                    <span class="text-sm text-gray-700">/home</span>
-                                </div>
-                                <span class="text-sm font-medium text-gray-900">23 users</span>
-                            </div>
-                            <div th:if="${realTimeVisitorsPerPage.isEmpty() || realTimeVisitorsPerPage.size() == 0}" class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 bg-blue-400 rounded-full mr-3"></div>
-                                    <span class="text-sm text-gray-700">/products</span>
-                                </div>
-                                <span class="text-sm font-medium text-gray-900">12 users</span>
                             </div>
                         </div>
                     </div>
@@ -257,340 +181,117 @@
             </div>
 
             <!-- Visit Stats Table -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div class="p-6 border-b border-gray-200">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-gray-800">Visit Statistics</h3>
-                        <button class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-download mr-2"></i>
-                            Export
+                        <h3 class="text-lg font-semibold text-gray-900">Visit Statistics</h3>
+                        <button class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Export
                         </button>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full">
                         <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visitors</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Page Views</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bounce Rate</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Session</th>
-                        </tr>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Visitors</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Page Views</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bounce Rate</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avg. Session</th>
+                            </tr>
                         </thead>
-                        <tbody id="visit-stats-body" class="bg-white divide-y divide-gray-200">
-                        <tr th:each="visit : ${visits}">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}">2024-01-15</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#numbers.formatInteger(visit.count, 1, 'COMMA')}">2,547</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#numbers.formatInteger(visit.pageViews, 1, 'COMMA')}">8,942</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#numbers.formatDecimal(visit.getBounceRate(), 1, 1)} + '%'">34.5%</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:with="seconds=${visit.getAvgSessionDuration()}, minutes=${seconds / 60}, remainingSeconds=${seconds % 60}" 
-                                th:text="${#numbers.formatInteger(minutes, 1)} + 'm ' + ${#numbers.formatInteger(remainingSeconds, 1)} + 's'">3m 42s</td>
-                        </tr>
-
-                        <!-- Empty state if no visits -->
-                        <tr th:if="${#lists.isEmpty(visits)}">
-                            <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
+                        <tbody id="visit-stats-body" class="divide-y divide-gray-100">
+                            <tr th:each="visit : ${visits}" class="hover:bg-gray-50">
+                                <td class="px-6 py-4 text-sm font-medium text-gray-900" th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}">2024-01-15</td>
+                                <td class="px-6 py-4 text-sm text-gray-900" th:text="${#numbers.formatInteger(visit.count, 1, 'COMMA')}">2,547</td>
+                                <td class="px-6 py-4 text-sm text-gray-900" th:text="${#numbers.formatInteger(visit.pageViews, 1, 'COMMA')}">8,942</td>
+                                <td class="px-6 py-4 text-sm text-gray-900" th:text="${#numbers.formatDecimal(visit.getBounceRate(), 1, 1)} + '%'">34.5%</td>
+                                <td class="px-6 py-4 text-sm text-gray-900" th:with="seconds=${visit.getAvgSessionDuration()}, minutes=${seconds / 60}, remainingSeconds=${seconds % 60}" 
+                                    th:text="${#numbers.formatInteger(minutes, 1)} + 'm ' + ${#numbers.formatInteger(remainingSeconds, 1)} + 's'">3m 42s</td>
+                            </tr>
+                            <tr th:if="${visits == null || #lists.isEmpty(visits)}">
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                    <i class="fas fa-chart-bar text-4xl text-gray-300 mb-4"></i>
                                     <p>No visit data available</p>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </main>
-    </div>
-</div>
+        </th:block>
+    </th:block>
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    // Get visit data from model
-    const visitData = /*[[${last7Days}]]*/ [
-        {date: '2024-01-09', count: 1654},
-        {date: '2024-01-10', count: 1823},
-        {date: '2024-01-11', count: 2156},
-        {date: '2024-01-12', count: 1987},
-        {date: '2024-01-13', count: 1892},
-        {date: '2024-01-14', count: 2183},
-        {date: '2024-01-15', count: 2547}
-    ];
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function () {
+            const visitData = /*[[${last7Days}]]*/[];
+            const trafficSourcesData = /*[[${trafficSources}]]*/ { direct: 35, search: 30, social: 15, referral: 12, email: 8 };
 
-    // Format dates for chart labels
-    const formatDate = (dateStr) => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    };
-
-    // Visits Chart
-    const ctx = document.getElementById('visitsChart').getContext('2d');
-    const visitsChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: visitData.map(item => formatDate(item.date)),
-            datasets: [{
-                label: 'Daily Visits',
-                data: visitData.map(item => item.count),
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#3B82F6',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2,
-                pointRadius: 4
-            }, {
-                label: 'Page Views',
-                data: visitData.map(item => item.pageViews),
-                borderColor: '#10B981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#10B981',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                hidden: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#f3f4f6'
+            // Visits Chart
+            const ctx = document.getElementById('visitsChart');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: visitData.map(item => new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                        datasets: [{
+                            label: 'Daily Visits',
+                            data: visitData.map(item => item.count),
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
                     },
-                    ticks: {
-                        color: '#6b7280'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#f3f4f6' } },
+                            x: { grid: { display: false } }
+                        }
                     }
-                },
-                x: {
-                    grid: {
-                        display: false
+                });
+            }
+
+            // Traffic Sources Chart
+            const sourceCtx = document.getElementById('sourceChart');
+            if (sourceCtx) {
+                new Chart(sourceCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(trafficSourcesData).map(k => k.charAt(0).toUpperCase() + k.slice(1)),
+                        datasets: [{
+                            data: Object.values(trafficSourcesData),
+                            backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+                            borderWidth: 0
+                        }]
                     },
-                    ticks: {
-                        color: '#6b7280'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } }
                     }
-                }
+                });
             }
-        }
-    });
 
-    // Traffic Sources Chart
-    const sourceCtx = document.getElementById('sourceChart').getContext('2d');
-
-    // Get traffic sources from model
-    const trafficSourcesData = /*[[${trafficSources}]]*/ {
-        direct: 35,
-        search: 30,
-        social: 15,
-        referral: 12,
-        email: 8
-    };
-
-    // Format traffic sources for chart
-    const sourceLabels = Object.keys(trafficSourcesData).map(key => 
-        key.charAt(0).toUpperCase() + key.slice(1) // Capitalize first letter
-    );
-    const sourceValues = Object.values(trafficSourcesData);
-
-    const sourceChart = new Chart(sourceCtx, {
-        type: 'doughnut',
-        data: {
-            labels: sourceLabels,
-            datasets: [{
-                data: sourceValues,
-                backgroundColor: [
-                    '#3B82F6', // Direct - Blue
-                    '#10B981', // Search - Green
-                    '#F59E0B', // Social - Yellow
-                    '#EF4444', // Referral - Red
-                    '#8B5CF6'  // Email - Purple
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true
-                    }
-                }
-            }
-        }
-    });
-
-    // WebSocket connection for real-time updates
-    const socket = new SockJS('/ws');
-    const stompClient = Stomp.over(socket);
-
-    stompClient.connect({}, function () {
-        stompClient.subscribe('/topic/trafficUpdates', function (message) {
-            try {
-                const data = JSON.parse(message.body);
-                console.log('Received traffic update:', data);
-
-                // If data is just an array of traffic records (old format)
-                if (Array.isArray(data)) {
-                    const formattedData = { traffic: data };
-                    updateVisitStatsTable(formattedData);
-                    updateChartData(formattedData);
-                } 
-                // If data is an object with traffic and other properties (new format)
-                else {
-                    updateVisitStatsTable(data);
-                    updateChartData(data);
-                }
-            } catch (error) {
-                console.error('Error processing traffic update:', error);
+            // WebSocket for real-time updates
+            if (typeof SockJS !== 'undefined' && typeof Stomp !== 'undefined') {
+                const socket = new SockJS('/ws');
+                const stompClient = Stomp.over(socket);
+                stompClient.debug = null;
+                stompClient.connect({}, function () {
+                    stompClient.subscribe('/topic/trafficUpdates', function (message) {
+                        console.log('Traffic update received');
+                    });
+                });
             }
         });
-    }, function(error) {
-        console.error('WebSocket connection error:', error);
-    });
-
-    function updateVisitStatsTable(data) {
-        // Check if we have traffic data
-        if (!data || !data.traffic) return;
-
-        const tableBody = document.getElementById('visit-stats-body');
-        if (!tableBody) return;
-
-        // Clear the table
-        tableBody.innerHTML = '';
-
-        // Format date
-        const formatDate = (dateStr) => {
-            const date = new Date(dateStr);
-            return date.toISOString().split('T')[0]; // YYYY-MM-DD format
-        };
-
-        // Format number with commas
-        const formatNumber = (num) => {
-            return new Intl.NumberFormat().format(num);
-        };
-
-        // Format session duration
-        const formatDuration = (seconds) => {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = Math.floor(seconds % 60);
-            return `${minutes}m ${remainingSeconds}s`;
-        };
-
-        // Add each visit to the table
-        data.traffic.forEach(visit => {
-            // Calculate bounce rate and avg session duration
-            const bounceRate = visit.bounceCount && visit.count ? (visit.bounceCount / visit.count * 100).toFixed(1) : '0.0';
-            const avgSessionDuration = visit.sessionCount ? (visit.totalSessionDuration / visit.sessionCount).toFixed(0) : '0';
-
-            const row = document.createElement('tr');
-            row.className = 'bg-white hover:bg-gray-50';
-            row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${formatDate(visit.date)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatNumber(visit.count)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatNumber(visit.pageViews)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${bounceRate}%</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatDuration(avgSessionDuration)}</td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function updateChartData(data) {
-        // Check if we have traffic data
-        if (!data || !data.traffic) return;
-
-        // Format dates for chart labels
-        const formatChartDate = (dateStr) => {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        };
-
-        // Update visits chart
-        visitsChart.data.labels = data.traffic.map(item => formatChartDate(item.date));
-        visitsChart.data.datasets[0].data = data.traffic.map(item => item.count);
-        visitsChart.data.datasets[1].data = data.traffic.map(item => item.pageViews);
-        visitsChart.update();
-
-        // Update traffic sources chart if available
-        if (data.trafficSources) {
-            const sourceLabels = Object.keys(data.trafficSources).map(key => 
-                key.charAt(0).toUpperCase() + key.slice(1)
-            );
-            const sourceValues = Object.values(data.trafficSources);
-
-            sourceChart.data.labels = sourceLabels;
-            sourceChart.data.datasets[0].data = sourceValues;
-            sourceChart.update();
-        }
-
-        // Update real-time visitors
-        if (data.realTimeVisitors !== undefined) {
-            document.querySelector('.text-2xl.font-bold.text-green-600').textContent = data.realTimeVisitors;
-        }
-
-        // Update real-time visitors per page
-        if (data.realTimeVisitorsPerPage) {
-            updateRealTimeVisitorsList(data.realTimeVisitorsPerPage);
-        }
-    }
-
-    function updateRealTimeVisitorsList(visitorsPerPage) {
-        const listContainer = document.getElementById('real-time-visitors-list');
-        if (!listContainer) return;
-
-        // Clear the list
-        listContainer.innerHTML = '';
-
-        // Check if we have any visitors
-        if (Object.keys(visitorsPerPage).length === 0) {
-            listContainer.innerHTML = '<div class="text-center text-gray-500 py-4">No active visitors</div>';
-            return;
-        }
-
-        // Add each page to the list
-        let index = 0;
-        for (const [page, count] of Object.entries(visitorsPerPage)) {
-            if (count <= 0) continue;
-
-            // Determine color based on index
-            let colorClass = 'bg-green-400';
-            if (index % 4 === 1) colorClass = 'bg-blue-400';
-            else if (index % 4 === 2) colorClass = 'bg-yellow-400';
-            else if (index % 4 === 3) colorClass = 'bg-purple-400';
-
-            const item = document.createElement('div');
-            item.className = 'flex items-center justify-between';
-            item.innerHTML = `
-                <div class="flex items-center">
-                    <div class="w-3 h-3 ${colorClass} rounded-full mr-3"></div>
-                    <span class="text-sm text-gray-700">${page}</span>
-                </div>
-                <span class="text-sm font-medium text-gray-900">${count} users</span>
-            `;
-            listContainer.appendChild(item);
-            index++;
-        }
-    }
-    /*]]>*/
-</script>
+        /*]]>*/
+    </script>
 </body>
 </html>

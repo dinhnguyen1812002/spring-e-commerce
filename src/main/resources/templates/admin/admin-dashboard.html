@@ -1,186 +1,207 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Admin Dashboard - Overview and statistics">
-  <link rel="stylesheet" th:href="@{/css/main.css}">
-</head>
-<body>
-  <th:block th:replace="~{layout/admin-base :: layout(
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard - Overview and statistics">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+  </head>
+
+  <body>
+    <th:block th:replace="~{layout/admin-base :: layout(
     title=${title != null ? title : 'Dashboard'},
     pageTitle=${pageTitle != null ? pageTitle : 'Dashboard Overview'},
     pageDescription=${pageDescription != null ? pageDescription : 'Welcome back, ' 
     + ((#authentication != null and #authentication.principal != null) 
     ? #authentication.principal.username : 'Admin')}
   )}">
-    <th:block th:fragment="content">
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Products Card -->
-        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-              <i class="fas fa-box text-2xl" aria-hidden="true"></i>
+      <th:block th:fragment="content">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- Products Card -->
+          <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                <i class="fas fa-box text-2xl" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Total Products</p>
+                <p class="text-2xl font-semibold text-gray-900" data-stat="product-count" th:text="${totalProducts}">
+                  1,234</p>
+              </div>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">Total Products</p>
-              <p class="text-2xl font-semibold text-gray-900" data-stat="product-count" th:text="${totalProducts}">1,234</p>
+            <div class="mt-4">
+              <a href="/admin/products" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                View all products
+                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
             </div>
           </div>
-          <div class="mt-4">
-            <a href="/admin/products" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
-              View all products
+
+          <!-- Users Card -->
+          <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-green-100 text-green-600">
+                <i class="fas fa-users text-2xl" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Total Users</p>
+                <p class="text-2xl font-semibold text-gray-900" data-stat="user-count" th:text="${totalUsers}">5,678</p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <a href="/admin/users" class="text-sm text-green-600 hover:text-green-800 font-medium flex items-center">
+                View all users
+                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Orders Card -->
+          <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                <i class="fas fa-shopping-cart text-2xl" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Total Orders</p>
+                <p class="text-2xl font-semibold text-gray-900" data-stat="order-count" th:text="${totalCategories}">892
+                </p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <a href="/admin/orders"
+                class="text-sm text-yellow-600 hover:text-yellow-800 font-medium flex items-center">
+                View all orders
+                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Revenue Card -->
+          <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                <i class="fas fa-dollar-sign text-2xl" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Revenue</p>
+                <p class="text-2xl font-semibold text-gray-900" data-stat="revenue">$45,678</p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <a href="/admin/revenue"
+                class="text-sm text-purple-600 hover:text-purple-800 font-medium flex items-center">
+                View details
+                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <!-- Revenue Chart -->
+          <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-lg font-semibold text-gray-800">Revenue Statistics</h3>
+              <div class="flex space-x-1">
+                <button data-chart="revenue" data-period="day"
+                  class="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Daily</button>
+                <button data-chart="revenue" data-period="month"
+                  class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Monthly</button>
+                <button data-chart="revenue" data-period="quarter"
+                  class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Quarterly</button>
+                <button data-chart="revenue" data-period="year"
+                  class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Yearly</button>
+              </div>
+            </div>
+            <div class="relative h-[300px] w-full">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Sales Chart -->
+          <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-lg font-semibold text-gray-800">Sales Statistics</h3>
+              <div class="flex space-x-1">
+                <button data-chart="sales" data-period="day"
+                  class="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Daily</button>
+                <button data-chart="sales" data-period="month"
+                  class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Monthly</button>
+                <button data-chart="sales" data-period="quarter"
+                  class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Quarterly</button>
+                <button data-chart="sales" data-period="year"
+                  class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Yearly</button>
+              </div>
+            </div>
+            <div class="relative h-[300px] w-full">
+              <canvas id="salesChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
+            <a href="/admin/orders" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
+              View all
               <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </a>
           </div>
-        </div>
 
-        <!-- Users Card -->
-        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-green-100 text-green-600">
-              <i class="fas fa-users text-2xl" aria-hidden="true"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">Total Users</p>
-              <p class="text-2xl font-semibold text-gray-900" data-stat="user-count" th:text="${totalUsers}">5,678</p>
-            </div>
-          </div>
-          <div class="mt-4">
-            <a href="/admin/users" class="text-sm text-green-600 hover:text-green-800 font-medium flex items-center">
-              View all users
-              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Orders Card -->
-        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-              <i class="fas fa-shopping-cart text-2xl" aria-hidden="true"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">Total Orders</p>
-              <p class="text-2xl font-semibold text-gray-900" data-stat="order-count" th:text="${totalCategories}">892</p>
-            </div>
-          </div>
-          <div class="mt-4">
-            <a href="/admin/orders" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium flex items-center">
-              View all orders
-              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Revenue Card -->
-        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-              <i class="fas fa-dollar-sign text-2xl" aria-hidden="true"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">Revenue</p>
-              <p class="text-2xl font-semibold text-gray-900" data-stat="revenue">$45,678</p>
-            </div>
-          </div>
-          <div class="mt-4">
-            <a href="/admin/revenue" class="text-sm text-purple-600 hover:text-purple-800 font-medium flex items-center">
-              View details
-              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Charts Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Revenue Chart -->
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-semibold text-gray-800">Revenue Statistics</h3>
-            <div class="flex space-x-1">
-              <button data-chart="revenue" data-period="day" class="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Daily</button>
-              <button data-chart="revenue" data-period="month" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Monthly</button>
-              <button data-chart="revenue" data-period="quarter" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Quarterly</button>
-              <button data-chart="revenue" data-period="year" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Yearly</button>
-            </div>
-          </div>
-          <div class="relative h-[300px] w-full">
-            <canvas id="revenueChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Sales Chart -->
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-semibold text-gray-800">Sales Statistics</h3>
-            <div class="flex space-x-1">
-              <button data-chart="sales" data-period="day" class="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Daily</button>
-              <button data-chart="sales" data-period="month" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Monthly</button>
-              <button data-chart="sales" data-period="quarter" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Quarterly</button>
-              <button data-chart="sales" data-period="year" class="px-3 py-1.5 text-xs font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Yearly</button>
-            </div>
-          </div>
-          <div class="relative h-[300px] w-full">
-            <canvas id="salesChart"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Orders Section -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
-          <a href="/admin/orders" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
-            View all
-            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </a>
-        </div>
-
-        <!-- Orders List -->
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200" id="recent-orders-list">
-              <!-- Orders will be listed here -->
-              <tr th:each="order : ${orders}" th:data-order-id="${order.id}" class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900" th:text="'#' + ${order.id}">Order #12345</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div class="flex-shrink-0 h-10 w-10">
-                      <img th:src="'data:image/jpeg;base64,' + ${order.user.avatar}" alt="User" class="h-10 w-10 rounded-full object-cover">
+          <!-- Orders List -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200" id="recent-orders-list">
+                <!-- Orders will be listed here -->
+                <tr th:each="order : ${orders}" th:data-order-id="${order.id}" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900" th:text="'#' + ${order.id}">Order #12345</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img th:src="'data:image/jpeg;base64,' + ${order.user.avatar}" alt="User"
+                          class="h-10 w-10 rounded-full object-cover">
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900" th:text="${order.user.username}">John Doe</div>
+                        <div class="text-sm text-gray-500" th:text="${order.phoneNumber}">+1234567890</div>
+                      </div>
                     </div>
-                    <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900" th:text="${order.user.username}">John Doe</div>
-                      <div class="text-sm text-gray-500" th:text="${order.phoneNumber}">+1234567890</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">01/01/2023</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">01/01/2023</div>
                   <div class="text-sm text-gray-500" th:text="${#temporals.format(order.orderDate, 'HH:mm')}">10:00 AM</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -223,12 +244,10 @@
       </div>
     </th:block>
 
-    <th:block th:fragment="scripts">
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="/js/admin/dashboard.js" defer></script>
       <script  src="/js/admin/notifications" defer></script>
       <script  src="/js/toggle.js" defer></script>
-    </th:block>
   </th:block>
 </body>
 </html>

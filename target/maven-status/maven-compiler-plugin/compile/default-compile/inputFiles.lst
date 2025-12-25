@@ -28,6 +28,7 @@
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/config/WebConfig.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/config/WebSocketConfig.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/controller/AdminController.java
+/home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/controller/AdminInvoiceTemplateController.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/controller/AuthController.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/controller/CartController.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/controller/CategoryController.java

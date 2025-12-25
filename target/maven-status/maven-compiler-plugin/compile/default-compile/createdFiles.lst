@@ -4,6 +4,7 @@ com/app/e_commerce/repository/ProductRecommendationRepository.class
 com/app/e_commerce/exception/invoice/InsufficientPermissionException.class
 com/app/e_commerce/DTO/invoice/InvoiceUpdateDTO.class
 com/app/e_commerce/services/RecommendationService.class
+com/app/e_commerce/controller/AdminInvoiceTemplateController.class
 com/app/e_commerce/repository/ProductRepo.class
 com/app/e_commerce/services/ExcelParsingService.class
 com/app/e_commerce/DB/DataInitializer.class

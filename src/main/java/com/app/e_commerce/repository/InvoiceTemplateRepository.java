@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,6 +58,7 @@ public interface InvoiceTemplateRepository extends JpaRepository<InvoiceTemplate
      * Set all templates as non-default
      */
     @Modifying
+    @Transactional
     @Query("UPDATE InvoiceTemplate t SET t.isDefault = false WHERE t.isDefault = true")
     void clearAllDefaults();
 
@@ -64,6 +66,7 @@ public interface InvoiceTemplateRepository extends JpaRepository<InvoiceTemplate
      * Deactivate all active templates
      */
     @Modifying
+    @Transactional
     @Query("UPDATE InvoiceTemplate t SET t.status = :newStatus WHERE t.status = :currentStatus")
     void updateStatusForAll(
         @Param("currentStatus") TemplateStatus currentStatus,
