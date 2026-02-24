@@ -5,8 +5,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+		<version>4.0.3</version>
+		<relativePath/> <!-- lookup parent from repository -->
     </parent>
 	<groupId>com.app</groupId>
 	<artifactId>e-commerce</artifactId>
@@ -29,10 +29,10 @@
 	<properties>
 		<java.version>25</java.version>
 	</properties>
-	<dependencies>
-		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch -->
-		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch -->
 
+	
+	<dependencies>
+	
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -111,11 +111,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.webjars.npm/tailwindcss -->
 		<dependency>

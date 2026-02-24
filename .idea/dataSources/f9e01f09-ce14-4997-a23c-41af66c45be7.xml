@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="postgres@localhost">
-  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
+  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.54">
     <root id="1"/>
     <database id="2" parent="1" name="e_commerce_spring">
       <Grants>11||10|C|G
@@ -3933,7 +3933,6 @@
 14996||10|t|G
 14996||10|D|G
 14996||10|w|G</Grants>
-      <IntrospectionStateNumber>778</IntrospectionStateNumber>
       <LastIntrospectionLocalTimestamp>2024-11-11.15:18:50</LastIntrospectionLocalTimestamp>
       <ObjectId>14650</ObjectId>
       <StateNumber>538</StateNumber>
@@ -5141,7 +5140,6 @@
 12347||10|t|G
 12347||10|D|G
 12347||10|w|G</Grants>
-      <IntrospectionStateNumber>778</IntrospectionStateNumber>
       <LastIntrospectionLocalTimestamp>2024-11-11.15:18:50</LastIntrospectionLocalTimestamp>
       <ObjectId>11</ObjectId>
       <StateNumber>532</StateNumber>
@@ -5150,7 +5148,6 @@
     <schema id="265" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>778</IntrospectionStateNumber>
       <LastIntrospectionLocalTimestamp>2024-11-11.15:18:50</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>532</StateNumber>
@@ -8507,7 +8504,6 @@
     <schema id="509" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>774</IntrospectionStateNumber>
       <LastIntrospectionLocalTimestamp>2024-11-11.15:18:17</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>532</StateNumber>

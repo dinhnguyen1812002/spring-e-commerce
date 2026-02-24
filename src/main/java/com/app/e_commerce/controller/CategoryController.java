@@ -14,15 +14,17 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
     @GetMapping("/new-category")
     public String showCreateForm(Model model) {
         model.addAttribute("category", new Category());
         return "Category/category-form";
 
     }
+
     @PostMapping("/save")
     public String saveCategory(@ModelAttribute("category") @Valid Category category,
-                               BindingResult result, Model model) {
+            BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "Category/category-form";
         }
@@ -31,6 +33,7 @@ public class CategoryController {
 
         return "redirect:/admin/categories";
     }
+
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         Category category = categoryService.getCategoryById(id);
@@ -41,10 +44,11 @@ public class CategoryController {
             return "redirect:/categories";
         }
     }
+
     @PostMapping("/update/{id}")
     public String updateCategory(@PathVariable("id") Long id,
-                                 @ModelAttribute("category") @Valid Category category,
-                                 BindingResult result, Model model) {
+            @ModelAttribute("category") @Valid Category category,
+            BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "Category/category-form";
         }
@@ -59,10 +63,10 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return "redirect:/admin/categories";
     }
+
     @GetMapping
     public String listCategories(Model model) {
         model.addAttribute("categories", categoryService.getAllCategories());
         return "Category/categories";
     }
 }
-

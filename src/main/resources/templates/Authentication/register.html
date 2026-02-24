@@ -1,59 +1,160 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Create Account | ShopEase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
     <th:block th:replace="~{Layout :: link-css}"></th:block>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-<div th:replace="~{fragments/header :: header}"></div>
 
-<main class="flex-grow container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-center mb-8">Register</h1>
+<body class="page-register">
+    <div class="auth-page">
 
-    <form th:action="@{/auth/register}" th:object="${user}" method="post" class="max-w-md mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <div class="mb-4">
-            <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username:</label>
-            <input id="username" type="text" th:field="*{username}" required
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
-        </div>
-        <div class="mb-4">
-            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
-            <input id="email" type="email" th:field="*{email}" required
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
-        </div>
-        <div class="mb-6">
-            <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
-            <input id="password" type="password" th:field="*{password}" required
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"/>
-        </div>
-        <div class="flex items-center justify-between">
-            <button type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Register
-            </button>
-        </div>
-        <br/>
-        <hr >
-        <br/>
-        <div>
-            <a th:href="@{/auth/login}"
-               class="w-full bg-blue-600 text-white rounded-md py-2 px-4
-                    hover:bg-blue-700 focus:outline-none focus:ring-2
-                    focus:ring-blue-500 focus:ring-opacity-50 transition duration-300">
-                Đăng Nhập
-            </a>
-        </div>
-    </form>
+        <!-- ═══════════════ LEFT: FORM PANEL ═══════════════ -->
+        <section class="form-panel">
+            <div class="form-inner">
 
-    <p th:if="${errorMessage}" th:text="${errorMessage}" class="text-red-500 text-center mt-4"></p>
-    <p th:if="${param.success}" class="text-green-500 text-center mt-4">Registration successful! Please log in.</p>
-</main>
+                <!-- Brand -->
+                <div class="brand">
+                    <div class="brand-icon"><i class="fas fa-bag-shopping"></i></div>
+                    <span class="brand-name">ShopEase</span>
+                </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
-<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
+                <!-- Heading -->
+                <div class="form-heading">
+                    <h1>Create your account</h1>
+                    <p>Join us today — it's completely free.</p>
+                </div>
+
+                <!-- Error alert -->
+                <div th:if="${errorMessage}" class="alert alert-error">
+                    <i class="fas fa-circle-exclamation"></i>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <!-- Form -->
+                <form th:action="@{/auth/register}" th:object="${user}" method="post" id="registerForm">
+
+                    <!-- Name + Email (2 columns) -->
+                    <div class="grid-2">
+                        <div class="field">
+                            <label for="username">Full Name</label>
+                            <div class="input-wrap">
+                                <i class="far fa-user icon"></i>
+                                <input type="text" id="username" th:field="*{username}" placeholder="John Doe" required
+                                    autocomplete="name">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="email">Email Address</label>
+                            <div class="input-wrap">
+                                <i class="far fa-envelope icon"></i>
+                                <input type="email" id="email" th:field="*{email}" placeholder="name@example.com"
+                                    required autocomplete="email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <div class="input-wrap">
+                            <i class="far fa-lock icon"></i>
+                            <input type="password" id="password" th:field="*{password}"
+                                placeholder="Create a strong password" required autocomplete="new-password">
+                            <button type="button" class="eye-btn" id="togglePassword" aria-label="Toggle password">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <!-- Strength indicator -->
+                        <div class="strength-wrap">
+                            <div class="strength-header">
+                                <span>Password strength</span>
+                                <span id="strengthText">—</span>
+                            </div>
+                            <div class="strength-track">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms -->
+                    <div class="checkbox-field">
+                        <input type="checkbox" id="terms" required>
+                        <span>
+                            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                        </span>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+
+                    <!-- Footer -->
+                    <p class="form-footer">
+                        Already have an account?
+                        <a th:href="@{/auth/login}">Sign in</a>
+                    </p>
+                </form>
+            </div>
+        </section>
+
+        <!-- ═══════════════ RIGHT: BRAND PANEL ═══════════════ -->
+        <section class="brand-panel">
+            <div class="brand-content">
+                <h2>Everything you need in one place.</h2>
+                <p>Join over 50,000 shoppers enjoying exclusive deals, fast delivery, and a seamless experience.</p>
+
+                <ul class="steps-list">
+                    <li>
+                        <div class="step-icon"><i class="fas fa-shield-halved"></i></div>
+                        <div class="step-text">
+                            <strong>Secure &amp; private</strong>
+                            Your data is encrypted and never shared.
+                        </div>
+                    </li>
+                    <li>
+                        <div class="step-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="step-text">
+                            <strong>Fast checkout</strong>
+                            Save addresses and pay in one click.
+                        </div>
+                    </li>
+                    <li>
+                        <div class="step-icon"><i class="fas fa-tag"></i></div>
+                        <div class="step-text">
+                            <strong>Exclusive deals</strong>
+                            Members-only discounts on every order.
+                        </div>
+                    </li>
+                    <li>
+                        <div class="step-icon"><i class="fas fa-truck-fast"></i></div>
+                        <div class="step-text">
+                            <strong>Free shipping</strong>
+                            On all orders over $50.
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="float-badge">
+                    <span class="dot"></span>
+                    50,000+ happy customers
+                </div>
+            </div>
+        </section>
+
+    </div><!-- /.auth-page -->
+
+    <script th:src="@{/js/auth-register.js}"></script>
 </body>
+
 </html>

@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <th:block  th:replace="Layout :: link-css"></th:block>
+    <th:block th:replace="Layout :: link-css"></th:block>
 </head>
+
 <body>
-<div th:replace="fragments/header :: header"></div>
-<div class="container mx-auto mt-10">
-    <h1 class="text-2xl font-bold mb-4">Categories</h1>
-    <table class="table-auto w-full">
-        <thead>
-        <tr>
-            <th class="px-4 py-2">ID</th>
-            <th class="px-4 py-2">Name</th>
-            <th class="px-4 py-2">email</th>
-            <th class="px-4 py-2">avatar</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="list : ${users}">
-            <td class="border px-4 py-2" th:text="${list.id}"></td>
-            <td class="border px-4 py-2" th:text="${list.username}"></td>
-            <td class="border px-4 py-2" th:text="${list.email}"></td>
-            <td class="border px-4 py-2">
-                <img th:src="'data:image/jpeg;base64,' + ${list.avatar}" alt="username" class="h-10 w-10 rounded-full">
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div th:replace="fragments/footer :: footer"></div>
-<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
+    <div th:replace="fragments/header :: header"></div>
+    <div class="container mx-auto mt-10">
+        <h1 class="text-2xl font-bold mb-4">Categories</h1>
+        <table class="table-auto w-full">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2">ID</th>
+                    <th class="px-4 py-2">Name</th>
+                    <th class="px-4 py-2">email</th>
+                    <th class="px-4 py-2">avatar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="list : ${users}">
+                    <td class="border px-4 py-2" th:text="${list.id}"></td>
+                    <td class="border px-4 py-2" th:text="${list.username}"></td>
+                    <td class="border px-4 py-2" th:text="${list.email}"></td>
+                    <td class="border px-4 py-2">
+                        <img th:src="${list.avatarUri}" alt="username" class="h-10 w-10 rounded-full">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer"></div>
+    <script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
 
 </body>
+
 </html>

@@ -1,11 +1,11 @@
-package com.app.e_commerce.service.impl;
+package com.app.e_commerce.services.impl;
 
 import com.app.e_commerce.DTO.invoice.*;
 import com.app.e_commerce.Enum.InvoiceStatus;
 import com.app.e_commerce.entity.*;
 import com.app.e_commerce.exception.invoice.*;
 import com.app.e_commerce.repository.*;
-import com.app.e_commerce.service.InvoiceService;
+import com.app.e_commerce.services.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -37,14 +37,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final com.app.e_commerce.repository.UserRepository userRepository;
 
     private static final List<String> ADMIN_EDITABLE_FIELDS = List.of(
-        "status", "dueDate", "notes", "terms", "paymentMethod", 
-        "paymentTransactionId", "paidDate"
-    );
+            "status", "dueDate", "notes", "terms", "paymentMethod",
+            "paymentTransactionId", "paidDate");
 
     private static final List<String> USER_EDITABLE_FIELDS_DRAFT = List.of(
-        "customerName", "customerEmail", "customerPhone", 
-        "billingAddress", "shippingAddress", "notes"
-    );
+            "customerName", "customerEmail", "customerPhone",
+            "billingAddress", "shippingAddress", "notes");
 
     @Override
     public InvoiceResponseDTO createInvoice(InvoiceRequestDTO requestDTO, User currentUser) {
@@ -52,7 +50,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         // Validate order exists
         Order order = orderRepository.findById(requestDTO.getOrderId())
-            .orElseThrow(() -> new RuntimeException("Order not found: " + requestDTO.getOrderId()));
+                .orElseThrow(() -> new RuntimeException("Order not found: " + requestDTO.getOrderId()));
 
         // Check if invoice already exists for this order
         if (invoiceRepository.existsByOrderId(order.getId())) {
@@ -66,14 +64,19 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setInvoiceNumber(generateInvoiceNumber());
         invoice.setStatus(InvoiceStatus.DRAFT);
         invoice.setInvoiceDate(LocalDateTime.now());
-        invoice.setDueDate(requestDTO.getDueDate() != null ? requestDTO.getDueDate() : LocalDateTime.now().plusDays(30));
+        invoice.setDueDate(
+                requestDTO.getDueDate() != null ? requestDTO.getDueDate() : LocalDateTime.now().plusDays(30));
 
         // Set customer information from order or DTO
         invoice.setCustomerName(requestDTO.getCustomerName() != null ? requestDTO.getCustomerName() : order.getName());
-        invoice.setCustomerEmail(requestDTO.getCustomerEmail() != null ? requestDTO.getCustomerEmail() : order.getUser().getEmail());
-        invoice.setCustomerPhone(requestDTO.getCustomerPhone() != null ? requestDTO.getCustomerPhone() : order.getPhoneNumber());
-        invoice.setBillingAddress(requestDTO.getBillingAddress() != null ? requestDTO.getBillingAddress() : order.getShippingAddress());
-        invoice.setShippingAddress(requestDTO.getShippingAddress() != null ? requestDTO.getShippingAddress() : order.getShippingAddress());
+        invoice.setCustomerEmail(
+                requestDTO.getCustomerEmail() != null ? requestDTO.getCustomerEmail() : order.getUser().getEmail());
+        invoice.setCustomerPhone(
+                requestDTO.getCustomerPhone() != null ? requestDTO.getCustomerPhone() : order.getPhoneNumber());
+        invoice.setBillingAddress(
+                requestDTO.getBillingAddress() != null ? requestDTO.getBillingAddress() : order.getShippingAddress());
+        invoice.setShippingAddress(
+                requestDTO.getShippingAddress() != null ? requestDTO.getShippingAddress() : order.getShippingAddress());
 
         // Set financial information from order
         invoice.setSubtotal(order.getSubtotal());
@@ -98,7 +101,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         // Set template if specified
         if (requestDTO.getTemplateId() != null) {
             InvoiceTemplate template = templateRepository.findById(requestDTO.getTemplateId())
-                .orElseThrow(() -> new TemplateNotFoundException(requestDTO.getTemplateId()));
+                    .orElseThrow(() -> new TemplateNotFoundException(requestDTO.getTemplateId()));
             invoice.setTemplate(template);
         }
 
@@ -145,11 +148,16 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
 
         // Update fields with audit trail
-        updateFieldWithAudit(invoice, "customerName", invoice.getCustomerName(), updateDTO.getCustomerName(), currentUser);
-        updateFieldWithAudit(invoice, "customerEmail", invoice.getCustomerEmail(), updateDTO.getCustomerEmail(), currentUser);
-        updateFieldWithAudit(invoice, "customerPhone", invoice.getCustomerPhone(), updateDTO.getCustomerPhone(), currentUser);
-        updateFieldWithAudit(invoice, "billingAddress", invoice.getBillingAddress(), updateDTO.getBillingAddress(), currentUser);
-        updateFieldWithAudit(invoice, "shippingAddress", invoice.getShippingAddress(), updateDTO.getShippingAddress(), currentUser);
+        updateFieldWithAudit(invoice, "customerName", invoice.getCustomerName(), updateDTO.getCustomerName(),
+                currentUser);
+        updateFieldWithAudit(invoice, "customerEmail", invoice.getCustomerEmail(), updateDTO.getCustomerEmail(),
+                currentUser);
+        updateFieldWithAudit(invoice, "customerPhone", invoice.getCustomerPhone(), updateDTO.getCustomerPhone(),
+                currentUser);
+        updateFieldWithAudit(invoice, "billingAddress", invoice.getBillingAddress(), updateDTO.getBillingAddress(),
+                currentUser);
+        updateFieldWithAudit(invoice, "shippingAddress", invoice.getShippingAddress(), updateDTO.getShippingAddress(),
+                currentUser);
         updateFieldWithAudit(invoice, "notes", invoice.getNotes(), updateDTO.getNotes(), currentUser);
         updateFieldWithAudit(invoice, "terms", invoice.getTerms(), updateDTO.getTerms(), currentUser);
 
@@ -157,16 +165,18 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (invoice.getStatus() == InvoiceStatus.DRAFT) {
             updateFieldWithAudit(invoice, "subtotal", invoice.getSubtotal(), updateDTO.getSubtotal(), currentUser);
             updateFieldWithAudit(invoice, "taxAmount", invoice.getTaxAmount(), updateDTO.getTaxAmount(), currentUser);
-            updateFieldWithAudit(invoice, "discountAmount", invoice.getDiscountAmount(), updateDTO.getDiscountAmount(), currentUser);
-            updateFieldWithAudit(invoice, "shippingCost", invoice.getShippingCost(), updateDTO.getShippingCost(), currentUser);
-            
+            updateFieldWithAudit(invoice, "discountAmount", invoice.getDiscountAmount(), updateDTO.getDiscountAmount(),
+                    currentUser);
+            updateFieldWithAudit(invoice, "shippingCost", invoice.getShippingCost(), updateDTO.getShippingCost(),
+                    currentUser);
+
             // Recalculate total
-            if (updateDTO.getSubtotal() != null || updateDTO.getTaxAmount() != null || 
-                updateDTO.getDiscountAmount() != null || updateDTO.getShippingCost() != null) {
+            if (updateDTO.getSubtotal() != null || updateDTO.getTaxAmount() != null ||
+                    updateDTO.getDiscountAmount() != null || updateDTO.getShippingCost() != null) {
                 BigDecimal total = invoice.getSubtotal()
-                    .add(invoice.getTaxAmount())
-                    .add(invoice.getShippingCost())
-                    .subtract(invoice.getDiscountAmount());
+                        .add(invoice.getTaxAmount())
+                        .add(invoice.getShippingCost())
+                        .subtract(invoice.getDiscountAmount());
                 invoice.setTotalAmount(total);
             }
         }
@@ -182,7 +192,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional(readOnly = true)
     public InvoiceResponseDTO getInvoiceById(String invoiceId, User currentUser) {
         Invoice invoice = getInvoiceEntityById(invoiceId);
-        
+
         if (!hasAccess(invoice, currentUser)) {
             throw new AccessDeniedException("You do not have permission to view this invoice");
         }
@@ -194,7 +204,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional(readOnly = true)
     public Invoice getInvoiceEntityById(String invoiceId) {
         return invoiceRepository.findById(invoiceId)
-            .orElseThrow(() -> InvoiceNotFoundException.byId(invoiceId));
+                .orElseThrow(() -> InvoiceNotFoundException.byId(invoiceId));
     }
 
     @Override
@@ -204,27 +214,25 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         // Build pageable
         Sort sort = Sort.by(
-            filterDTO.getSortDirection().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
-            filterDTO.getSortBy()
-        );
+                filterDTO.getSortDirection().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
+                filterDTO.getSortBy());
         Pageable pageable = PageRequest.of(filterDTO.getPage(), filterDTO.getSize(), sort);
 
         // Determine user filter (non-admin users can only see their own invoices)
         User userFilter = isAdmin(currentUser) && filterDTO.getUserId() != null
-            ? userRepository.findById(java.util.UUID.fromString(filterDTO.getUserId())).orElse(null)
-            : currentUser;
+                ? userRepository.findById(java.util.UUID.fromString(filterDTO.getUserId())).orElse(null)
+                : currentUser;
 
         // Apply filters
         Page<Invoice> invoices = invoiceRepository.findByFilters(
-            userFilter,
-            filterDTO.getStatus(),
-            filterDTO.getStartDate(),
-            filterDTO.getEndDate(),
-            filterDTO.getCustomerName(),
-            filterDTO.getMinAmount(),
-            filterDTO.getMaxAmount(),
-            pageable
-        );
+                userFilter,
+                filterDTO.getStatus(),
+                filterDTO.getStartDate(),
+                filterDTO.getEndDate(),
+                filterDTO.getCustomerName(),
+                filterDTO.getMinAmount(),
+                filterDTO.getMaxAmount(),
+                pageable);
 
         return invoices.map(this::mapToResponseDTO);
     }
@@ -339,11 +347,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     public String generateInvoiceNumber() {
         String year = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy"));
         String latestNumber = invoiceRepository.findLatestInvoiceNumber().orElse("INV-" + year + "-0000");
-        
+
         // Extract number and increment
         String[] parts = latestNumber.split("-");
         int number = parts.length >= 3 ? Integer.parseInt(parts[2]) + 1 : 1;
-        
+
         return String.format("INV-%s-%04d", year, number);
     }
 
@@ -356,7 +364,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private boolean isAdmin(User user) {
         return user.getRoles().stream()
-            .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("INVOICE_MANAGER"));
+                .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("INVOICE_MANAGER"));
     }
 
     private void updateFieldWithAudit(Invoice invoice, String fieldName, Object oldValue, Object newValue, User user) {
@@ -408,7 +416,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         dto.setOrderId(invoice.getOrder().getId());
         dto.setUserId(invoice.getUser().getId().toString());
         dto.setUsername(invoice.getUser().getUsername());
-        
+
         if (invoice.getTemplate() != null) {
             dto.setTemplateId(invoice.getTemplate().getId());
             dto.setTemplateName(invoice.getTemplate().getName());
@@ -441,8 +449,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         // Map items
         List<InvoiceItemDTO> itemDTOs = invoice.getItems().stream()
-            .map(this::mapToItemDTO)
-            .collect(Collectors.toList());
+                .map(this::mapToItemDTO)
+                .collect(Collectors.toList());
         dto.setItems(itemDTOs);
         dto.setTotalItems(itemDTOs.size());
         dto.setTotalQuantity(itemDTOs.stream().mapToInt(InvoiceItemDTO::getQuantity).sum());

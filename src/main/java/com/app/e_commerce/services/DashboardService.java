@@ -1,4 +1,4 @@
-package com.app.e_commerce.service;
+package com.app.e_commerce.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

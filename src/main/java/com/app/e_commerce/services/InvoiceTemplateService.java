@@ -1,4 +1,4 @@
-package com.app.e_commerce.service;
+package com.app.e_commerce.services;
 
 import com.app.e_commerce.DTO.invoice.InvoiceTemplateDTO;
 import com.app.e_commerce.entity.InvoiceTemplate;

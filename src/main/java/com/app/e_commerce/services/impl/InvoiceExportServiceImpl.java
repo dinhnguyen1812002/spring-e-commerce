@@ -1,11 +1,11 @@
-package com.app.e_commerce.service.impl;
+package com.app.e_commerce.services.impl;
 
 import com.app.e_commerce.Enum.InvoiceFormat;
 import com.app.e_commerce.entity.Invoice;
 import com.app.e_commerce.entity.InvoiceItem;
 import com.app.e_commerce.exception.invoice.InvoiceNotFoundException;
 import com.app.e_commerce.repository.InvoiceRepository;
-import com.app.e_commerce.service.InvoiceExportService;
+import com.app.e_commerce.services.InvoiceExportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -38,18 +38,18 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
         log.info("Exporting invoice {} to PDF", invoiceId);
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> InvoiceNotFoundException.byId(invoiceId));
-        
+
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Context context = new Context();
             context.setVariable("invoice", invoice);
-            
+
             String htmlContent = templateEngine.process("invoices/pdf_export", context);
-            
+
             ITextRenderer renderer = new ITextRenderer();
             renderer.setDocumentFromString(htmlContent);
             renderer.layout();
             renderer.createPDF(baos);
-            
+
             return baos.toByteArray();
         } catch (Exception e) {
             log.error("Error generating PDF for invoice {}", invoiceId, e);
@@ -62,46 +62,48 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
         log.info("Exporting invoice {} to Excel", invoiceId);
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> InvoiceNotFoundException.byId(invoiceId));
-        
+
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Hóa đơn");
-            
+
             // Styles
             CellStyle headerStyle = createHeaderStyle(workbook);
             CellStyle titleStyle = createTitleStyle(workbook);
             CellStyle currencyStyle = createCurrencyStyle(workbook);
             CellStyle boldStyle = createBoldStyle(workbook);
-            
+
             int rowNum = 0;
-            
+
             // Title
             Row titleRow = sheet.createRow(rowNum++);
             Cell titleCell = titleRow.createCell(0);
             titleCell.setCellValue("HÓA ĐƠN #" + invoice.getInvoiceNumber());
             titleCell.setCellStyle(titleStyle);
             sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 4));
-            
+
             rowNum++; // Empty row
-            
+
             // Invoice info
             createInfoRow(sheet, rowNum++, "Ngày tạo:", invoice.getInvoiceDate().format(DATE_FORMATTER), boldStyle);
             createInfoRow(sheet, rowNum++, "Trạng thái:", invoice.getStatus().toString(), boldStyle);
             createInfoRow(sheet, rowNum++, "Khách hàng:", invoice.getCustomerName(), boldStyle);
             createInfoRow(sheet, rowNum++, "Email:", invoice.getCustomerEmail(), boldStyle);
-            createInfoRow(sheet, rowNum++, "Điện thoại:", invoice.getCustomerPhone() != null ? invoice.getCustomerPhone() : "", boldStyle);
-            createInfoRow(sheet, rowNum++, "Địa chỉ:", invoice.getShippingAddress() != null ? invoice.getShippingAddress() : "", boldStyle);
-            
+            createInfoRow(sheet, rowNum++, "Điện thoại:",
+                    invoice.getCustomerPhone() != null ? invoice.getCustomerPhone() : "", boldStyle);
+            createInfoRow(sheet, rowNum++, "Địa chỉ:",
+                    invoice.getShippingAddress() != null ? invoice.getShippingAddress() : "", boldStyle);
+
             rowNum++; // Empty row
-            
+
             // Items header
             Row headerRow = sheet.createRow(rowNum++);
-            String[] headers = {"STT", "Sản phẩm", "Số lượng", "Đơn giá", "Thành tiền"};
+            String[] headers = { "STT", "Sản phẩm", "Số lượng", "Đơn giá", "Thành tiền" };
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
                 cell.setCellStyle(headerStyle);
             }
-            
+
             // Items
             int itemNum = 1;
             for (InvoiceItem item : invoice.getItems()) {
@@ -109,32 +111,35 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
                 row.createCell(0).setCellValue(itemNum++);
                 row.createCell(1).setCellValue(item.getProductName());
                 row.createCell(2).setCellValue(item.getQuantity());
-                
+
                 Cell priceCell = row.createCell(3);
                 priceCell.setCellValue(item.getUnitPrice().doubleValue());
                 priceCell.setCellStyle(currencyStyle);
-                
+
                 Cell totalCell = row.createCell(4);
                 totalCell.setCellValue(item.getLineTotal().doubleValue());
                 totalCell.setCellStyle(currencyStyle);
             }
-            
+
             rowNum++; // Empty row
-            
+
             // Totals
             createTotalRow(sheet, rowNum++, "Tạm tính:", invoice.getSubtotal().doubleValue(), boldStyle, currencyStyle);
             createTotalRow(sheet, rowNum++, "Thuế:", invoice.getTaxAmount().doubleValue(), boldStyle, currencyStyle);
-            createTotalRow(sheet, rowNum++, "Phí vận chuyển:", invoice.getShippingCost().doubleValue(), boldStyle, currencyStyle);
+            createTotalRow(sheet, rowNum++, "Phí vận chuyển:", invoice.getShippingCost().doubleValue(), boldStyle,
+                    currencyStyle);
             if (invoice.getDiscountAmount().doubleValue() > 0) {
-                createTotalRow(sheet, rowNum++, "Giảm giá:", -invoice.getDiscountAmount().doubleValue(), boldStyle, currencyStyle);
+                createTotalRow(sheet, rowNum++, "Giảm giá:", -invoice.getDiscountAmount().doubleValue(), boldStyle,
+                        currencyStyle);
             }
-            createTotalRow(sheet, rowNum++, "TỔNG CỘNG:", invoice.getTotalAmount().doubleValue(), boldStyle, currencyStyle);
-            
+            createTotalRow(sheet, rowNum++, "TỔNG CỘNG:", invoice.getTotalAmount().doubleValue(), boldStyle,
+                    currencyStyle);
+
             // Auto-size columns
             for (int i = 0; i < 5; i++) {
                 sheet.autoSizeColumn(i);
             }
-            
+
             workbook.write(baos);
             return baos.toByteArray();
         } catch (IOException e) {
@@ -142,7 +147,7 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
             throw new RuntimeException("Failed to generate Excel", e);
         }
     }
-    
+
     private CellStyle createHeaderStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
@@ -156,7 +161,7 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
         style.setBorderRight(BorderStyle.THIN);
         return style;
     }
-    
+
     private CellStyle createTitleStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
@@ -165,14 +170,14 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
         style.setFont(font);
         return style;
     }
-    
+
     private CellStyle createCurrencyStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         DataFormat format = workbook.createDataFormat();
         style.setDataFormat(format.getFormat("#,##0 ₫"));
         return style;
     }
-    
+
     private CellStyle createBoldStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
@@ -180,7 +185,7 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
         style.setFont(font);
         return style;
     }
-    
+
     private void createInfoRow(Sheet sheet, int rowNum, String label, String value, CellStyle labelStyle) {
         Row row = sheet.createRow(rowNum);
         Cell labelCell = row.createCell(0);
@@ -188,8 +193,9 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
         labelCell.setCellStyle(labelStyle);
         row.createCell(1).setCellValue(value);
     }
-    
-    private void createTotalRow(Sheet sheet, int rowNum, String label, double value, CellStyle labelStyle, CellStyle valueStyle) {
+
+    private void createTotalRow(Sheet sheet, int rowNum, String label, double value, CellStyle labelStyle,
+            CellStyle valueStyle) {
         Row row = sheet.createRow(rowNum);
         Cell labelCell = row.createCell(3);
         labelCell.setCellValue(label);
@@ -207,18 +213,18 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
 
         StringBuilder csv = new StringBuilder();
         csv.append("Item,Quantity,Unit Price,Total\n");
-        
+
         for (InvoiceItem item : invoice.getItems()) {
             csv.append(escapeCsv(item.getProductName())).append(",")
-               .append(item.getQuantity()).append(",")
-               .append(item.getUnitPrice()).append(",")
-               .append(item.getLineTotal()).append("\n");
+                    .append(item.getQuantity()).append(",")
+                    .append(item.getUnitPrice()).append(",")
+                    .append(item.getLineTotal()).append("\n");
         }
-        
+
         csv.append("\n,,Subtotal,").append(invoice.getSubtotal()).append("\n");
         csv.append(",,Tax,").append(invoice.getTaxAmount()).append("\n");
         csv.append(",,Total,").append(invoice.getTotalAmount()).append("\n");
-        
+
         return csv.toString().getBytes(StandardCharsets.UTF_8);
     }
 
@@ -231,12 +237,21 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
                 byte[] content;
                 String extension;
                 switch (format) {
-                    case PDF -> { content = exportToPdf(id); extension = "pdf"; }
-                    case EXCEL -> { content = exportToExcel(id); extension = "xlsx"; }
-                    case CSV -> { content = exportToCsv(id); extension = "csv"; }
+                    case PDF -> {
+                        content = exportToPdf(id);
+                        extension = "pdf";
+                    }
+                    case EXCEL -> {
+                        content = exportToExcel(id);
+                        extension = "xlsx";
+                    }
+                    case CSV -> {
+                        content = exportToCsv(id);
+                        extension = "csv";
+                    }
                     default -> throw new IllegalArgumentException("Unsupported format");
                 }
-                
+
                 ZipEntry entry = new ZipEntry("invoice_" + id + "." + extension);
                 zos.putNextEntry(entry);
                 zos.write(content);
@@ -265,9 +280,10 @@ public class InvoiceExportServiceImpl implements InvoiceExportService {
             case CSV -> ".csv";
         };
     }
-    
+
     private String escapeCsv(String value) {
-        if (value == null) return "";
+        if (value == null)
+            return "";
         if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
             return "\"" + value.replace("\"", "\"\"") + "\"";
         }

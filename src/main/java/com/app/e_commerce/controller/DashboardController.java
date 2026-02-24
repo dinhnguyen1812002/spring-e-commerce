@@ -1,6 +1,6 @@
 package com.app.e_commerce.controller;
 
-import com.app.e_commerce.service.DashboardService;
+import com.app.e_commerce.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

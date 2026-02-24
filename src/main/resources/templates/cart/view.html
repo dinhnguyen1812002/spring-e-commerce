@@ -1,331 +1,401 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" class="h-full bg-gray-50">
+<html xmlns:th="http://www.thymeleaf.org" class="h-full">
 
-    <head>
-        <title>Chi tiết đơn hàng</title>
-        <th:block th:replace="~{Layout :: link-css}"></th:block>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            primary: {
-                                50: '#f0f9ff',
-                                500: '#3b82f6',
-                                600: '#2563eb',
-                                700: '#1d4ed8',
-                            }
-                        }
+<head>
+    <title>Chi tiết đơn hàng</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{Layout :: link-css}"></th:block>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
                     }
                 }
             }
-        </script>
-    </head>
+        }
+    </script>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
 
-    <body class="h-full bg-gray-50">
-        <div class="flex min-h-screen">
-            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
 
-            <!-- Main Content -->
-            <div class="flex-1 px-4 sm:px-6 lg:px-8 py-8">
-                <!-- Header Section -->
-                <div class="mb-8">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-900">Chi tiết đơn hàng</h1>
-                            <p class="text-gray-600 mt-1">Thông tin chi tiết về đơn hàng của bạn</p>
-                        </div>
-                        <a href="/"
-                            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
-                            <i class="fa-solid fa-arrow-left mr-2 text-sm"></i>
-                            Tiếp tục mua sắm
-                        </a>
+        .timeline-line {
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #22c55e, #e5e7eb);
+        }
+
+        .step-done .dot {
+            background: #22c55e;
+            box-shadow: 0 0 0 4px #dcfce7;
+        }
+
+        .step-active .dot {
+            background: #3b82f6;
+            box-shadow: 0 0 0 4px #dbeafe;
+            animation: pulse 2s infinite;
+        }
+
+        .step-pending .dot {
+            background: #e5e7eb;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 4px #dbeafe;
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px #bfdbfe;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/profile-sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-64 p-6 lg:p-8">
+
+            <!-- Page Header -->
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                        <a th:href="@{/orders}" class="hover:text-brand-600 transition-colors">Đơn hàng của tôi</a>
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                        <span class="text-gray-700 font-medium" th:text="'#' + ${#strings.abbreviate(order.id, 12)}">Chi
+                            tiết</span>
                     </div>
+                    <h1 class="text-2xl font-bold text-gray-900">Chi tiết đơn hàng</h1>
                 </div>
+                <a th:href="@{/orders}"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all text-sm font-medium">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    Quay lại danh sách
+                </a>
+            </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Order Information -->
-                    <div class="lg:col-span-2 space-y-6">
-                        <!-- Order Details Card -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4">
-                                <h3 class="text-lg font-semibold text-black flex items-center">
-                                    <i class="fa-solid fa-receipt mr-3"></i>
-                                    Thông tin đơn hàng
-                                </h3>
-                            </div>
-                            <div class="p-6">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <div class="space-y-4">
-                                        <div class="flex items-start space-x-3">
-                                            <i class="fa-solid fa-hashtag text-gray-400 mt-0.5"></i>
-                                            <div>
-                                                <p class="text-sm text-gray-600">Mã đơn hàng</p>
-                                                <p class="font-semibold text-gray-900" th:text="${order.id}">#DH001</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start space-x-3">
-                                            <i class="fa-solid fa-calendar text-gray-400 mt-0.5"></i>
-                                            <div>
-                                                <p class="text-sm text-gray-600">Ngày đặt hàng</p>
-                                                <p class="font-semibold text-gray-900" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">
-                                                25/08/2024 14:30</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start space-x-3">
-                                        <i class="fa-solid fa-truck text-gray-400 mt-0.5"></i>
-                                        <div class="flex flex-col">
-                                            <p class="text-sm text-gray-600">Trạng thái</p>
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
-                                                th:class="${order.orderStatus.name() == 'CANCELLED' ? 'bg-red-100 text-red-800' : 
-                                                       order.orderStatus.name() == 'COMPLETED' ? 'bg-green-100 text-green-800' : 
-                                                       'bg-yellow-100 text-yellow-800'}"
-                                                th:text="${order.orderStatus}">
-                                                Đang xử lý
-                                            </span>
-                                            <form
-                                                th:if="${order.orderStatus.name() != 'CANCELLED' && order.orderStatus.name() != 'COMPLETED'}"
-                                                th:action="@{'/orders/' + ${order.id} + '/cancel'}" method="post"
-                                                class="mt-2">
-                                                <input type="hidden" th:name="${_csrf.parameterName}"
-                                                    th:value="${_csrf.token}" />
-                                                <button type="submit"
-                                                    class="text-xs text-red-600 hover:text-red-800 flex items-center"
-                                                    onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
-                                                    <i class="fas fa-times-circle mr-1"></i> Hủy đơn hàng
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+                <!-- LEFT COLUMN: Order Info + Items -->
+                <div class="xl:col-span-2 space-y-6">
+
+                    <!-- Order Info Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
+                                    <i class="fa-solid fa-receipt text-brand-600"></i>
                                 </div>
-                                <div class="space-y-4">
-                                    <div class="flex items-start space-x-3">
-                                        <i class="fa-solid fa-user text-gray-400 mt-0.5"></i>
-                                        <div>
-                                            <p class="text-sm text-gray-600">Người nhận</p>
-                                            <p class="font-semibold text-gray-900" th:text="${order.name}">Nguyễn Văn A</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start space-x-3">
-                                        <i class="fa-solid fa-phone text-gray-400 mt-0.5"></i>
-                                        <div>
-                                            <p class="text-sm text-gray-600">Số điện thoại</p>
-                                            <p class="font-semibold text-gray-900" th:text="${order.phoneNumber}">0123456789</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start space-x-3">
-                                        <i class="fa-solid fa-credit-card text-gray-400 mt-0.5"></i>
-                                        <div>
-                                            <p class="text-sm text-gray-600">Thanh toán</p>
-                                            <p class="font-semibold text-gray-900" th:text="${order.paymentMethod}">COD</p>
-                                        </div>
-                                    </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Mã đơn hàng</p>
+                                    <p class="text-sm font-bold text-gray-900 font-mono" th:text="'#' + ${order.id}">-
+                                    </p>
                                 </div>
                             </div>
-                            <div class="mt-6 pt-6 border-t border-gray-100">
-                                <div class="flex items-start space-x-3">
-                                    <i class="fa-solid fa-location-dot text-gray-400 mt-0.5"></i>
-                                    <div class="flex-1">
-                                        <p class="text-sm text-gray-600">Địa chỉ giao hàng</p>
-                                        <p class="font-semibold text-gray-900" th:text="${order.shippingAddress}">123 Đường ABC, Quận 1, TP.HCM</p>
-                                    </div>
+                            <!-- Status Badge -->
+                            <span
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
+                                th:classappend="${order.orderStatus.name() == 'CANCELLED'  ? 'bg-red-100 text-red-700' :
+                                               order.orderStatus.name() == 'COMPLETED'  ? 'bg-green-100 text-green-700' :
+                                               order.orderStatus.name() == 'SHIPPED'    ? 'bg-blue-100 text-blue-700' :
+                                               order.orderStatus.name() == 'PROCESSING' ? 'bg-purple-100 text-purple-700' :
+                                                                                          'bg-yellow-100 text-yellow-700'}">
+                                <span class="w-1.5 h-1.5 rounded-full" th:classappend="${order.orderStatus.name() == 'CANCELLED'  ? 'bg-red-500' :
+                                                   order.orderStatus.name() == 'COMPLETED'  ? 'bg-green-500' :
+                                                   order.orderStatus.name() == 'SHIPPED'    ? 'bg-blue-500' :
+                                                   order.orderStatus.name() == 'PROCESSING' ? 'bg-purple-500' :
+                                                                                              'bg-yellow-500'}"></span>
+                                <span th:text="${order.orderStatus}">-</span>
+                            </span>
+                        </div>
+
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-calendar text-gray-500 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-0.5">Ngày đặt hàng</p>
+                                    <p class="text-sm font-semibold text-gray-900"
+                                        th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">-</p>
+                                    <p class="text-xs text-gray-400"
+                                        th:text="${#temporals.format(order.orderDate, 'HH:mm')}">-</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-credit-card text-gray-500 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-0.5">Thanh toán</p>
+                                    <p class="text-sm font-semibold text-gray-900" th:text="${order.paymentMethod}">-
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-user text-gray-500 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-0.5">Người nhận</p>
+                                    <p class="text-sm font-semibold text-gray-900" th:text="${order.name}">-</p>
+                                    <p class="text-xs text-gray-400" th:text="${order.phoneNumber}">-</p>
+                                </div>
+                            </div>
+                            <div
+                                class="sm:col-span-2 lg:col-span-3 flex items-start gap-3 pt-4 border-t border-gray-100">
+                                <div
+                                    class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-location-dot text-gray-500 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-0.5">Địa chỉ giao hàng</p>
+                                    <p class="text-sm font-semibold text-gray-900" th:text="${order.shippingAddress}">-
+                                    </p>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Cancel button -->
+                        <div th:if="${order.orderStatus.name() != 'CANCELLED' and order.orderStatus.name() != 'COMPLETED'}"
+                            class="px-6 pb-5">
+                            <form th:action="@{'/orders/' + ${order.id} + '/cancel'}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit"
+                                    onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')"
+                                    class="inline-flex items-center gap-2 text-xs text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-medium transition-colors">
+                                    <i class="fa-solid fa-xmark"></i>
+                                    Hủy đơn hàng
+                                </button>
+                            </form>
+                        </div>
                     </div>
 
-                    <!-- Order Items -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4">
-                            <h3 class="text-lg font-semibold text-black flex items-center">
-                                <i class="fa-solid fa-shopping-bag mr-3"></i>
-                                Sản phẩm đã đặt
-                            </h3>
+                    <!-- Order Items Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-bag-shopping text-brand-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-900">Sản phẩm đã đặt</h3>
+                                <p class="text-xs text-gray-500" th:text="${order.orderItems.size()} + ' sản phẩm'">0
+                                    sản phẩm</p>
+                            </div>
                         </div>
 
                         <!-- Empty State -->
-                        <div th:if="${order.orderItems.size() == 0}" class="p-12 text-center">
-                            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fa-solid fa-shopping-cart text-3xl text-gray-400"></i>
+                        <div th:if="${order.orderItems.size() == 0}" class="py-16 text-center">
+                            <div
+                                class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-box-open text-2xl text-gray-400"></i>
                             </div>
-                            <p class="text-xl text-black mb-6">Đơn hàng không có sản phẩm nào</p>
-                            <a href="/"
-                                class="inline-flex items-center px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200">
-                                <i class="fa-solid fa-plus mr-2"></i>
-                                Thêm sản phẩm ngay
-                            </a>
+                            <p class="text-gray-500 text-sm">Đơn hàng không có sản phẩm nào</p>
                         </div>
 
-                        <!-- Product Items -->
-                        <div th:if="${order.orderItems.size() > 0}" class="divide-y divide-gray-100">
-                            <div th:each="item, itemStat : ${order.orderItems}"
-                                class="p-6 hover:bg-gray-50 transition-colors duration-200">
-                                <div class="flex items-center space-x-4">
-                                    <div class="relative">
-                                        <img th:src="${'/' + item.product.image}" alt="Product image"
-                                            class="w-20 h-20 object-cover rounded-lg border-2 border-gray-100">
-                                        <div class="absolute -top-2 -right-2 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-semibold"
-                                            th:text="${item.quantity}">2</div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="text-lg font-semibold text-gray-900 mb-1" th:text="${item.product.name}">
-                                            Áo thun nam basic
-                                        </h4>
-                                        <p class="text-sm text-gray-600 mb-2">
-                                            Số lượng: <span class="font-medium" th:text="${item.quantity}">2</span>
-                                        </p>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-lg font-bold text-primary-600"
-                                                th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">
-                                                450,000 VND
-                                            </span>
-                                        </div>
-                                    </div>
+                        <!-- Items List -->
+                        <div th:if="${order.orderItems.size() > 0}" class="divide-y divide-gray-50">
+                            <div th:each="item, stat : ${order.orderItems}"
+                                class="p-5 flex items-center gap-4 hover:bg-gray-50/50 transition-colors">
+                                <!-- Product Image -->
+                                <div class="relative flex-shrink-0">
+                                    <img th:src="${'/' + item.product.image}" th:alt="${item.product.name}"
+                                        class="w-18 h-18 w-[72px] h-[72px] object-cover rounded-xl border border-gray-100 shadow-sm">
+                                    <div class="absolute -top-2 -right-2 w-5 h-5 bg-brand-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow"
+                                        th:text="${item.quantity}">1</div>
+                                </div>
+                                <!-- Product Info -->
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-sm font-semibold text-gray-900 truncate mb-1"
+                                        th:text="${item.product.name}">-</h4>
+                                    <p class="text-xs text-gray-500">Số lượng:
+                                        <span class="font-medium text-gray-700" th:text="${item.quantity}">1</span>
+                                    </p>
+                                </div>
+                                <!-- Price -->
+                                <div class="text-right flex-shrink-0">
+                                    <p class="text-sm font-bold text-brand-600"
+                                        th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + '₫'">-
+                                    </p>
+                                    <p class="text-xs text-gray-400 mt-0.5">/ sản phẩm</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Order Summary -->
+                <!-- RIGHT COLUMN: Summary + Tracking -->
                 <div class="space-y-6">
+
+                    <!-- Order Summary Card -->
                     <div th:if="${order.orderItems.size() > 0}"
-                        class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-8">
-                        <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4">
-                            <h3 class="text-lg font-semibold text-black flex items-center">
-                                <i class="fa-solid fa-calculator mr-3"></i>
-                                Tóm tắt đơn hàng
-                            </h3>
-                        </div>
-                        <div class="p-6">
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600">Tạm tính:</span>
-                                    <span class="font-semibold"
-                                        th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">800,000 VND</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600">Thuế (10%):</span>
-                                    <span class="font-semibold"
-                                        th:text="${#numbers.formatDecimal(order.tax, 0, 'COMMA', 0, 'POINT')} + ' VND'">80,000 VND</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600">Phí vận chuyển:</span>
-                                    <span class="font-semibold"
-                                        th:text="${#numbers.formatDecimal(order.shippingCost, 0, 'COMMA', 0, 'POINT')} + ' VND'">30,000 VND</span>
-                                </div>
-                                <div th:if="${order.discountAmount > 0}" class="flex justify-between items-center text-green-600">
-                                    <span>Giảm giá:</span>
-                                    <span class="font-semibold"
-                                        th:text="'- ' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">- 50,000 VND</span>
-                                </div>
-                                <div class="border-t border-gray-200 pt-4">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-lg font-bold text-gray-900">Tổng cộng:</span>
-                                        <span class="text-xl font-bold text-primary-600"
-                                            th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">860,000 VND</span>
-                                    </div>
-                                </div>
+                        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-8">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-calculator text-green-600"></i>
                             </div>
+                            <h3 class="text-sm font-bold text-gray-900">Tóm tắt thanh toán</h3>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Tạm tính</span>
+                                <span class="font-medium text-gray-900"
+                                    th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 0, 'POINT')} + '₫'">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Thuế (10%)</span>
+                                <span class="font-medium text-gray-900"
+                                    th:text="${#numbers.formatDecimal(order.tax, 0, 'COMMA', 0, 'POINT')} + '₫'">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Phí vận chuyển</span>
+                                <span class="font-medium text-gray-900"
+                                    th:text="${#numbers.formatDecimal(order.shippingCost, 0, 'COMMA', 0, 'POINT')} + '₫'">-</span>
+                            </div>
+                            <div th:if="${order.discountAmount > 0}" class="flex justify-between text-sm">
+                                <span class="text-green-600">Giảm giá</span>
+                                <span class="font-medium text-green-600"
+                                    th:text="'- ' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + '₫'">-</span>
+                            </div>
+                            <div class="border-t border-gray-100 pt-3 mt-3 flex justify-between items-center">
+                                <span class="font-bold text-gray-900">Tổng cộng</span>
+                                <span class="text-lg font-extrabold text-brand-600"
+                                    th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + '₫'">-</span>
+                            </div>
+                        </div>
 
-                            <div class="mt-6 space-y-3">
-                                <!-- Export Invoice Dropdown -->
-                                <div class="relative" x-data="{ open: false }">
-                                    <button @click="open = !open" type="button"
-                                        class="w-full bg-primary-500 text-white py-3 px-4 rounded-lg hover:bg-primary-600 transition-colors duration-200 font-medium flex items-center justify-center">
-                                        <i class="fa-solid fa-file-export mr-2"></i>
-                                        Xuất hóa đơn
-                                        <i class="fa-solid fa-chevron-down ml-2 text-sm transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
-                                    </button>
-
-                                    <!-- Dropdown Menu -->
-                                    <div x-show="open" 
-                                        x-cloak
-                                        @click.away="open = false"
-                                        x-transition:enter="transition ease-out duration-100"
-                                        x-transition:enter-start="transform opacity-0 scale-95"
-                                        x-transition:enter-end="transform opacity-100 scale-100"
-                                        x-transition:leave="transition ease-in duration-75"
-                                        x-transition:leave-start="transform opacity-100 scale-100"
-                                        x-transition:leave-end="transform opacity-0 scale-95"
-                                        class="absolute z-10 mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
-                                        <a th:href="@{'/api/invoices/export/order/' + ${order.id} + '/pdf'}"
-                                            target="_blank"
-                                            class="flex items-center px-4 py-3 hover:bg-gray-50 transition-colors duration-150 text-gray-700">
-                                            <i class="fa-solid fa-file-pdf text-red-500 mr-3 w-5 text-center"></i>
-                                            <span class="font-medium">Xuất PDF</span>
-                                        </a>
-                                        <a th:href="@{'/api/invoices/export/order/' + ${order.id} + '/excel'}"
-                                            target="_blank"
-                                            class="flex items-center px-4 py-3 hover:bg-gray-50 transition-colors duration-150 border-t border-gray-100 text-gray-700">
-                                            <i class="fa-solid fa-file-excel text-green-500 mr-3 w-5 text-center"></i>
-                                            <span class="font-medium">Xuất Excel</span>
-                                        </a>
-                                        <a th:href="@{'/api/invoices/export/order/' + ${order.id} + '/csv'}"
-                                            target="_blank"
-                                            class="flex items-center px-4 py-3 hover:bg-gray-50 transition-colors duration-150 border-t border-gray-100 text-gray-700">
-                                            <i class="fa-solid fa-file-csv text-blue-500 mr-3 w-5 text-center"></i>
-                                            <span class="font-medium">Xuất CSV</span>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <button class="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium">
-                                    <i class="fa-solid fa-headset mr-2"></i>
-                                    Liên hệ hỗ trợ
-                                </button>
+                        <!-- Export Buttons -->
+                        <div class="px-6 pb-6 space-y-2" x-data="{ open: false }">
+                            <button @click="open = !open" type="button"
+                                class="w-full bg-brand-600 text-white py-2.5 px-4 rounded-xl hover:bg-brand-700 transition-colors font-semibold text-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-file-export"></i>
+                                Xuất hóa đơn
+                                <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"
+                                    :class="{ 'rotate-180': open }"></i>
+                            </button>
+                            <div x-show="open" x-cloak @click.away="open = false"
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 -translate-y-2"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 divide-y divide-gray-100">
+                                <a th:href="@{'/api/invoices/export/order/' + ${order.id} + '/pdf'}" target="_blank"
+                                    class="flex items-center gap-3 px-4 py-3 hover:bg-white text-sm text-gray-700 transition-colors">
+                                    <i class="fa-solid fa-file-pdf text-red-500 w-4 text-center"></i>
+                                    <span>Xuất PDF</span>
+                                </a>
+                                <a th:href="@{'/api/invoices/export/order/' + ${order.id} + '/excel'}" target="_blank"
+                                    class="flex items-center gap-3 px-4 py-3 hover:bg-white text-sm text-gray-700 transition-colors">
+                                    <i class="fa-solid fa-file-excel text-green-500 w-4 text-center"></i>
+                                    <span>Xuất Excel</span>
+                                </a>
+                                <a th:href="@{'/api/invoices/export/order/' + ${order.id} + '/csv'}" target="_blank"
+                                    class="flex items-center gap-3 px-4 py-3 hover:bg-white text-sm text-gray-700 transition-colors">
+                                    <i class="fa-solid fa-file-csv text-blue-500 w-4 text-center"></i>
+                                    <span>Xuất CSV</span>
+                                </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Order Tracking -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
-                            <h3 class="text-lg font-semibold text-black flex items-center">
-                                <i class="fa-solid fa-route mr-3"></i>
-                                Theo dõi đơn hàng
-                            </h3>
+                    <!-- Order Tracking Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-route text-purple-600"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-gray-900">Theo dõi đơn hàng</h3>
                         </div>
                         <div class="p-6">
-                            <div class="space-y-4">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                                    <div>
-                                        <p class="font-medium text-gray-900">Đơn hàng đã được xác nhận</p>
-                                        <p class="text-sm text-gray-500" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">25/08/2024 14:35</p>
+                            <div class="relative space-y-6">
+                                <!-- Step: Đặt hàng -->
+                                <div class="flex items-start gap-4 step-done">
+                                    <div class="relative flex flex-col items-center">
+                                        <div
+                                            class="dot w-5 h-5 rounded-full border-2 border-white shadow flex-shrink-0 bg-green-500 ring-4 ring-green-100">
+                                        </div>
+                                        <div class="w-0.5 h-10 bg-gray-200 mt-1"></div>
+                                    </div>
+                                    <div class="pb-2">
+                                        <p class="text-sm font-semibold text-gray-900">Đơn hàng đã đặt</p>
+                                        <p class="text-xs text-gray-400 mt-0.5"
+                                            th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">-</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-3 h-3 rounded-full" 
-                                        th:class="${order.orderStatus.name() == 'PROCESSING' || order.orderStatus.name() == 'SHIPPED' || order.orderStatus.name() == 'COMPLETED' ? 'bg-green-500' : 'bg-gray-300'}"></div>
-                                    <div>
-                                        <p class="font-medium" 
-                                            th:class="${order.orderStatus.name() == 'PROCESSING' || order.orderStatus.name() == 'SHIPPED' || order.orderStatus.name() == 'COMPLETED' ? 'text-gray-900' : 'text-gray-400'}">Đang chuẩn bị hàng</p>
-                                        <p class="text-sm text-gray-500">Dự kiến 1-2 ngày</p>
+                                <!-- Step: Xử lý -->
+                                <div class="flex items-start gap-4"
+                                    th:classappend="${order.orderStatus.name() == 'PROCESSING' or order.orderStatus.name() == 'SHIPPED' or order.orderStatus.name() == 'COMPLETED' ? 'step-done' : 'step-pending'}">
+                                    <div class="relative flex flex-col items-center">
+                                        <div class="dot w-5 h-5 rounded-full border-2 border-white shadow flex-shrink-0"
+                                            th:classappend="${order.orderStatus.name() == 'PROCESSING' or order.orderStatus.name() == 'SHIPPED' or order.orderStatus.name() == 'COMPLETED' ? 'bg-green-500 ring-4 ring-green-100' : 'bg-gray-300'}">
+                                        </div>
+                                        <div class="w-0.5 h-10 bg-gray-200 mt-1"></div>
+                                    </div>
+                                    <div class="pb-2">
+                                        <p class="text-sm font-semibold"
+                                            th:classappend="${order.orderStatus.name() == 'PROCESSING' or order.orderStatus.name() == 'SHIPPED' or order.orderStatus.name() == 'COMPLETED' ? 'text-gray-900' : 'text-gray-400'}">
+                                            Đang chuẩn bị hàng</p>
+                                        <p class="text-xs text-gray-400 mt-0.5">Dự kiến 1–2 ngày</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-3 h-3 rounded-full"
-                                        th:class="${order.orderStatus.name() == 'SHIPPED' || order.orderStatus.name() == 'COMPLETED' ? 'bg-green-500' : 'bg-gray-300'}"></div>
-                                    <div>
-                                        <p class="font-medium"
-                                            th:class="${order.orderStatus.name() == 'SHIPPED' || order.orderStatus.name() == 'COMPLETED' ? 'text-gray-900' : 'text-gray-400'}">Đang giao hàng</p>
-                                        <p class="text-sm text-gray-400" th:if="${order.shippedDate != null}" th:text="${#temporals.format(order.shippedDate, 'dd/MM/yyyy')}">Dự kiến 26/08/2024</p>
-                                        <p class="text-sm text-gray-400" th:if="${order.shippedDate == null}">Chờ vận chuyển</p>
+                                <!-- Step: Vận chuyển -->
+                                <div class="flex items-start gap-4"
+                                    th:classappend="${order.orderStatus.name() == 'SHIPPED' or order.orderStatus.name() == 'COMPLETED' ? 'step-done' : 'step-pending'}">
+                                    <div class="relative flex flex-col items-center">
+                                        <div class="dot w-5 h-5 rounded-full border-2 border-white shadow flex-shrink-0"
+                                            th:classappend="${order.orderStatus.name() == 'SHIPPED' or order.orderStatus.name() == 'COMPLETED' ? 'bg-green-500 ring-4 ring-green-100' : 'bg-gray-300'}">
+                                        </div>
+                                        <div class="w-0.5 h-10 bg-gray-200 mt-1"></div>
+                                    </div>
+                                    <div class="pb-2">
+                                        <p class="text-sm font-semibold"
+                                            th:classappend="${order.orderStatus.name() == 'SHIPPED' or order.orderStatus.name() == 'COMPLETED' ? 'text-gray-900' : 'text-gray-400'}">
+                                            Đang giao hàng</p>
+                                        <p class="text-xs text-gray-400 mt-0.5" th:if="${order.shippedDate != null}"
+                                            th:text="${#temporals.format(order.shippedDate, 'dd/MM/yyyy')}">-</p>
+                                        <p class="text-xs text-gray-400 mt-0.5" th:if="${order.shippedDate == null}">Chờ
+                                            vận chuyển</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-3 h-3 rounded-full"
-                                        th:class="${order.orderStatus.name() == 'COMPLETED' ? 'bg-green-500' : 'bg-gray-300'}"></div>
+                                <!-- Step: Hoàn thành -->
+                                <div class="flex items-start gap-4"
+                                    th:classappend="${order.orderStatus.name() == 'COMPLETED' ? 'step-done' : 'step-pending'}">
+                                    <div class="relative flex flex-col items-center">
+                                        <div class="dot w-5 h-5 rounded-full border-2 border-white shadow flex-shrink-0"
+                                            th:classappend="${order.orderStatus.name() == 'COMPLETED' ? 'bg-green-500 ring-4 ring-green-100' : 'bg-gray-300'}">
+                                        </div>
+                                    </div>
                                     <div>
-                                        <p class="font-medium"
-                                            th:class="${order.orderStatus.name() == 'COMPLETED' ? 'text-gray-900' : 'text-gray-400'}">Hoàn thành</p>
-                                        <p class="text-sm text-gray-400" th:if="${order.deliveredDate != null}" th:text="${#temporals.format(order.deliveredDate, 'dd/MM/yyyy')}">Đã giao</p>
-                                        <p class="text-sm text-gray-400" th:if="${order.deliveredDate == null}">Chờ giao hàng</p>
+                                        <p class="text-sm font-semibold"
+                                            th:classappend="${order.orderStatus.name() == 'COMPLETED' ? 'text-gray-900' : 'text-gray-400'}">
+                                            Giao hàng thành công</p>
+                                        <p class="text-xs text-gray-400 mt-0.5" th:if="${order.deliveredDate != null}"
+                                            th:text="${#temporals.format(order.deliveredDate, 'dd/MM/yyyy')}">-</p>
+                                        <p class="text-xs text-gray-400 mt-0.5" th:if="${order.deliveredDate == null}">
+                                            Chờ giao hàng</p>
                                     </div>
                                 </div>
                             </div>
@@ -336,10 +406,7 @@
         </div>
     </div>
 
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
-    <script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
+    <script th:src="@{/js/toggle.js}"></script>
 </body>
 
 </html>

@@ -19,7 +19,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User  {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -43,11 +43,7 @@ public class User  {
     private String avatar;
     @ManyToMany(fetch = FetchType.EAGER)
 
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
     // Getters and Setters
@@ -56,5 +52,19 @@ public class User  {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
         }
+    }
+
+    /**
+     * Helper method to get the full data URI for the avatar.
+     * Prevents SpEL concatenation limits for large base64 strings.
+     */
+    public String getAvatarUri() {
+        if (avatar == null || avatar.isEmpty()) {
+            return "/images/default-avatar.png";
+        }
+        if (avatar.startsWith("http") || avatar.startsWith("/")) {
+            return avatar;
+        }
+        return "data:image/jpeg;base64," + avatar;
     }
 }

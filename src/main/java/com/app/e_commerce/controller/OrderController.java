@@ -58,44 +58,43 @@ public class OrderController {
         return "cart/checkout";
     }
 
-
-
     /**
      * Submit đơn hàng
      */
-//    @PostMapping("/checkout")
-//    public String placeOrder(@RequestParam String fullName,
-//                             @RequestParam String phone,
-//                             @RequestParam String address,
-//                             @RequestParam(required = false) String note,
-//                             @RequestParam PaymentMethod paymentMethod,
-//                             HttpSession session,
-//                             Principal principal,
-//                             Model model) {
-//        try {
-//            Order order = orderService.checkoutCart(fullName, phone, address, note, paymentMethod, session, principal);
-//            return "redirect:/orders/" + order.getId();
-//        } catch (Exception e) {
-//            model.addAttribute("error", e.getMessage());
-//            model.addAttribute("paymentMethods", PaymentMethod.values());
-//            return "order/checkout";
-//        }
-//    }
+    // @PostMapping("/checkout")
+    // public String placeOrder(@RequestParam String fullName,
+    // @RequestParam String phone,
+    // @RequestParam String address,
+    // @RequestParam(required = false) String note,
+    // @RequestParam PaymentMethod paymentMethod,
+    // HttpSession session,
+    // Principal principal,
+    // Model model) {
+    // try {
+    // Order order = orderService.checkoutCart(fullName, phone, address, note,
+    // paymentMethod, session, principal);
+    // return "redirect:/orders/" + order.getId();
+    // } catch (Exception e) {
+    // model.addAttribute("error", e.getMessage());
+    // model.addAttribute("paymentMethods", PaymentMethod.values());
+    // return "order/checkout";
+    // }
+    // }
     @PostMapping("/checkout")
     public String placeOrder(@RequestParam String fullName,
-                             @RequestParam String phone,
-                             @RequestParam String address,
-                             @RequestParam(required = false) String note,
-                             @RequestParam PaymentMethod paymentMethod,
-                             HttpSession session,
-                             Principal principal,
-                             Model model) {
+            @RequestParam String phone,
+            @RequestParam String address,
+            @RequestParam(required = false) String note,
+            @RequestParam PaymentMethod paymentMethod,
+            HttpSession session,
+            Principal principal,
+            Model model) {
         try {
             // Lấy user từ principal (ví dụ bạn dùng Spring Security)
             User user = userService.findByUsername(principal.getName());
-//                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            if( user == null){
-                throw  new UsernameNotFoundException("User Not Found");
+            // .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            if (user == null) {
+                throw new UsernameNotFoundException("User Not Found");
             }
             Order order = orderService.checkoutCart(user, fullName, phone, note, address, paymentMethod, session);
 
@@ -107,20 +106,20 @@ public class OrderController {
         }
     }
 
-
     /**
      * Xem chi tiết đơn hàng
      */
     @GetMapping("/{orderId}")
     public String orderDetail(@PathVariable String orderId,
-                              @AuthenticationPrincipal UserDetails userDetails,
-                              Model model) {
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model) {
         if (userDetails == null) {
             return "redirect:/login";
         }
         User user = userService.findByUsername(userDetails.getUsername());
         Order order = orderService.findByIdAndUserOrThrow(orderId, user);
 
+        model.addAttribute("user", user);
         model.addAttribute("order", order);
 
         return "cart/view";
@@ -131,11 +130,12 @@ public class OrderController {
      */
     @GetMapping
     public String listOrders(@AuthenticationPrincipal UserDetails userDetails,
-                             Model model) {
+            Model model) {
         if (userDetails == null) {
             return "redirect:/login";
         }
         User user = userService.findByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
         model.addAttribute("orders", orderService.getOrdersByUser(user));
         return "cart/orderHistory";
     }
@@ -145,8 +145,8 @@ public class OrderController {
      */
     @PostMapping("/{orderId}/cancel")
     public String cancelOrder(@PathVariable String orderId,
-                              @AuthenticationPrincipal UserDetails userDetails,
-                              RedirectAttributes redirectAttributes) {
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
         if (userDetails == null) {
             return "redirect:/login";
         }
@@ -167,9 +167,9 @@ public class OrderController {
      */
     @PostMapping("/{orderId}/status")
     public String updateOrderStatus(@PathVariable String orderId,
-                                    @RequestParam OrderStatus status,
-                                    @AuthenticationPrincipal UserDetails userDetails,
-                                    RedirectAttributes redirectAttributes) {
+            @RequestParam OrderStatus status,
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
         // Check if user is admin (you should implement proper role checking)
         if (userDetails == null) {
             return "redirect:/login";
@@ -179,7 +179,8 @@ public class OrderController {
             orderService.updateOrderStatus(orderId, status);
             redirectAttributes.addFlashAttribute("successMessage", "Trạng thái đơn hàng đã được cập nhật.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật trạng thái đơn hàng: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Không thể cập nhật trạng thái đơn hàng: " + e.getMessage());
         }
 
         return "redirect:/admin/orders";
@@ -190,9 +191,9 @@ public class OrderController {
      */
     @PostMapping("/{orderId}/tracking")
     public String setTrackingNumber(@PathVariable String orderId,
-                                    @RequestParam String trackingNumber,
-                                    @AuthenticationPrincipal UserDetails userDetails,
-                                    RedirectAttributes redirectAttributes) {
+            @RequestParam String trackingNumber,
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
         // Check if user is admin (you should implement proper role checking)
         if (userDetails == null) {
             return "redirect:/login";
@@ -213,9 +214,9 @@ public class OrderController {
      */
     @PostMapping("/{orderId}/payment")
     public String setPaymentTransactionId(@PathVariable String orderId,
-                                          @RequestParam String transactionId,
-                                          @AuthenticationPrincipal UserDetails userDetails,
-                                          RedirectAttributes redirectAttributes) {
+            @RequestParam String transactionId,
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
         // Check if user is admin (you should implement proper role checking)
         if (userDetails == null) {
             return "redirect:/login";

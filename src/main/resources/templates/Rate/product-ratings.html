@@ -1,113 +1,107 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Product Comments</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-50">
 
-<!-- Comments Section -->
-<section class="py-24 relative" th:fragment="ratings-section(product)">
-    <div class="w-full container px-4 md:px-5 lg:px-5 mx-auto">
-        <div class="w-full flex-col justify-start items-start lg:gap-14 gap-7 inline-flex">
-            <h2 class="w-full text-gray-900 text-4xl font-bold font-manrope leading-normal">Comments</h2>
+    <!-- Comments Section -->
+    <section class="py-24 relative" th:fragment="ratings-section(product)">
+        <div class="w-full container px-4 md:px-5 lg:px-5 mx-auto">
+            <div class="w-full flex-col justify-start items-start lg:gap-14 gap-7 inline-flex">
+                <h2 class="w-full text-gray-900 text-4xl font-bold font-manrope leading-normal">Comments</h2>
 
-            <!-- Form nhập comment -->
-            <div th:if="${#authorization.expression('isAuthenticated()')}" class="w-full flex-col justify-start items-start gap-5 flex">
-                <form th:action="@{/ratings/add}" method="post" class="w-full">
-                    <input type="hidden" name="productId" th:value="${product.id}"/>
+                <!-- Form nhập comment -->
+                <div th:if="${#authorization.expression('isAuthenticated()')}"
+                    class="w-full flex-col justify-start items-start gap-5 flex">
+                    <form th:action="@{/ratings/add}" method="post" class="w-full">
+                        <input type="hidden" name="productId" th:value="${product.id}" />
 
-                    <!-- Avatar + Textarea -->
-                    <div class="w-full rounded-3xl justify-start items-start gap-3.5 inline-flex">
+                        <!-- Avatar + Textarea -->
+                        <div class="w-full rounded-3xl justify-start items-start gap-3.5 inline-flex">
 
 
-                        <img th:src="${#authentication.principal.avatar != null}
-                                      ? 'data:image/jpeg;base64,' + ${#authentication.principal.avatar}
-                                      : @{/images/avatar.png}"
-                             class="w-10 h-10 object-cover rounded-full"
-                        >
-<!--                        />-->
-                        <textarea name="comment" rows="5"
-                                  class="w-full px-5 py-3 rounded-2xl border border-gray-300 shadow resize-none focus:outline-none placeholder-gray-400 text-gray-900 text-lg font-normal leading-7"
-                                  placeholder="Write your thoughts here...."></textarea>
-                    </div>
+                            <img th:src="${#authentication.principal.avatarUri}"
+                                class="w-10 h-10 object-cover rounded-full">
+                            <!--                        />-->
+                            <textarea name="comment" rows="5"
+                                class="w-full px-5 py-3 rounded-2xl border border-gray-300 shadow resize-none focus:outline-none placeholder-gray-400 text-gray-900 text-lg font-normal leading-7"
+                                placeholder="Write your thoughts here...."></textarea>
+                        </div>
 
-                    <!-- Rating chọn sao -->
-                    <div class="mt-3">
-                        <label class="block text-sm text-gray-700 mb-2">Rating</label>
-                        <select name="star"
+                        <!-- Rating chọn sao -->
+                        <div class="mt-3">
+                            <label class="block text-sm text-gray-700 mb-2">Rating</label>
+                            <select name="star"
                                 class="w-32 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:ring-indigo-500 text-yellow-300">
-                            <option value="1" class="text-yellow-300"> ★</option>
-                            <option value="2">2 ★★</option>
-                            <option value="3">3 ★★★</option>
-                            <option value="4">4 ★★★★</option>
-                            <option value="5">5 ★★★★★</option>
-                        </select>
-                    </div>
+                                <option value="1" class="text-yellow-300"> ★</option>
+                                <option value="2">2 ★★</option>
+                                <option value="3">3 ★★★</option>
+                                <option value="4">4 ★★★★</option>
+                                <option value="5">5 ★★★★★</option>
+                            </select>
+                        </div>
 
-                    <!-- Submit -->
-                    <button type="submit"
+                        <!-- Submit -->
+                        <button type="submit"
                             class="mt-4 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-800 transition-all duration-700 ease-in-out rounded-xl shadow justify-center items-center flex">
-                        <span class="px-2 py-px text-white text-base font-semibold leading-relaxed">Post your comment</span>
-                    </button>
-                </form>
-            </div>
+                            <span class="px-2 py-px text-white text-base font-semibold leading-relaxed">Post your
+                                comment</span>
+                        </button>
+                    </form>
+                </div>
 
-            <!-- Nếu chưa đăng nhập -->
-            <div th:unless="${#authorization.expression('isAuthenticated()')}" class="mt-6 text-center">
-                <p class="text-gray-600">Please
-                    <a th:href="@{/login}" class="text-indigo-600 hover:underline">log in</a>
-                    to leave a review.</p>
-            </div>
+                <!-- Nếu chưa đăng nhập -->
+                <div th:unless="${#authorization.expression('isAuthenticated()')}" class="mt-6 text-center">
+                    <p class="text-gray-600">Please
+                        <a th:href="@{/login}" class="text-indigo-600 hover:underline">log in</a>
+                        to leave a review.
+                    </p>
+                </div>
 
-            <!-- Danh sách comments -->
-            <div class="w-full flex-col justify-start items-start gap-8 flex" id="ratings-list">
-                <div th:each="rate : ${product.rates}"
-                     class="w-full pb-6 border-b border-gray-300 justify-start items-start gap-2.5 inline-flex">
-<!--                    <img class="w-10 h-10 rounded-full object-cover"-->
-<!--                         th:src="@{ /images/default-avatar.png}"-->
-<!--                         alt="avatar"/>-->
-                    <img th:if="${rate.user.avatar != null}"
-                         th:src="'data:image/jpeg;base64,' + ${rate.user.avatar}"
-                         class="w-10 h-10 object-cover rounded-full"
-                         alt="User Avatar">
+                <!-- Danh sách comments -->
+                <div class="w-full flex-col justify-start items-start gap-8 flex" id="ratings-list">
+                    <div th:each="rate : ${product.rates}"
+                        class="w-full pb-6 border-b border-gray-300 justify-start items-start gap-2.5 inline-flex">
+                        <!--                    <img class="w-10 h-10 rounded-full object-cover"-->
+                        <!--                         th:src="@{ /images/default-avatar.png}"-->
+                        <!--                         alt="avatar"/>-->
+                        <img th:src="${rate.user.avatarUri}" class="w-10 h-10 object-cover rounded-full"
+                            alt="User Avatar">
+                        <div class="w-full flex-col justify-start items-start gap-3.5 inline-flex">
+                            <div class="w-full justify-start items-start flex-col flex gap-1">
+                                <div class="w-full justify-between items-start gap-1 inline-flex">
+                                    <h5 class="text-gray-900 text-sm font-semibold leading-snug"
+                                        th:text="${rate.user.username}">User</h5>
+                                    <span class="text-right text-gray-500 text-xs font-normal leading-5"
+                                        th:text="${T(com.app.e_commerce.util.TimeAgoUtil).getTimeAgo(rate.createdAt)}">
+                                        2 hours ago
+                                    </span>
+                                </div>
+                                <h5 class="text-gray-800 text-sm font-normal leading-snug" th:text="${rate.comment}">
+                                    Comment content
+                                </h5>
 
-                    <!-- fallback khi user chưa có avatar -->
-                    <img th:if="${rate.user.avatar == null}"
-                         th:src="@{/images/default-avatar.png}"
-                         class="w-10 h-10 object-cover rounded-full"
-                         alt="Default Avatar">
-                    <div class="w-full flex-col justify-start items-start gap-3.5 inline-flex">
-                        <div class="w-full justify-start items-start flex-col flex gap-1">
-                            <div class="w-full justify-between items-start gap-1 inline-flex">
-                                <h5 class="text-gray-900 text-sm font-semibold leading-snug"
-                                    th:text="${rate.user.username}">User</h5>
-                                <span class="text-right text-gray-500 text-xs font-normal leading-5"
-                                      th:text="${T(com.app.e_commerce.util.TimeAgoUtil).getTimeAgo(rate.createdAt)}">
-                                    2 hours ago
-                                </span>
-                            </div>
-                            <h5 class="text-gray-800 text-sm font-normal leading-snug"
-                                th:text="${rate.comment}">
-                                Comment content
-                            </h5>
-
-                            <!-- Hiển thị sao -->
-                            <div class="flex items-center">
-                                <span th:each="i : ${#numbers.sequence(1, rate.star)}"
-                                      class="text-yellow-400">★</span>
-                                <span th:each="i : ${#numbers.sequence(rate.star+1, 5)}"
-                                      class="text-gray-300">★</span>
+                                <!-- Hiển thị sao -->
+                                <div class="flex items-center">
+                                    <span th:each="i : ${#numbers.sequence(1, rate.star)}"
+                                        class="text-yellow-400">★</span>
+                                    <span th:each="i : ${#numbers.sequence(rate.star+1, 5)}"
+                                        class="text-gray-300">★</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 </body>
+
 </html>

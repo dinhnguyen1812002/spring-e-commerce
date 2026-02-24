@@ -54,10 +54,9 @@ public class AuthController {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities()
-            );
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             // ✅ Chuyển hướng sau khi đăng nhập thành công

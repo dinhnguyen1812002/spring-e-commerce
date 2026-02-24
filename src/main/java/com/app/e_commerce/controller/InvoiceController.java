@@ -3,7 +3,7 @@ package com.app.e_commerce.controller;
 import com.app.e_commerce.DTO.invoice.InvoiceFilterDTO;
 import com.app.e_commerce.DTO.invoice.InvoiceResponseDTO;
 import com.app.e_commerce.entity.User;
-import com.app.e_commerce.service.InvoiceService;
+import com.app.e_commerce.services.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

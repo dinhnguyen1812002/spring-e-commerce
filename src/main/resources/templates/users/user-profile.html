@@ -1,136 +1,293 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>User Profile</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <th:block th:replace="~{Layout :: link-css}"></th:block>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-        <style>
-            body {
-                font-family: 'Inter', sans-serif;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa hồ sơ – E-SHOP</title>
+    <th:block th:replace="~{Layout :: link-css}"></th:block>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+                    }
+                }
             }
-        </style>
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    </head>
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
 
-    <body>
-        <!--<div th:replace="~{fragments/header :: header}"></div>-->
+        .avatar-ring {
+            box-shadow: 0 0 0 4px white, 0 0 0 6px #3b82f6;
+        }
+    </style>
+</head>
 
-        <div class="flex min-h-screen">
-            <!-- Sidebar -->
-            <aside class="flex-shrink-0">
-                <!--    <div th:fragment="sidebar" class="w-64 bg-white h-screen left-0 shadow-lg rounded-xl">-->
-                <!--        <div class="p-6">-->
-                <!--            <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>-->
-                <!--        </div>-->
-                <!--        <nav class="mt-6">-->
-                <!--            <a th:href="@{/users/edit/{id}(id=${#authentication.principal.id})}" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Profile</a>-->
-                <!--            <a th:href="@{/orders}" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Orders</a>-->
-                <!--            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Settings</a>-->
-                <!--            <a th:href="@{/logout}" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:text-gray-900">Logout</a>-->
-                <!--        </nav>-->
-                <!--    </div>-->
-                <div th:replace="~{fragments/profile-sidebar :: profile-sidebar}"></div>
-            </aside>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex min-h-screen" x-data="{
+    avatarPreview: null,
+    handleAvatar(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => { this.avatarPreview = ev.target.result; };
+        reader.readAsDataURL(file);
+    }
+}">
 
-            <!-- Main Content -->
-            <div class="flex-1 min-w-0 p-10 overflow-x-hidden">
-                <h1 class="text-3xl font-bold text-gray-800 mb-8">User Profile</h1>
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/profile-sidebar :: sidebar}"></div>
 
-                <form th:action="@{/users/edit/{userId}(userId=${user.id})}" method="post"
-                    enctype="multipart/form-data">
-                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                        <div class="flex items-center space-x-6">
-                            <div class="w-32 h-32 rounded-full overflow-hidden">
-                                <img th:src="@{'data:image/jpeg;base64,'+${user.avatar}}" alt="Avatar"
-                                    class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <input type="text" th:value="${user.username}" name="username"
-                                    class="text-2xl font-semibold text-gray-800 mb-2 bg-transparent border-b border-gray-300 focus:border-blue-500 focus:outline-none">
-                                <input type="email" th:value="${user.email}" name="email"
-                                    class="text-gray-600 bg-transparent border-b border-gray-300 focus:border-blue-500 focus:outline-none">
-                                <div class="mt-4">
-                                    <label for="avatarFile"
-                                        class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 cursor-pointer">
-                                        Change Avatar
-                                        <input type="file" id="avatarFile" name="avatarFile" class="hidden">
-                                    </label>
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-64 p-6 lg:p-8">
+
+            <!-- Page Header -->
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-900">Chỉnh sửa hồ sơ</h1>
+                <p class="text-gray-500 text-sm mt-1">Cập nhật thông tin tài khoản của bạn</p>
+            </div>
+
+            <!-- Success / Error Flash -->
+            <div th:if="${successMessage}"
+                class="mb-6 flex items-center gap-3 px-5 py-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+                <i class="fa-solid fa-circle-check text-green-500"></i>
+                <span th:text="${successMessage}">Cập nhật thành công!</span>
+            </div>
+            <div th:if="${errorMessage}"
+                class="mb-6 flex items-center gap-3 px-5 py-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+                <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+            </div>
+
+            <form th:action="@{/users/edit/{userId}(userId=${user.id})}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+                    <!-- LEFT: Avatar Card -->
+                    <div class="xl:col-span-1">
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="h-24 bg-gradient-to-br from-brand-500 to-brand-700"></div>
+                            <div class="px-6 pb-6 -mt-12 flex flex-col items-center text-center">
+
+                                <!-- Avatar Preview -->
+                                <div class="relative mb-4 cursor-pointer group" @click="$refs.avatarInput.click()">
+                                    <img th:src="@{/users/{id}/avatar(id=${user.id})}" alt="Avatar"
+                                        x-ref="defaultAvatar"
+                                        x-bind:src="avatarPreview || $refs.defaultAvatar.dataset.src"
+                                        th:attr="data-src=@{/users/{id}/avatar(id=${user.id})}"
+                                        onerror="this.src='/images/default-avatar.png'"
+                                        class="w-24 h-24 rounded-full object-cover avatar-ring transition-all duration-200 group-hover:opacity-80">
+                                    <div
+                                        class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <i class="fa-solid fa-camera text-white text-xl"></i>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-gray-500 mb-4">Nhấn vào avatar để thay đổi</p>
+
+                                <input type="file" name="avatarFile" id="avatarFile" accept="image/*" class="hidden"
+                                    x-ref="avatarInput" @change="handleAvatar($event)">
+
+                                <label for="avatarFile"
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 text-brand-600 text-sm font-medium rounded-xl hover:bg-brand-100 transition-colors cursor-pointer">
+                                    <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
+                                    Tải lên ảnh mới
+                                </label>
+
+                                <div class="mt-6 w-full border-t border-gray-100 pt-4 space-y-2 text-left">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-500">Trạng thái</span>
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-semibold"
+                                            th:classappend="${user.enabled ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                            <span class="w-1.5 h-1.5 rounded-full"
+                                                th:classappend="${user.enabled ? 'bg-green-500' : 'bg-red-500'}"></span>
+                                            <span th:text="${user.enabled ? 'Hoạt động' : 'Bị khóa'}">Hoạt động</span>
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-500">Vai trò</span>
+                                        <span class="text-gray-700 font-medium"
+                                            th:text="${#strings.listJoin(user.roles.![name], ', ')}">USER</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-500">Ngày tham gia</span>
+                                        <span class="text-gray-700 font-medium"
+                                            th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">-</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Personal Information</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                <input type="tel" id="phone" name="phone"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <!-- RIGHT: Form Fields -->
+                    <div class="xl:col-span-2 space-y-6">
+
+                        <!-- Account Info -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
+                                    <i class="fa-solid fa-user text-brand-600"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-sm font-bold text-gray-900">Thông tin tài khoản</h2>
+                                    <p class="text-xs text-gray-500">Thông tin cơ bản của bạn</p>
+                                </div>
                             </div>
-                            <div>
-                                <label for="address"
-                                    class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                <input type="text" id="address" name="address"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="username"
+                                        class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                                        Tên đăng nhập
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                            <i class="fa-solid fa-at text-gray-400 text-xs"></i>
+                                        </div>
+                                        <input type="text" id="username" name="username" th:value="${user.username}"
+                                            placeholder="Tên đăng nhập"
+                                            class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-gray-50 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none transition-all duration-200 placeholder-gray-400">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="email"
+                                        class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                                        Email
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                            <i class="fa-solid fa-envelope text-gray-400 text-xs"></i>
+                                        </div>
+                                        <input type="email" id="email" name="email" th:value="${user.email}"
+                                            placeholder="email@example.com"
+                                            class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-gray-50 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none transition-all duration-200 placeholder-gray-400">
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Personal Info -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                                    <i class="fa-solid fa-address-card text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-sm font-bold text-gray-900">Thông tin cá nhân</h2>
+                                    <p class="text-xs text-gray-500">Địa chỉ và số điện thoại giao hàng</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="phone"
+                                        class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                                        Số điện thoại
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                            <i class="fa-solid fa-phone text-gray-400 text-xs"></i>
+                                        </div>
+                                        <input type="tel" id="phone" name="phone" placeholder="0901 234 567"
+                                            class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-gray-50 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none transition-all duration-200 placeholder-gray-400">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="address"
+                                        class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                                        Địa chỉ giao hàng
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                            <i class="fa-solid fa-location-dot text-gray-400 text-xs"></i>
+                                        </div>
+                                        <input type="text" id="address" name="address"
+                                            placeholder="123 Đường ABC, Quận 1, TP.HCM"
+                                            class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-gray-50 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none transition-all duration-200 placeholder-gray-400">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Change Password -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center">
+                                    <i class="fa-solid fa-lock text-orange-600"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-sm font-bold text-gray-900">Đổi mật khẩu</h2>
+                                    <p class="text-xs text-gray-500">Để trống nếu không muốn thay đổi</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" x-data="{ showPw: false }">
+                                <div>
+                                    <label for="password"
+                                        class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                                        Mật khẩu mới
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                            <i class="fa-solid fa-key text-gray-400 text-xs"></i>
+                                        </div>
+                                        <input :type="showPw ? 'text' : 'password'" id="password" name="password"
+                                            placeholder="••••••••"
+                                            class="w-full pl-9 pr-10 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-gray-50 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none transition-all duration-200 placeholder-gray-400">
+                                        <button type="button" @click="showPw = !showPw"
+                                            class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+                                            <i class="fa-solid text-xs" :class="showPw ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="confirmPassword"
+                                        class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                                        Xác nhận mật khẩu
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                            <i class="fa-solid fa-key text-gray-400 text-xs"></i>
+                                        </div>
+                                        <input :type="showPw ? 'text' : 'password'" id="confirmPassword"
+                                            name="confirmPassword" placeholder="••••••••"
+                                            class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-gray-50 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none transition-all duration-200 placeholder-gray-400">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center justify-end gap-3">
+                            <a th:href="@{/users/dashboard}"
+                                class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                                Hủy
+                            </a>
+                            <button type="submit"
+                                class="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 active:scale-95 transition-all duration-150 shadow-sm shadow-brand-200">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                Lưu thay đổi
+                            </button>
+                        </div>
                     </div>
-
-                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Orders</h2>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Order ID</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Date</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <!-- Iterate through the orders list -->
-                                    <tr th:each="order : ${orders}">
-                                        <td class="px-6 py-4 whitespace-nowrap" th:text="'#' + ${order.id}">#OrderID
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap" th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd')}">Order Date</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <!-- Conditional status formatting -->
-                                <span th:classappend="${order.orderStatus.name() == 'SUCCESS' ? 'bg-green-100 text-green-800' : order.orderStatus.name() == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}px-2 inline-flex text-xs leading-5 font-semibold rounded-full" th:text="${order.orderStatus}">
-                        Status
-                    </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap" th:text="${#numbers.formatDecimal(order.totalAmount, 2)} + ' VND'">Total Amount</td>
-                        </tr>
-                        </tbody>
-                    </table>
                 </div>
-            </div>
-
-            <div class="flex justify-end">
-                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Save Changes
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
-<!--<div th:replace="~{fragments/footer :: footer}"></div>-->
-<script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
-<script th:src="@{/js/hero.js}" ></script>
+
+    <script th:src="@{/js/toggle.js}"></script>
 </body>
+
 </html>

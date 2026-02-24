@@ -2,7 +2,7 @@ package com.app.e_commerce.controller;
 
 import com.app.e_commerce.DTO.invoice.*;
 import com.app.e_commerce.entity.User;
-import com.app.e_commerce.service.InvoiceService;
+import com.app.e_commerce.services.InvoiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

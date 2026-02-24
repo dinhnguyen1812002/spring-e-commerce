@@ -1,15 +1,11 @@
-package com.app.e_commerce.controller;
+package com.app.e_commerce.controller.API;
 
-import com.app.e_commerce.entity.User;
 import com.app.e_commerce.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("user")

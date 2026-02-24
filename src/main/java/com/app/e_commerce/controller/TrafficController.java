@@ -1,6 +1,5 @@
 package com.app.e_commerce.controller;
 
-
 import com.app.e_commerce.entity.Traffic;
 import com.app.e_commerce.services.TrafficService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,29 +22,30 @@ public class TrafficController {
     private TrafficService trafficService;
     @Autowired
     private SimpMessagingTemplate template;
+
     // Show all visit statistics
     @GetMapping("/stats")
     public String showVisitStats(Model model) {
         List<Traffic> visits = trafficService.getAllTraffic();
         model.addAttribute("visits", visits);
-        return "traffic/traffic";  // Refers to the Thymeleaf template
+        return "traffic/traffic"; // Refers to the Thymeleaf template
     }
+
     // Show visit statistics for a specific date
     @GetMapping("/stats/date")
-    public String showVisitsByDate(@RequestParam("date") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate date, Model model) {
+    public String showVisitsByDate(@RequestParam("date") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate date,
+            Model model) {
         trafficService.getVisitByDay(date).ifPresent(visit -> model.addAttribute("visit", visit));
         return "traffic/traffic";
     }
 
-//    public void sendTrafficUpdate() {
-//        LocalDate today = LocalDate.now();
-//        Long visitCount = trafficService.getVisitsByDate(today)
-//                .map(DailyVisit::getVisitCount)
-//                .orElse(0L);
-//        template.convertAndSend("/topic/traffic", visitCount);  // Send to all subscribers
-//    }
-
-
+    // public void sendTrafficUpdate() {
+    // LocalDate today = LocalDate.now();
+    // Long visitCount = trafficService.getVisitsByDate(today)
+    // .map(DailyVisit::getVisitCount)
+    // .orElse(0L);
+    // template.convertAndSend("/topic/traffic", visitCount); // Send to all
+    // subscribers
+    // }
 
 }
-

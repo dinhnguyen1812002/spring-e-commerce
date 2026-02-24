@@ -30,9 +30,9 @@ public class RateController {
 
     @PostMapping("/add")
     public String addRating(@RequestParam("productId") Long productId,
-                            @RequestParam("comment") String comment,
-                            @RequestParam("star") Integer star,
-                            Principal principal) {
+            @RequestParam("comment") String comment,
+            @RequestParam("star") Integer star,
+            Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }

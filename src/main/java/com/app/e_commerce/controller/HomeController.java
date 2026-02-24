@@ -1,4 +1,5 @@
 package com.app.e_commerce.controller;
+
 import com.app.e_commerce.entity.Category;
 import com.app.e_commerce.entity.Product;
 import com.app.e_commerce.entity.User;
@@ -32,8 +33,7 @@ public class HomeController {
     private RecommendationService recommendationService;
 
     @GetMapping
-    public String home(HttpServletRequest request, Model model)
-    {
+    public String home(HttpServletRequest request, Model model) {
         request.getSession(); // ép tạo session ngay từ đầu
         List<Product> listProduct = productService.getAllProducts();
         List<Category> categories = categoryService.getAllCategories();
@@ -55,12 +55,14 @@ public class HomeController {
 
         return "home";
     }
+
     @GetMapping("/user-list")
-    public String getAllUser(Model model){
+    public String getAllUser(Model model) {
         List<User> listUser = userService.getAllUser();
         model.addAttribute("users", listUser);
         return "users/list-user";
     }
+
     @GetMapping("/search")
     public String searchProducts(@RequestParam("keyword") String keyword, Model model) {
         model.addAttribute("products", productService.searchProducts(keyword));
@@ -68,7 +70,7 @@ public class HomeController {
     }
 
     @GetMapping("/hero")
-    public String hero(){
+    public String hero() {
         return "fragments/hero";
     }
 

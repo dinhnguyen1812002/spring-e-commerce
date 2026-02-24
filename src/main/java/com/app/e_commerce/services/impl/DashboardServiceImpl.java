@@ -1,10 +1,10 @@
-package com.app.e_commerce.service.impl;
+package com.app.e_commerce.services.impl;
 
 import com.app.e_commerce.repository.OrderRepository;
 
 import com.app.e_commerce.repository.ProductRepo;
 import com.app.e_commerce.repository.UserRepo;
-import com.app.e_commerce.service.DashboardService;
+import com.app.e_commerce.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +20,9 @@ public class DashboardServiceImpl implements DashboardService {
     private final ProductRepo productRepository;
     private final UserRepo userRepository;
 
-    public DashboardServiceImpl(OrderRepository orderRepository, 
-                             ProductRepo productRepository,
-                             UserRepo userRepository) {
+    public DashboardServiceImpl(OrderRepository orderRepository,
+            ProductRepo productRepository,
+            UserRepo userRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
@@ -70,9 +70,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public BigDecimal getTotalRevenue() {
-        return orderRepository.getTotalRevenue() != null ? 
-               orderRepository.getTotalRevenue() : 
-               BigDecimal.ZERO;
+        return orderRepository.getTotalRevenue() != null ? orderRepository.getTotalRevenue() : BigDecimal.ZERO;
     }
 
     @Override
@@ -97,6 +95,5 @@ public class DashboardServiceImpl implements DashboardService {
     public Map<String, Object> getDashboardSummary() {
         return Map.of();
     }
-
 
 }

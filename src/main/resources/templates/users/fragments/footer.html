@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <footer th:fragment="footer" class="bg-white border-t border-gray-100 py-6">
+        <div class="px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm text-gray-500">
+                &copy; <span th:text="${#calendars.year(#calendars.createNow())}">2024</span> E-SHOP. Tất cả quyền được
+                bảo lưu.
+            </p>
+            <div class="flex items-center gap-6">
+                <a href="#" class="text-sm text-gray-500 hover:text-blue-600 transition-colors">Điều khoản</a>
+                <a href="#" class="text-sm text-gray-500 hover:text-blue-600 transition-colors">Chính sách bảo mật</a>
+                <a href="#" class="text-sm text-gray-500 hover:text-blue-600 transition-colors">Trợ giúp</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -44,8 +44,7 @@ public class ProductController {
 
     @PostMapping("/create")
     public String addProduct(@ModelAttribute Product product,
-                             @RequestParam("file") MultipartFile file
-    ) throws IOException {
+            @RequestParam("file") MultipartFile file) throws IOException {
 
         productService.saveProduct(product, file);
         return "redirect:/admin/products";
@@ -67,9 +66,9 @@ public class ProductController {
 
     @GetMapping
     public String listProducts(Model model,
-                               @RequestParam(value = "page", defaultValue = "0") int page,
-                               @RequestParam(value = "size", defaultValue = "5") int size,
-                               @RequestParam(value = "category", required = false) String categorySlug) {
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size,
+            @RequestParam(value = "category", required = false) String categorySlug) {
 
         Page<Product> productPage;
 
@@ -98,7 +97,7 @@ public class ProductController {
     @GetMapping("/search")
     public String searchProducts(@RequestParam("keyword") String keyword, Model model) {
         List<Product> searchResults = productService.searchProducts(keyword.trim().toLowerCase());
-        List<Category> categories  = categoryService.getAllCategories();
+        List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("products", searchResults);
         model.addAttribute("keyword", keyword);
         model.addAttribute("categories", categories);
@@ -121,12 +120,11 @@ public class ProductController {
         return "product/edit-product";
     }
 
-
     @PostMapping("/update/{id}")
     public String updateProduct(@PathVariable Long id,
-                                @ModelAttribute("product") Product product,
-                                @RequestParam("file") MultipartFile file,
-                                RedirectAttributes redirectAttributes) {
+            @ModelAttribute("product") Product product,
+            @RequestParam("file") MultipartFile file,
+            RedirectAttributes redirectAttributes) {
         try {
             product.setId(id);
             productService.saveProduct(product, file);
@@ -148,25 +146,26 @@ public class ProductController {
             return "redirect:/products";
         }
     }
+
     @GetMapping("/{id}")
     public String getProductById(@PathVariable Long id, Model model) {
         Optional<Product> productOptional = productService.getProductById(id);
         List<Rate> rates = rateService.getRatesByProduct(id);
-        
+
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            
+
             // Tính rating trung bình
             double averageRating = rateService.getAverageRating(id);
             long ratingCount = rateService.getRatingCount(id);
             int[] ratingDistribution = rateService.getRatingDistribution(id);
-            
+
             model.addAttribute("product", product);
             model.addAttribute("rates", rates);
             model.addAttribute("averageRating", averageRating);
             model.addAttribute("ratingCount", ratingCount);
             model.addAttribute("ratingDistribution", ratingDistribution);
-            
+
             return "product/product-details";
         } else {
             model.addAttribute("errorMessage", "Product not found");
@@ -174,10 +173,10 @@ public class ProductController {
         }
     }
 
-//    @GetMapping("/find")
-//    @ResponseBody
-//    public List<Product> searchProducts(@RequestParam("query") String query) {
-//        return productService.searchProducts(query);
-//    }
+    // @GetMapping("/find")
+    // @ResponseBody
+    // public List<Product> searchProducts(@RequestParam("query") String query) {
+    // return productService.searchProducts(query);
+    // }
 
 }
