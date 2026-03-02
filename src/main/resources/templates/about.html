@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{Layout :: layout(~{::main})}">
+<main class="min-h-screen bg-white">
+    <!-- Hero Section -->
+    <section class="bg-gray-900 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-6xl font-light mb-6">About Shop-Ease</h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                Discover our journey, our values, and why we're dedicated to bringing you the best shopping experience.
+                <br>
+                This page is demo for Spring Boot project
+            </p>
+        </div>
+    </section>
+
+    <!-- Our Story -->
+    <section class="py-20">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2">
+                    <h2 class="text-3xl font-light mb-6 text-gray-900 font-serif">Our Story</h2>
+                    <p class="text-gray-600 mb-4 leading-relaxed">
+                        Founded in 2025, Shop-Ease started with a simple vision: to make high-quality products
+                        accessible to everyone through a seamless and enjoyable online shopping experience.
+                    </p>
+                    <p class="text-gray-600 mb-4 leading-relaxed">
+                        What began as a small collection of hand-picked items has grown into a comprehensive
+                        marketplace, but our core mission remains the same. We believe that shopping should be simpler,
+                        more honest, and more rewarding.
+                    </p>
+                    <p class="text-gray-600 leading-relaxed">
+                        Our team is passionate about finding the perfect balance between style, functionality, and
+                        value, ensuring that every item in our store meets our rigorous standards.
+                    </p>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                            alt="Our Team" class="w-full h-auto">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Values -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-light mb-16 text-center text-gray-900">Our Core Values</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="bg-white p-10 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-heart text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-medium mb-4">Customer First</h3>
+                    <p class="text-gray-600">Your satisfaction is our top priority. We're here to help at every step of
+                        your shopping journey.</p>
+                </div>
+                <div class="bg-white p-10 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-certificate text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-medium mb-4">Quality Guaranteed</h3>
+                    <p class="text-gray-600">We meticulously vet every product and supplier to ensure you receive only
+                        the best items.</p>
+                </div>
+                <div class="bg-white p-10 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div
+                        class="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-leaf text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-medium mb-4">Sustainability</h3>
+                    <p class="text-gray-600">We are committed to reducing our environmental impact through conscious
+                        sourcing and packaging.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Join Us -->
+    <section class="py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-light mb-8">Join Our Community</h2>
+            <p class="text-gray-600 mb-12 max-w-xl mx-auto">
+                Thank you for being a part of our story. We're excited to continue serving you with exceptional products
+                and service.
+            </p>
+            <a href="/products"
+                class="inline-block bg-gray-900 text-white px-10 py-4 font-medium hover:bg-gray-800 transition-colors">
+                Start Shopping
+            </a>
+        </div>
+    </section>
+</main>
+
+</html>

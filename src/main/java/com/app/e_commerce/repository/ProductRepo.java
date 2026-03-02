@@ -16,13 +16,12 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.categories")
     List<Product> findAllWithCategories();
 
-    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    @Query("SELECT DISTINCT p FROM Product p LEFT JOIN p.categories c WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(c.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Product> searchProductsByKeyword(@Param("keyword") String keyword);
+
     @Query("SELECT p FROM Product p ORDER BY p.createdAt DESC")
     List<Product> findOrderByCreatedAtDesc();// top 10 newest product
 
     Page<Product> findByCategories_Slug(String slug, Pageable pageable);
 
 }
-
-

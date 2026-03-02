@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{Layout :: layout(~{::main})}">
+<main class="min-h-screen bg-white">
+    <!-- Hero Section -->
+    <section class="bg-gray-900 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-6xl font-light mb-6">Contact Us</h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                Have questions or feedback? We'd love to hear from you.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contact Info & Form -->
+    <section class="py-20">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row gap-16">
+                <!-- Contact Details -->
+                <div class="md:w-1/3 space-y-12">
+                    <div>
+                        <h2 class="text-2xl font-medium mb-6 text-gray-900">Get in Touch</h2>
+                        <p class="text-gray-600 mb-8 leading-relaxed">
+                           
+                            This page is demo for Spring Boot project
+                        </p>
+
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Visit Us</h3>
+                                    <p class="text-gray-600">Tp Hồ Chí Minh, Việt Nam</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Call Me</h3>
+                                    <p class="text-gray-600">
+                                    
+                                        <a href="tel:0919360244">0919360244</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Email Me</h3>
+                                    <p class="text-gray-600">dinhnguyen1812002@gmail.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-medium mb-6 text-gray-900">Working Hours</h2>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex justify-between"><span>Monday - Friday:</span> <span
+                                    class="font-medium">9:00 AM - 6:00 PM</span></li>
+                            <li class="flex justify-between"><span>Saturday:</span> <span class="font-medium">10:00 AM -
+                                    4:00 PM</span></li>
+                            <li class="flex justify-between"><span>Sunday:</span> <span
+                                    class="font-medium">Closed</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="md:w-2/3 bg-gray-50 p-8 md:p-12 rounded-2xl">
+                    <h2 class="text-2xl font-medium mb-8 text-gray-900 text-center">Send Us a Message (Not working for now)</h2>
+                    <form action="#" method="POST" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" id="name" name="name" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200"
+                                    placeholder="Enter your name">
+                            </div>
+                            <div class="space-y-4">
+                                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                <input type="email" id="email" name="email" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200"
+                                    placeholder="Enter your email">
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <label for="subject" class="block text-sm font-medium text-gray-700">Subject</label>
+                            <input type="text" id="subject" name="subject" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200"
+                                placeholder="How can we help?">
+                        </div>
+                        <div class="space-y-4">
+                            <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                            <textarea id="message" name="message" rows="6" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200 resize-none"
+                                placeholder="Write your message here..."></textarea>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-gray-900 text-white font-medium py-4 rounded-lg hover:bg-gray-800 transition-colors uppercase tracking-wider">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map or Location Placeholder -->
+    <section
+        class="h-96 w-full bg-gray-200 grayscale hover:grayscale-0 transition-all duration-500 flex items-center justify-center">
+        <p class="text-gray-500 text-lg flex items-center gap-2">
+            <i class="fas fa-map-marked-alt"></i> Interactive Map coming soon
+        </p>
+    </section>
+</main>
+
+</html>

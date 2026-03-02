@@ -173,10 +173,22 @@ public class ProductController {
         }
     }
 
-    // @GetMapping("/find")
-    // @ResponseBody
-    // public List<Product> searchProducts(@RequestParam("query") String query) {
-    // return productService.searchProducts(query);
-    // }
+    @GetMapping("/find")
+    @ResponseBody
+    public List<com.app.e_commerce.DTO.ProductSearchDTO> findProducts(@RequestParam("query") String query) {
+        List<Product> products = productService.searchProducts(query);
+        List<com.app.e_commerce.DTO.ProductSearchDTO> results = new ArrayList<>();
 
+        for (Product product : products) {
+            double avgRating = rateService.getAverageRating(product.getId());
+            results.add(new com.app.e_commerce.DTO.ProductSearchDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getImage(),
+                    product.getPrice(),
+                    product.getStock(),
+                    avgRating));
+        }
+        return results;
+    }
 }

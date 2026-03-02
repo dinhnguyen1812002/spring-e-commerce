@@ -74,4 +74,14 @@ public class HomeController {
         return "fragments/hero";
     }
 
+    @GetMapping("/about")
+    public String about() {
+        return "about";
+    }
+
+    @GetMapping("/contact")
+    public String contact() {
+        return "contact";
+    }
+
 }

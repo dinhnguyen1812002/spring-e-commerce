@@ -7,6 +7,7 @@
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/DTO/OrderNotificationDTO.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/DTO/ProductImportRequestDTO.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/DTO/ProductImportResponseDTO.java
+/home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/DTO/ProductSearchDTO.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/DTO/RateMessageDTO.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/DTO/invoice/BulkExportRequestDTO.java
 /home/ng-dev/ng-dev/java/spring-e-commerce/src/main/java/com/app/e_commerce/DTO/invoice/InvoiceAuditDTO.java
