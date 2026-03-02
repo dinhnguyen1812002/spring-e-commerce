@@ -1,8 +1,5 @@
 package com.app.e_commerce.entity;
 
-
-
-
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -62,5 +59,22 @@ public class Category {
 
     public Category(String name) {
         this.name = name;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void generateSlug() {
+        if (this.name != null) {
+            this.slug = makeSlug(this.name);
+        }
+    }
+
+    private String makeSlug(String input) {
+        if (input == null)
+            return "";
+        String nowhitespace = input.toLowerCase().replaceAll("\\s+", "-");
+        String normalized = java.text.Normalizer.normalize(nowhitespace, java.text.Normalizer.Form.NFD);
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(normalized).replaceAll("").replaceAll("[^\\w-]", "");
     }
 }

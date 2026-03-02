@@ -103,36 +103,8 @@
             </div>
         </nav>
     </header>
-    <div th:replace="layout :: common-js"></div>
-    <script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
-    <script>
-        const userDropdownButton = document.getElementById('userDropdownButton');
-        const userDropdownMenu = document.getElementById('userDropdownMenu');
-
-        if (userDropdownButton && userDropdownMenu) {
-            userDropdownButton.addEventListener('click', () => {
-                userDropdownMenu.classList.toggle('hidden');
-            });
-
-            // Close the dropdown when clicking outside
-            document.addEventListener('click', (event) => {
-                if (!userDropdownButton.contains(event.target) && !userDropdownMenu.contains(event.target)) {
-                    userDropdownMenu.classList.add('hidden');
-                }
-            });
-        }
-
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-    </script>
-    <script th:src="@{/js/search.js}"></script>
-    <script th:src="@{/js/toggle.js}" th:fragment="common-js"></script>
+    </nav>
+    </header>
 </body>
 
 </html>

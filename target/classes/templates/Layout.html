@@ -8,16 +8,16 @@ This requires the page to have a <title> and a <main> element.
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     th:fragment="layout(mainContent)">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- Add user ID for WebSocket notifications if user is authenticated -->
-        <meta name="user-id" th:if="${#authentication != null && #authentication.principal != null}" 
-          th:content="${#authentication.principal}">
+    <!-- Add user ID for WebSocket notifications if user is authenticated -->
+    <meta name="user-id" th:if="${#authentication != null && #authentication.principal != null}"
+        th:content="${#authentication.principal}">
 
     <!-- The title of the page will be replaced by the content of the <title> tag in the child template -->
-<!--    <title th:replace="${pageTitle}">E-Commerce Application</title>-->
+    <!--    <title th:replace="${pageTitle}">E-Commerce Application</title>-->
 
     <!--
       This block is defined as a fragment so that other pages,
@@ -28,8 +28,8 @@ This requires the page to have a <title> and a <main> element.
         <link rel="stylesheet" th:href="@{/css/main.css}">
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-              integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-              crossorigin="anonymous" referrerpolicy="no-referrer"/>
+            integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
     </th:block>
 
     <!-- WebSocket libraries for real-time notifications -->
@@ -39,13 +39,27 @@ This requires the page to have a <title> and a <main> element.
     <style>
         /* Toast notification styles */
         @keyframes slideIn {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         @keyframes slideOut {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(100%); opacity: 0; }
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(100%);
+                opacity: 0;
+            }
         }
 
         .toast-enter {
@@ -58,9 +72,17 @@ This requires the page to have a <title> and a <main> element.
 
         /* Notification badge pulse animation */
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .animate-pulse {
@@ -68,22 +90,26 @@ This requires the page to have a <title> and a <main> element.
         }
     </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen font-sans">
 
-<!-- Header fragment is inserted here -->
-<header th:replace="~{fragments/header :: header}"></header>
+    <!-- Header fragment is inserted here -->
+    <header th:replace="~{fragments/header :: header}"></header>
 
-<!-- Main content from the calling page is inserted here. -->
-<main th:insert="${mainContent}"></main>
+    <!-- Main content from the calling page is inserted here. -->
+    <main th:insert="${mainContent}"></main>
 
-<!-- Footer fragment is inserted here -->
-<footer th:replace="~{fragments/footer :: footer}"></footer>
+    <!-- Footer fragment is inserted here -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<!-- Global Scripts -->
-<script th:src="@{/js/toggle.js}"></script>
+    <!-- Global Scripts -->
+    <script th:src="@{/js/toggle.js}"></script>
+    <script th:src="@{/js/search.js}"></script>
 
-<!-- WebSocket notifications for authenticated users -->
-<script th:if="${#authentication != null && #authentication.principal != null}" th:src="@{/js/user-notifications.js}"></script>
+    <!-- WebSocket notifications for authenticated users -->
+    <script th:if="${#authentication != null && #authentication.principal != null}"
+        th:src="@{/js/user-notifications.js}"></script>
 
 </body>
+
 </html>
