@@ -14,6 +14,18 @@ public interface TrafficRepo extends JpaRepository<Traffic, Long> {
     Optional<Traffic> findByDate(LocalDate date);
 
     @Modifying
-    @Query("UPDATE Traffic t SET t.count = t.count + 1 WHERE t.date = :date")
-    int incrementCount(@Param("date") LocalDate date);
+    @Query(value = """
+            INSERT INTO traffic (date, count, page_views, bounce_count, total_session_duration, session_count, traffic_sources)
+            VALUES (:date, 1, 0, 0, 0, 0, NULL)
+            ON CONFLICT (date) DO UPDATE SET count = traffic.count + 1
+            """, nativeQuery = true)
+    void incrementCountUpsert(@Param("date") LocalDate date);
+
+    @Modifying
+    @Query(value = """
+            INSERT INTO traffic (date, count, page_views, bounce_count, total_session_duration, session_count, traffic_sources)
+            VALUES (:date, 0, 0, 0, 0, 0, NULL)
+            ON CONFLICT (date) DO NOTHING
+            """, nativeQuery = true)
+    void insertIfAbsent(@Param("date") LocalDate date);
 }

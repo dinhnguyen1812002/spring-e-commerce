@@ -42,15 +42,7 @@ public class TrafficService {
     @Transactional
     public void trackVisit() {
         LocalDate today = LocalDate.now();
-
-        // update count, nếu có record
-        int updated = trafficRepo.incrementCount(today);
-
-        if (updated == 0) {
-            // chưa có record => insert mới
-            Traffic traffic = new Traffic(today, 1L);
-            trafficRepo.save(traffic);
-        }
+        trafficRepo.incrementCountUpsert(today);
 
         // gửi realtime update
         messagingTemplate.convertAndSend("/topic/trafficUpdates", getAllTraffic());
@@ -203,13 +195,9 @@ public class TrafficService {
      * @return the traffic record
      */
     private Traffic getOrCreateTrafficForToday(LocalDate date) {
-        Optional<Traffic> trafficOpt = trafficRepo.findByDate(date);
-        if (trafficOpt.isPresent()) {
-            return trafficOpt.get();
-        } else {
-            Traffic traffic = new Traffic(date, 0L);
-            return trafficRepo.save(traffic);
-        }
+        trafficRepo.insertIfAbsent(date);
+        return trafficRepo.findByDate(date)
+                .orElseThrow(() -> new IllegalStateException("Failed to load traffic row for date: " + date));
     }
 
     /**
